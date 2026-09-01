@@ -23,7 +23,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const trustedHost =
     hostname === 'localhost' ||
     hostname === '127.0.0.1' ||
-    hostname.endsWith('.sites.openai.com');
+    hostname.endsWith('.sites.openai.com') ||
+    hostname.endsWith('.chatgpt.site');
   const forwardedProto = requestHeaders
     .get('x-forwarded-proto')
     ?.split(',')[0]
@@ -36,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
         : 'https';
   const origin = trustedHost
     ? `${protocol}://${host}`
-    : 'https://sites.openai.com';
+    : 'https://hu-jiayi-2027-job-tracker.atkaescalitfee.chatgpt.site';
   const image = `${origin}/og.png`;
 
   return {
