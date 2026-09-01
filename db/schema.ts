@@ -1,0 +1,48 @@
+import {
+  integer,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from 'drizzle-orm/sqlite-core';
+
+export const opportunities = sqliteTable(
+  'opportunities',
+  {
+    rowKey: text('row_key').primaryKey(),
+    sourceId: text('source_id').notNull(),
+    ownerId: text('owner_id').notNull(),
+    company: text('company').notNull(),
+    role: text('role').notNull(),
+    tracks: text('tracks').notNull(),
+    ownership: text('ownership').notNull(),
+    scale: text('scale').notNull(),
+    city: text('city').notNull(),
+    applyUrl: text('apply_url').notNull(),
+    sourceUrl: text('source_url').notNull(),
+    sourceLabel: text('source_label').notNull(),
+    startDate: text('start_date'),
+    endDate: text('end_date'),
+    deadlineNote: text('deadline_note').notNull(),
+    recommendation: integer('recommendation').notNull(),
+    fitReason: text('fit_reason').notNull(),
+    riskNote: text('risk_note').notNull(),
+    degreeGate: text('degree_gate').notNull(),
+    compensation: text('compensation').notNull().default('未公开'),
+    verifiedAt: text('verified_at').notNull(),
+    stage: text('stage').notNull().default('待投递'),
+    appliedAt: text('applied_at'),
+    nextActionAt: text('next_action_at'),
+    notes: text('notes').notNull().default(''),
+    favorite: integer('favorite').notNull().default(0),
+    archived: integer('archived').notNull().default(0),
+    isCustom: integer('is_custom').notNull().default(0),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_opportunities_owner_source').on(
+      table.ownerId,
+      table.sourceId,
+    ),
+  ],
+);
