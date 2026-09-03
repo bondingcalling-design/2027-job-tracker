@@ -281,6 +281,7 @@ export default function Dashboard() {
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     const result = items.filter((item) => {
+      if (item.stage === '放弃') return false;
       if (item.archived !== showArchived) return false;
       if (
         normalized &&
@@ -349,7 +350,9 @@ export default function Dashboard() {
   );
 
   const metrics = useMemo(() => {
-    const active = items.filter((item) => !item.archived);
+    const active = items.filter(
+      (item) => !item.archived && item.stage !== '放弃',
+    );
     return {
       total: active.length,
       mid: active.filter(
@@ -674,7 +677,7 @@ export default function Dashboard() {
                 onChange={(event) => setStage(event.target.value)}
               >
                 <NativeSelectOption>全部阶段</NativeSelectOption>
-                {STAGES.map((item) => (
+                {STAGES.filter((item) => item !== '放弃').map((item) => (
                   <NativeSelectOption key={item}>{item}</NativeSelectOption>
                 ))}
               </NativeSelect>
@@ -1042,12 +1045,12 @@ function OpportunityRows({
       </TableRow>
       {expanded ? (
         <TableRow className="bg-muted/22">
-          <TableCell colSpan={10}>
-            <div className="grid gap-4 px-2 py-3 text-xs leading-5 lg:grid-cols-4">
+          <TableCell colSpan={10} className="whitespace-normal">
+            <div className="grid min-w-0 gap-5 px-2 py-3 text-xs leading-5 lg:grid-cols-2 xl:grid-cols-4">
               <Detail label="为什么推荐" value={item.fitReason} />
               <Detail label="风险 / 准备重点" value={item.riskNote} />
               <Detail label="学历门槛" value={item.degreeGate} />
-              <div>
+              <div className="min-w-0">
                 <p className="font-semibold text-foreground">核实与备注</p>
                 <p className="mt-1 text-muted-foreground">
                   {item.verifiedAt} · {item.sourceLabel}
@@ -1207,9 +1210,11 @@ function MobileCard({
 
 function Detail({ label, value }: { label: string; value: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="font-semibold text-foreground">{label}</p>
-      <p className="mt-1 text-muted-foreground">{value || '待补充'}</p>
+      <p className="mt-1 whitespace-normal break-words text-muted-foreground">
+        {value || '待补充'}
+      </p>
     </div>
   );
 }
