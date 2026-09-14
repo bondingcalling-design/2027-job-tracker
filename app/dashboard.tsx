@@ -583,7 +583,7 @@ export default function Dashboard() {
               私企月薪或同岗参考下限 ≥ 1 万，央国企薪资不限。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              09.14 更新 · 新增本周提醒，并复核OPPO、小米、安克产品岗；准备中和已有进度保留，放弃隐藏。
+              09.14 更新 · 新增蔚来能源、中移互联网AI、车之家B端产品岗；准备中和已有进度保留，放弃隐藏。
               本科符合公开条件不代表保证通过简历筛选。
             </p>
           </div>

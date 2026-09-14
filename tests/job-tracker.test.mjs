@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('new recommendations exclude internet megafirms and project-management roles; private salary floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 15);
+  assert.equal(selected.length, 18);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -107,4 +107,20 @@ test('three large technology companies are screened by role instead of size', ()
     assert.ok(screeningReviews[id].monthlyMin >= 10000, item.company);
     assert.equal(item.verifiedAt, '2026-09-14');
   }
+});
+
+test('continued search adds three concrete bachelor roles without delivery work', () => {
+  const ids = ['nio-energy-product-2027', 'cmic-ai-product-2027', 'autohome-b2b-product-2027'];
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.match(item.degreeGate, /本科/);
+    assert.doesNotMatch(item.role, /项目管理|项目经理|PMO|实施|交付/);
+    assert.ok(new URL(item.applyUrl));
+    assert.ok(new URL(item.sourceUrl));
+    assert.equal(item.verifiedAt, '2026-09-14');
+  }
+  assert.ok(screeningReviews['nio-energy-product-2027'].monthlyMin >= 10000);
+  assert.ok(screeningReviews['autohome-b2b-product-2027'].monthlyMin >= 10000);
+  assert.equal(screeningReviews['cmic-ai-product-2027'].salaryKind, '未公开');
 });
