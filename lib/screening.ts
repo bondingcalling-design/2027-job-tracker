@@ -14,8 +14,8 @@ const exclusions: [string, string[]][] = [
     'pdd-campus-2027',
   ]],
   ['规模不作为排除理由，但这些旧集团入口或泛岗位尚未通过本科具体产品岗与薪资证据复核', [
-    'dji-digital-2027', 'oppo-ai-pm-2027', 'oppo-internet-pm-2027',
-    'xiaomi-product-2027', 'dji-campus-2027', 'anker-campus-2027',
+    'dji-digital-2027', 'oppo-internet-pm-2027',
+    'dji-campus-2027',
     'lenovo-product-2027', 'xiaopeng-ai-product-2027', 'li-auto-product-2027',
     'chinatelecom-campus-2027', 'catl-campus-2027',
     'ke-product-2027', 'nio-energy-product-2027', 'yonyou-b2b-product-2027',
@@ -143,6 +143,27 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     salaryKind: '招聘转载参考', monthlyMin: 12900,
     salarySourceUrl: 'https://www.jobui.com/company/1261638/jobs/analysis/',
     salarySourceLabel: '汇川技术当前应届岗位平均值，非本届产品岗承诺',
+  },
+  'oppo-ai-pm-2027': {
+    eligible: true,
+    reason: '官方2027互联网产品经理（AI方向），计算机本科可投；本届未公开月薪，采用深圳经验不限AI产品岗20–40K参考并降低推荐度',
+    salaryKind: '招聘转载参考', monthlyMin: 20000,
+    salarySourceUrl: 'https://www.zhipin.com/zhaopin/33e51e8132a7a8381HF92NW7Ew~~/',
+    salarySourceLabel: 'OPPO深圳经验不限AI产品岗参考，非本届报价',
+  },
+  'xiaomi-product-2027': {
+    eligible: true,
+    reason: '2027具体策略产品岗，计算机本科可投；薪资采用本届校招项目公开区间，因C端且竞争强放在后排',
+    salaryKind: '本届公开', monthlyMin: 15000,
+    salarySourceUrl: 'https://career.nankai.edu.cn/correcruit/content/id/116728.html',
+    salarySourceLabel: '小米集团2027校招项目公开区间（非单一子岗报价）',
+  },
+  'anker-campus-2027': {
+    eligible: true,
+    reason: '企业招聘人员发布的2027硬件产品经理，本科理工科；本届面议，采用深圳经验不限同岗18–30K参考',
+    salaryKind: '招聘转载参考', monthlyMin: 18000,
+    salarySourceUrl: 'https://www.zhipin.com/zhaopin/a1b60e9324c386830XF93tq9/',
+    salarySourceLabel: '安克深圳经验不限产品经理同岗参考，非本届报价',
   },
 };
 

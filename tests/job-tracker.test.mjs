@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('new recommendations exclude internet megafirms and project-management roles; private salary floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 12);
+  assert.equal(selected.length, 15);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -94,5 +94,17 @@ test('three re-screened industrial tech companies have concrete product opportun
     assert.ok(screeningReviews[id].monthlyMin >= 10000, item.company);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
+  }
+});
+
+test('three large technology companies are screened by role instead of size', () => {
+  const ids = ['oppo-ai-pm-2027', 'xiaomi-product-2027', 'anker-campus-2027'];
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.equal(item.scale, '大型科技企业');
+    assert.match(item.degreeGate, /本科/);
+    assert.ok(screeningReviews[id].monthlyMin >= 10000, item.company);
+    assert.equal(item.verifiedAt, '2026-09-14');
   }
 });

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AlertTriangle,
   ArrowUpRight,
   BriefcaseBusiness,
   CalendarClock,
@@ -98,6 +99,43 @@ const STAGES = [
 ];
 const OWNERSHIPS = ['全部性质', '央企', '国企', '私企', '外企', '混合所有制'];
 const SCALES = ['全部规模', '中厂', '成长公司', '大型科技企业', '大厂'];
+const WEEK_ALERTS = [
+  {
+    date: '09.15',
+    title: 'vivo 12:00 截止网申',
+    note: '15:00笔试仅研发岗（官方）',
+    href: 'https://hr-campus.vivo.com/campus/jobs?shareId=307651af-8827-443a-9fe0-ebd5a0f3e724&shareSource=2',
+    source: '官方核实',
+  },
+  {
+    date: '09.16',
+    title: '广联达笔试',
+    note: '具体场次以短信/邮件为准',
+    href: 'https://app.mokahr.com/m/campus-recruitment/glodon/91966?recommendCode=DSwxrkaW#/jobs',
+    source: '你的提醒',
+  },
+  {
+    date: '09.17',
+    title: '途虎养车笔试',
+    note: '仅提醒已投岗位，未新增默认推荐',
+    href: 'https://app.mokahr.com/m/campus_apply/tuhu/28398?recommendCode=DS1sBVSW#/jobs',
+    source: '你的提醒',
+  },
+  {
+    date: '09.18',
+    title: 'OPPO 发放笔试',
+    note: '官方说明仅部分岗位有笔试',
+    href: 'https://careers.oppo.com/university/oppo/campus/post?shareId=19939',
+    source: '你的提醒',
+  },
+  {
+    date: '09.19–20',
+    title: '周末集中笔试',
+    note: '得物、蚂蚁、讯飞、网易互娱、阿里系等按邮件确认',
+    href: 'https://iflytek.zhiye.com/campus/jobs?memory=%7B%7D&silence=1',
+    source: '你的提醒',
+  },
+];
 
 const EMPTY: Opportunity = {
   id: '',
@@ -545,7 +583,7 @@ export default function Dashboard() {
               私企月薪或同岗参考下限 ≥ 1 万，央国企薪资不限。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              09.14 更新 · 远景、货拉拉、九号旗下未岚大陆已通过复核；准备中和已有进度保留，放弃隐藏。
+              09.14 更新 · 新增本周提醒，并复核OPPO、小米、安克产品岗；准备中和已有进度保留，放弃隐藏。
               本科符合公开条件不代表保证通过简历筛选。
             </p>
           </div>
@@ -578,6 +616,40 @@ export default function Dashboard() {
             </Button>
           </div>
         </header>
+
+        {Date.now() < new Date('2026-09-21T00:00:00+08:00').getTime() ? (
+          <section
+            aria-label="本周紧急时间点"
+            className="mt-5 overflow-hidden rounded-[18px] border border-orange-200 bg-orange-50/70"
+          >
+            <div className="flex items-center gap-2 border-b border-orange-200 px-4 py-3 text-sm font-semibold text-orange-950">
+              <AlertTriangle className="size-4 text-orange-700" />
+              本周时间点
+              <span className="font-normal text-orange-800">未收到通知不代表进入该批次</span>
+            </div>
+            <div className="grid gap-px bg-orange-200 sm:grid-cols-2 xl:grid-cols-5">
+              {WEEK_ALERTS.map((item) => (
+                <a
+                  key={item.date}
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group bg-orange-50 px-4 py-3 transition-colors hover:bg-white"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <strong className="text-sm text-orange-950">{item.date}</strong>
+                    <span className="text-xs text-orange-700">{item.source}</span>
+                  </div>
+                  <p className="mt-1 flex items-center gap-1 text-sm font-medium text-foreground">
+                    {item.title}
+                    <ArrowUpRight className="size-3.5 shrink-0 opacity-60 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{item.note}</p>
+                </a>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section className="grid gap-3 py-5 sm:grid-cols-2 xl:grid-cols-4">
           {[
