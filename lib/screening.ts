@@ -7,14 +7,17 @@ export type ScreeningReview = {
   salarySourceLabel?: string;
 };
 
-// 2026-09-10：按具体岗位审核，不根据企业名、综合年包或岗位标题自动放行。
+// 2026-09-14：按具体岗位审核；“大厂”仅指互联网超大厂，产业科技企业不因规模自动排除。
 const exclusions: [string, string[]][] = [
-  ['大厂不再新增推荐；已有准备或投递进度继续保留', [
-    'dji-digital-2027', 'oppo-ai-pm-2027', 'oppo-internet-pm-2027',
+  ['互联网超大厂不再新增推荐；已有准备或投递进度继续保留', [
     'baidu-ai-pm-2027', 'alibaba-cloud-product-2027', 'alibaba-group-product-2027',
-    'xiaomi-product-2027', 'pdd-campus-2027', 'dji-campus-2027', 'anker-campus-2027',
+    'pdd-campus-2027',
+  ]],
+  ['规模不作为排除理由，但这些旧集团入口或泛岗位尚未通过本科具体产品岗与薪资证据复核', [
+    'dji-digital-2027', 'oppo-ai-pm-2027', 'oppo-internet-pm-2027',
+    'xiaomi-product-2027', 'dji-campus-2027', 'anker-campus-2027',
     'lenovo-product-2027', 'xiaopeng-ai-product-2027', 'li-auto-product-2027',
-    'chinatelecom-campus-2027', 'envision-product-2027', 'catl-campus-2027',
+    'chinatelecom-campus-2027', 'catl-campus-2027',
     'ke-product-2027', 'nio-energy-product-2027', 'yonyou-b2b-product-2027',
     'byd-energy-digital-2027', 'inovance-b2b-market-2027',
     'chnenergy-xinjiang-digital-2027', 'sany-digital-energy-2027',
@@ -112,6 +115,34 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     salaryKind: '本届公开', monthlyMin: 10500,
     salarySourceUrl: 'https://myjob.dlmu.edu.cn/campus/view/id/868828',
     salarySourceLabel: '高校就业网2027岗位薪资档与年薪表',
+  },
+  'envision-product-2027': {
+    eligible: true,
+    reason: '2027校招明确开放产品类和本科，能源大模型/新型电力系统高度匹配；20K+为项目公开口径，具体产品子岗需再次确认',
+    salaryKind: '本届公开', monthlyMin: 20000,
+    salarySourceUrl: 'https://career.nankai.edu.cn/correcruit/content/id/116772.html',
+    salarySourceLabel: '南开就业网远景能源2027校招项目口径（非单一子岗报价）',
+  },
+  'lalamove-strategy-product-2027': {
+    eligible: true,
+    reason: '本届具体策略产品岗位，本科可投，16–26K/月；物流产品而非能源方向，因此推荐度靠后',
+    salaryKind: '本届公开', monthlyMin: 16000,
+    salarySourceUrl: 'https://m.zhipin.com/zhaopin/298301ce32a28e331nV_2tW9FQ~~/',
+    salarySourceLabel: '货拉拉当前同届策略产品岗位',
+  },
+  'ninebot-navimow-product-2027': {
+    eligible: true,
+    reason: '九号旗下智能机器人子公司本届软件产品岗，计算机本科，15–30K×15薪；非项目管理或客户交付',
+    salaryKind: '本届公开', monthlyMin: 15000,
+    salarySourceUrl: 'https://www.nowcoder.com/jobs/detail/465296',
+    salarySourceLabel: '未岚大陆招聘人员发布的2027软件产品经理岗位',
+  },
+  'inovance-b2b-market-2027': {
+    eligible: false,
+    reason: '已重新筛选：现有条目是技术市场/解决方案且专业偏电气自动化；另查到的大连产品岗薪资仅有公司应届均值参考，暂不满足具体岗位证据要求',
+    salaryKind: '招聘转载参考', monthlyMin: 12900,
+    salarySourceUrl: 'https://www.jobui.com/company/1261638/jobs/analysis/',
+    salarySourceLabel: '汇川技术当前应届岗位平均值，非本届产品岗承诺',
   },
 };
 

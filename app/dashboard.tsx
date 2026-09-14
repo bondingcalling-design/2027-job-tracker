@@ -97,7 +97,7 @@ const STAGES = [
   '放弃',
 ];
 const OWNERSHIPS = ['全部性质', '央企', '国企', '私企', '外企', '混合所有制'];
-const SCALES = ['全部规模', '中厂', '成长公司', '大厂'];
+const SCALES = ['全部规模', '中厂', '成长公司', '大型科技企业', '大厂'];
 
 const EMPTY: Opportunity = {
   id: '',
@@ -541,11 +541,11 @@ export default function Dashboard() {
               秋招投递台
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              聚焦中厂 B 端 / AI / 能源产品，不再新增大厂与项目管理岗。
+              聚焦 B 端 / AI / 能源产品；不新增互联网超大厂，产业科技企业按具体岗位审核。
               私企月薪或同岗参考下限 ≥ 1 万，央国企薪资不限。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              09.14 更新 · 准备中和已有投递进度保留，放弃隐藏；参考薪资不是 Offer 承诺。
+              09.14 更新 · 远景、货拉拉、九号旗下未岚大陆已通过复核；准备中和已有进度保留，放弃隐藏。
               本科符合公开条件不代表保证通过简历筛选。
             </p>
           </div>

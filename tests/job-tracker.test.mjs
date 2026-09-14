@@ -15,11 +15,12 @@ test('every non-retired seed has an explicit screening decision', () => {
   }
 });
 
-test('new recommendations have no big firms or project-management roles; private salary floor is 10K', () => {
+test('new recommendations exclude internet megafirms and project-management roles; private salary floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 9);
+  assert.equal(selected.length, 12);
+  const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
-    assert.notEqual(item.scale, '大厂', item.company);
+    assert.doesNotMatch(item.company, internetMegafirms);
     assert.doesNotMatch(item.role, /项目管理|项目经理|PMO|实施|交付/);
     if (item.ownership === '私企') {
       assert.ok(screeningReviews[item.id].monthlyMin >= 10000, item.company);
@@ -82,4 +83,16 @@ test('five newly verified companies have concrete bachelor product roles', () =>
     assert.ok(new URL(item.sourceUrl));
   }
   assert.equal(seedOpportunities.find((item) => item.id === 'richinfo-ai-product-2027').verifiedAt, '2026-09-14');
+});
+
+test('three re-screened industrial tech companies have concrete product opportunities', () => {
+  const ids = ['envision-product-2027', 'lalamove-strategy-product-2027', 'ninebot-navimow-product-2027'];
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.match(item.degreeGate, /本科/);
+    assert.ok(screeningReviews[id].monthlyMin >= 10000, item.company);
+    assert.ok(new URL(item.applyUrl));
+    assert.ok(new URL(item.sourceUrl));
+  }
 });
