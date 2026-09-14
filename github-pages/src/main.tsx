@@ -3,52 +3,10 @@ import { createRoot } from 'react-dom/client';
 
 import Dashboard from '@/app/dashboard';
 import '@/app/globals.css';
-import {
-  retiredSeedIds,
-  seedOpportunities,
-  type SeedOpportunity,
-} from '@/lib/opportunities';
-
-type StoredOpportunity = SeedOpportunity & {
-  compensation: string;
-  stage: string;
-  appliedAt: string | null;
-  nextActionAt: string | null;
-  notes: string;
-  favorite: boolean;
-  archived: boolean;
-  isCustom: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-};
+import { seedOpportunities } from '@/lib/opportunities';
+import { mergeOpportunities, type StoredOpportunity } from '@/lib/opportunity-state';
 
 const STORAGE_KEY = 'hu-jiayi-2027-job-tracker-v2';
-const progressFields = [
-  'stage',
-  'appliedAt',
-  'nextActionAt',
-  'notes',
-  'favorite',
-  'archived',
-] as const;
-
-function normalizeSeed(item: SeedOpportunity): StoredOpportunity {
-  const now = new Date().toISOString();
-  return {
-    ...item,
-    compensation: item.compensation || '未公开',
-    stage: '待投递',
-    appliedAt: null,
-    nextActionAt: null,
-    notes: '',
-    favorite: false,
-    archived: false,
-    isCustom: false,
-    createdAt: now,
-    updatedAt: now,
-  };
-}
-
 function readStored(): StoredOpportunity[] {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -59,27 +17,7 @@ function readStored(): StoredOpportunity[] {
 }
 
 function currentItems() {
-  const stored = readStored();
-  const storedById = new Map(stored.map((item) => [item.id, item]));
-  const seeds = seedOpportunities
-    .filter((item) => !retiredSeedIds.includes(item.id))
-    .map((item) => {
-      const next = normalizeSeed(item);
-      const previous = storedById.get(item.id);
-      if (previous) {
-        for (const field of progressFields) {
-          (next[field] as unknown) = previous[field] as unknown;
-        }
-        next.createdAt = previous.createdAt || next.createdAt;
-        next.updatedAt = previous.updatedAt || next.updatedAt;
-      }
-      return next;
-    });
-  const seedIds = new Set(seeds.map((item) => item.id));
-  const custom = stored.filter(
-    (item) => item.isCustom || !seedIds.has(item.id),
-  );
-  return [...seeds, ...custom];
+  return mergeOpportunities(seedOpportunities, readStored());
 }
 
 function persist(items: StoredOpportunity[]) {

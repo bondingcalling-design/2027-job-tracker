@@ -46,6 +46,8 @@ import {
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import { retiredSeedIds } from '@/lib/opportunities';
+import { isOpportunityInScope, isProtectedFromScreening, screeningReviews } from '@/lib/screening';
 
 type Opportunity = {
   id: string;
@@ -281,7 +283,7 @@ export default function Dashboard() {
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     const result = items.filter((item) => {
-      if (item.stage === '放弃') return false;
+      if (!isOpportunityInScope(item, retiredSeedIds)) return false;
       if (item.archived !== showArchived) return false;
       if (
         normalized &&
@@ -351,7 +353,7 @@ export default function Dashboard() {
 
   const metrics = useMemo(() => {
     const active = items.filter(
-      (item) => !item.archived && item.stage !== '放弃',
+      (item) => !item.archived && isOpportunityInScope(item, retiredSeedIds),
     );
     return {
       total: active.length,
@@ -539,7 +541,12 @@ export default function Dashboard() {
               秋招投递台
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              把对口机会、投递进度和截止时间放在一张能真正行动的表里。
+              聚焦中厂 B 端 / AI / 能源产品，不再新增大厂与项目管理岗。
+              私企月薪或同岗参考下限 ≥ 1 万，央国企薪资不限。
+            </p>
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
+              09.14 更新 · 准备中和已有投递进度保留，放弃隐藏；参考薪资不是 Offer 承诺。
+              本科符合公开条件不代表保证通过简历筛选。
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -574,7 +581,7 @@ export default function Dashboard() {
 
         <section className="grid gap-3 py-5 sm:grid-cols-2 xl:grid-cols-4">
           {[
-            ['已核实机会', metrics.total, '自动加入新核实企业'],
+            ['当前机会', metrics.total, '本轮精选 + 已准备/投递保留'],
             ['中厂 / 成长公司', metrics.mid, '本轮重点补充'],
             ['14天内截止', metrics.urgent, '按明确截止日统计'],
             ['已推进投递', metrics.applied, '投递及后续阶段'],
@@ -1055,6 +1062,7 @@ function OpportunityRows({
                 <p className="mt-1 text-muted-foreground">
                   {item.verifiedAt} · {item.sourceLabel}
                 </p>
+                <ScreeningNote item={item} />
                 {item.notes ? (
                   <p className="mt-2 whitespace-pre-wrap">{item.notes}</p>
                 ) : (
@@ -1152,6 +1160,7 @@ function MobileCard({
         <div className="col-span-2">
           <p className="text-muted-foreground">待遇</p>
           <p className="mt-1">{item.compensation || '未公开'}</p>
+          <ScreeningNote item={item} />
         </div>
       </div>
       <p className="mt-3 line-clamp-2 text-xs leading-5 text-muted-foreground">
@@ -1205,6 +1214,26 @@ function MobileCard({
         </p>
       ) : null}
     </article>
+  );
+}
+
+function ScreeningNote({ item }: { item: Opportunity }) {
+  const review = screeningReviews[item.id];
+  if (!review) return null;
+  return (
+    <div className="mt-2 min-w-0 space-y-1 whitespace-normal break-words text-xs leading-5 text-muted-foreground">
+      {isProtectedFromScreening(item) ? (
+        <p className="text-amber-700">已有准备 / 投递，按你的选择保留。{review.reason}</p>
+      ) : null}
+      {review.salaryKind ? <p>薪资口径：{review.salaryKind}</p> : null}
+      {review.salarySourceUrl ? (
+        <a className="inline-flex max-w-full items-start gap-1 text-primary hover:underline"
+          href={review.salarySourceUrl} target="_blank" rel="noreferrer">
+          <span className="min-w-0 break-words">{review.salarySourceLabel || '查看薪资依据'}</span>
+          <ArrowUpRight className="mt-1 size-3 shrink-0" />
+        </a>
+      ) : null}
+    </div>
   );
 }
 

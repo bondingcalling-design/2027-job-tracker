@@ -105,14 +105,7 @@ export async function GET(request: Request) {
       .filter((item) => !retiredSeedIds.includes(item.id))
       .map((item) => seedStatement(ownerId, item)),
   );
-  if (retiredSeedIds.length) {
-    await getD1()
-      .prepare(
-        `DELETE FROM opportunities WHERE owner_id = ? AND is_custom = 0 AND source_id IN (${retiredSeedIds.map(() => '?').join(', ')})`,
-      )
-      .bind(ownerId, ...retiredSeedIds)
-      .run();
-  }
+  // 下架只影响界面推荐，不删除用户原有投递进度；历史记录仍可导出备份。
   const result = await getD1()
     .prepare(`SELECT * FROM opportunities WHERE owner_id = ? ORDER BY archived, recommendation DESC,
       CASE WHEN end_date IS NULL THEN 1 ELSE 0 END, end_date, company`)
