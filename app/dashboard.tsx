@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  AlertTriangle,
   ArrowUpRight,
   BriefcaseBusiness,
   CalendarClock,
@@ -99,44 +98,6 @@ const STAGES = [
 ];
 const OWNERSHIPS = ['全部性质', '央企', '国企', '私企', '外企', '混合所有制'];
 const SCALES = ['全部规模', '中厂', '成长公司', '大型科技企业', '大厂'];
-const WEEK_ALERTS = [
-  {
-    date: '09.15',
-    title: 'vivo 12:00 截止网申',
-    note: '15:00笔试仅研发岗（官方）',
-    href: 'https://hr-campus.vivo.com/campus/jobs?shareId=307651af-8827-443a-9fe0-ebd5a0f3e724&shareSource=2',
-    source: '官方核实',
-  },
-  {
-    date: '09.16',
-    title: '广联达笔试',
-    note: '具体场次以短信/邮件为准',
-    href: 'https://app.mokahr.com/m/campus-recruitment/glodon/91966?recommendCode=DSwxrkaW#/jobs',
-    source: '你的提醒',
-  },
-  {
-    date: '09.17',
-    title: '途虎养车笔试',
-    note: '仅提醒已投岗位，未新增默认推荐',
-    href: 'https://app.mokahr.com/m/campus_apply/tuhu/28398?recommendCode=DS1sBVSW#/jobs',
-    source: '你的提醒',
-  },
-  {
-    date: '09.18',
-    title: 'OPPO 发放笔试',
-    note: '官方说明仅部分岗位有笔试',
-    href: 'https://careers.oppo.com/university/oppo/campus/post?shareId=19939',
-    source: '你的提醒',
-  },
-  {
-    date: '09.19–20',
-    title: '周末集中笔试',
-    note: '得物、蚂蚁、讯飞、网易互娱、阿里系等按邮件确认',
-    href: 'https://iflytek.zhiye.com/campus/jobs?memory=%7B%7D&silence=1',
-    source: '你的提醒',
-  },
-];
-
 const EMPTY: Opportunity = {
   id: '',
   company: '',
@@ -408,6 +369,25 @@ export default function Dashboard() {
     };
   }, [items]);
 
+  const workflowAlerts = useMemo(() => {
+    const activeStages = new Set(['已投递', '笔试', '面试', 'Offer']);
+    return items
+      .filter(
+        (item) =>
+          !item.archived &&
+          activeStages.has(item.stage) &&
+          Boolean(item.nextActionAt),
+      )
+      .filter((item) => {
+        const days = daysUntil(item.nextActionAt);
+        return days !== null && days >= 0 && days <= 30;
+      })
+      .sort((a, b) =>
+        (a.nextActionAt || '').localeCompare(b.nextActionAt || ''),
+      )
+      .slice(0, 6);
+  }, [items]);
+
   function resetFilters() {
     setQuery('');
     setTrack('全部方向');
@@ -579,11 +559,11 @@ export default function Dashboard() {
               秋招投递台
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              聚焦 B 端 / AI / 能源产品；不新增互联网超大厂，产业科技企业按具体岗位审核。
-              私企月薪或同岗参考下限 ≥ 1 万，央国企薪资不限。
+              聚焦 B 端 / AI / 能源产品与产品工程、技术产品、解决方案等相邻岗位；
+              私企常规项月薪下限 ≥ 1 万，央国企、外企与高福利岗位可标明理由破格收录。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              09.14 更新 · 新增蔚来能源、中移互联网AI、车之家B端产品岗；准备中和已有进度保留，放弃隐藏。
+              09.15 更新 · vivo平台产品已登记为已投递；提醒只读取你已投岗位的“下一步日期”，未投企业不提醒。
               本科符合公开条件不代表保证通过简历筛选。
             </p>
           </div>
@@ -617,34 +597,34 @@ export default function Dashboard() {
           </div>
         </header>
 
-        {Date.now() < new Date('2026-09-21T00:00:00+08:00').getTime() ? (
+        {workflowAlerts.length > 0 ? (
           <section
-            aria-label="本周紧急时间点"
+            aria-label="我的流程提醒"
             className="mt-5 overflow-hidden rounded-[18px] border border-orange-200 bg-orange-50/70"
           >
             <div className="flex items-center gap-2 border-b border-orange-200 px-4 py-3 text-sm font-semibold text-orange-950">
-              <AlertTriangle className="size-4 text-orange-700" />
-              本周时间点
-              <span className="font-normal text-orange-800">未收到通知不代表进入该批次</span>
+              <CalendarClock className="size-4 text-orange-700" />
+              我的流程提醒
+              <span className="font-normal text-orange-800">仅显示已投递及后续阶段，并读取你填写的下一步日期</span>
             </div>
-            <div className="grid gap-px bg-orange-200 sm:grid-cols-2 xl:grid-cols-5">
-              {WEEK_ALERTS.map((item) => (
+            <div className="grid gap-px bg-orange-200 sm:grid-cols-2 xl:grid-cols-3">
+              {workflowAlerts.map((item) => (
                 <a
-                  key={item.date}
-                  href={item.href}
+                  key={item.id}
+                  href={item.applyUrl || item.sourceUrl}
                   target="_blank"
                   rel="noreferrer"
                   className="group bg-orange-50 px-4 py-3 transition-colors hover:bg-white"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <strong className="text-sm text-orange-950">{item.date}</strong>
-                    <span className="text-xs text-orange-700">{item.source}</span>
+                    <strong className="text-sm text-orange-950">{localDate(item.nextActionAt)}</strong>
+                    <span className="text-xs text-orange-700">{item.stage}</span>
                   </div>
                   <p className="mt-1 flex items-center gap-1 text-sm font-medium text-foreground">
-                    {item.title}
+                    {item.company}
                     <ArrowUpRight className="size-3.5 shrink-0 opacity-60 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{item.note}</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{item.role}</p>
                 </a>
               ))}
             </div>
@@ -1294,6 +1274,9 @@ function ScreeningNote({ item }: { item: Opportunity }) {
   if (!review) return null;
   return (
     <div className="mt-2 min-w-0 space-y-1 whitespace-normal break-words text-xs leading-5 text-muted-foreground">
+      {review.exceptionReason ? (
+        <p className="text-orange-700">破格推荐：{review.exceptionReason}</p>
+      ) : null}
       {isProtectedFromScreening(item) ? (
         <p className="text-amber-700">已有准备 / 投递，按你的选择保留。{review.reason}</p>
       ) : null}

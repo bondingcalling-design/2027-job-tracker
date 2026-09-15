@@ -26,7 +26,8 @@ export function mergeOpportunities(
   const current = seeds.map((item): StoredOpportunity => {
     const next: StoredOpportunity = {
       ...item, compensation: item.compensation || '未公开',
-      stage: '待投递', appliedAt: null, nextActionAt: null, notes: '',
+      stage: item.initialStage || '待投递', appliedAt: item.initialAppliedAt || null,
+      nextActionAt: null, notes: '',
       favorite: false, archived: false, isCustom: false,
       createdAt: now, updatedAt: now,
     };

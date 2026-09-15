@@ -5,6 +5,7 @@ export type ScreeningReview = {
   monthlyMin?: number;
   salarySourceUrl?: string;
   salarySourceLabel?: string;
+  exceptionReason?: string;
 };
 
 // 2026-09-14：按具体岗位审核；“大厂”仅指互联网超大厂，产业科技企业不因规模自动排除。
@@ -19,16 +20,15 @@ const exclusions: [string, string[]][] = [
     'lenovo-product-2027', 'xiaopeng-ai-product-2027', 'li-auto-product-2027',
     'chinatelecom-campus-2027', 'catl-campus-2027',
     'ke-product-2027', 'yonyou-b2b-product-2027',
-    'byd-energy-digital-2027', 'inovance-b2b-market-2027',
+    'byd-energy-digital-2027',
     'chnenergy-xinjiang-digital-2027', 'sany-digital-energy-2027',
     'star-net-product-2027', 'inspur-datacenter-product-2027',
   ]],
   ['偏项目管理、实施交付、工程服务或非产品工作，不再主动推荐', [
     'metax-product-2027', 'hand-ai-consultant-2027', 'transwarp-ai-delivery-2027',
-    'ampace-aidc-solution-2027', 'teld-solution-2027', 'foxess-solution-2027',
-    'sac-power-ai-service-2027', 'wisdri-automation-technical-marketing-2027',
+    'foxess-solution-2027',
     'cetc-digital-project-client-2027', 'dongfang-electric-solution-2027',
-    'cmcc-qinghai-solution-2027', 'neusoft-consulting-2027',
+    'neusoft-consulting-2027',
   ]],
   ['私企公开月薪下限不足1万元；不以区间上限判断符合要求', [
     'sifang-power-solution-2027', 'luoshu-ai-energy-2027',
@@ -38,12 +38,9 @@ const exclusions: [string, string[]][] = [
     'sigenergy-sales-service-2027', 'hoymiles-product-engineer-2027',
   ]],
   ['未核实到计算机本科匹配的具体产品岗，不用专业大类或集团入口代替岗位', [
-    'nrec-support-2027', 'voyah-product-digital-2027',
-    'wisdom-power-solution-marketing-2027', 'fiberhome-solution-product-2027',
+    'voyah-product-digital-2027',
+    'fiberhome-solution-product-2027',
     'hei-digital-energy-2027', 'huadian-zhejiang-digital-2027',
-  ]],
-  ['售前岗位专业偏电气；软件产品岗公开渠道已下线，暂不新增推荐', [
-    'ecoflow-presales-2027',
   ]],
 ];
 
@@ -51,13 +48,6 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
-  'kehua-digital-energy-2027': {
-    eligible: false,
-    reason: '2026届同城信息产品助理参考8–13K/月，且职责偏实施运维；本届未单列薪资，暂不推荐',
-    salaryKind: '往届参考', monthlyMin: 8000,
-    salarySourceUrl: 'https://www.shushuqiuzhi.com/article/119681',
-    salarySourceLabel: '2026届厦门信息产品助理转载（非本届报价）',
-  },
   'fanruan-product-2027': {
     eligible: true, reason: '本届官方产品岗：理工本科、ToB产品实习优先，16–20.5K/月',
     salaryKind: '本届公开', monthlyMin: 16000,
@@ -157,11 +147,114 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     salarySourceLabel: '未岚大陆招聘人员发布的2027软件产品经理岗位',
   },
   'inovance-b2b-market-2027': {
-    eligible: false,
-    reason: '已重新筛选：现有条目是技术市场/解决方案且专业偏电气自动化；另查到的大连产品岗薪资仅有公司应届均值参考，暂不满足具体岗位证据要求',
-    salaryKind: '招聘转载参考', monthlyMin: 12900,
-    salarySourceUrl: 'https://www.jobui.com/company/1261638/jobs/analysis/',
-    salarySourceLabel: '汇川技术当前应届岗位平均值，非本届产品岗承诺',
+    eligible: true,
+    reason: '本届具体市场类岗位本科可投，工业自动化/新能源B端方案，12–20K/月',
+    salaryKind: '本届公开', monthlyMin: 12000,
+    salarySourceUrl: 'https://jy.scu.edu.cn/index/index/employjobdetail.html?data=MDAwMDAwMDAwMJG6n3_Ed6imi4qQtLh4Y9yK0dTOs4bddricp9CWi5qikaeWacSdqLqGfaK2w4iil5C4zNbGiL-E',
+    salarySourceLabel: '高校就业网2027具体市场类岗位页',
+    exceptionReason: '高薪私企工业B端：允许销售/出差属性，但明确排在纯产品与AI+能源岗位之后',
+  },
+  'vivo-platform-product-2027': {
+    eligible: true,
+    reason: '你已于9月15日投递平台方向产品经理，作为真实流程保留；后续仅按你填写的日期提醒',
+    salaryKind: '未公开',
+    exceptionReason: '已投递保留：不再用尚未核实的薪资或竞争强度覆盖你的实际选择',
+  },
+  'engergy-ai-energy-solution-2027': {
+    eligible: true,
+    reason: '2027校招AI+能源解决方案岗，计算机/AI/控制/能源专业开放，10–15K/月',
+    salaryKind: '本届公开', monthlyMin: 10000,
+    salarySourceUrl: 'https://job.zut.edu.cn/module/position_brief_detail/id-113985/nid-6287',
+    salarySourceLabel: '中原工学院就业网2027岗位与待遇页',
+    exceptionReason: 'AI+能源高度垂直且双休弹性：可接受部分方案与客户现场工作',
+  },
+  'fanruan-fde-ai-solution-2027': {
+    eligible: true,
+    reason: '官方2027 AI解决方案岗，本科计算机可投，职责含需求洞察与产品反馈闭环，13–17K/月',
+    salaryKind: '本届公开', monthlyMin: 13000,
+    salarySourceUrl: 'https://join.fanruan.com/campus/detail?id=9889',
+    salarySourceLabel: '帆软官方FDE解决方案工程师岗位页',
+    exceptionReason: '高薪私企AI方案：允许售前、POC和客户赋能，但不是项目经理',
+  },
+  'siemens-sales100-2027': {
+    eligible: true,
+    reason: '西门子官方2027本科项目，计算机/AI可投，聚焦工业数字化解决方案',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://www.siemens.com/zh-cn/company/jobs/campus-recruiting/',
+    salarySourceLabel: '西门子官方2027校园招聘与福利说明',
+    exceptionReason: '外企与工作节奏例外：官方注明混合办公、拒绝996和系统培训',
+  },
+  'kehua-digital-energy-2027': {
+    eligible: true,
+    reason: '本届产品工程师/IT产品助理/微网EMS岗位，本科开放，项目页标注10K以上',
+    salaryKind: '本届公开', monthlyMin: 10000,
+    salarySourceUrl: 'https://career.hebut.edu.cn/home/correcruit/content/id/80200.html',
+    salarySourceLabel: '河北工大就业网科华2027校招与岗位表',
+    exceptionReason: 'AI+数字能源垂直：岗位专业分流较细，投递时只选产品工程师、IT产品助理或微网EMS',
+  },
+  'ampace-aidc-solution-2027': {
+    eligible: true,
+    reason: 'AIDC供电、储能EMS/BMS解决方案本科开放，校招项目月薪10K起',
+    salaryKind: '本届公开', monthlyMin: 10000,
+    salarySourceUrl: 'https://career.hebut.edu.cn/correcruit/content/id/79145.html',
+    salarySourceLabel: '高校就业网2027校招岗位与待遇页',
+    exceptionReason: '高薪私企AI+能源：允许售前/交付，但优先AIDC解决方案而非纯项目管理',
+  },
+  'teld-solution-2027': {
+    eligible: true,
+    reason: '总部电气类本科岗位10.5–15K/月，数字充电网、电力交易和能源方案高度匹配',
+    salaryKind: '本届公开', monthlyMin: 10500,
+    salarySourceUrl: 'https://myjob.dlmu.edu.cn/campus/view/id/868552',
+    salarySourceLabel: '高校就业网2027岗位与薪资表',
+    exceptionReason: '高薪私企电力垂直：接受售前/方案，避开纯项目管理和强销售岗位',
+  },
+  'nrec-support-2027': {
+    eligible: true,
+    reason: '2027届本科开放技术支持与信息技术，电力系统/储能垂直，七险二金',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://www.wondercv.com/xiaozhao/nanrui-jibao-2027-campus-recruitment-13172-8ca5ea/',
+    salarySourceLabel: '南瑞继保2027校招岗位、学历与福利汇总',
+    exceptionReason: '央国企电力与高福利例外：可接受技术支持，但不选择纯现场调试',
+  },
+  'sac-power-ai-service-2027': {
+    eligible: true,
+    reason: '2027本科开放，人工智能、系统软件与储能/新能源服务均在招，六险二金',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://m.nj.bendibao.com/job/182644.shtm',
+    salarySourceLabel: '国电南自2027校招岗位与福利汇总',
+    exceptionReason: '央企电力垂直例外：优先AI/系统软件；调试服务仅作保底',
+  },
+  'wisdom-power-solution-marketing-2027': {
+    eligible: true,
+    reason: '国企数字电力/智慧能源方案岗位，本科可投，客户覆盖电网与工业企业',
+    salaryKind: '本届公开', monthlyMin: 5000,
+    salarySourceUrl: 'https://www.fenbi.com/page/exam-information-detail/468601157997568',
+    salarySourceLabel: '2027具体岗位与福利页',
+    exceptionReason: '国企电力垂直例外：不设私企10K门槛，但需接受驻外/出差',
+  },
+  'wisdri-automation-technical-marketing-2027': {
+    eligible: true,
+    reason: '央企工业自动化技术/营销岗位，本科开放，七险一金与单身公寓',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://career.hebut.edu.cn/home/correcruit/content/id/79331.html',
+    salarySourceLabel: '2027校招岗位学历与福利表',
+    exceptionReason: '央企B端与福利例外：技术营销可投，现场调试岗位放在后排',
+  },
+  'cmcc-qinghai-solution-2027': {
+    eligible: true,
+    reason: '央企省公司明确开放产品管理、解决方案和经营分析，本科计算机可投',
+    salaryKind: '本届公开', monthlyMin: 5000,
+    salarySourceUrl: 'https://career.sustech.edu.cn/detail/online?id=3595540',
+    salarySourceLabel: '中国移动青海2027校招公告',
+    exceptionReason: '央企产品岗位例外：薪资不设下限，仅在能接受青海长期发展时投递',
+  },
+  'ecoflow-presales-2027': {
+    eligible: true,
+    reason: '2027本科售前解决方案岗，储能场景含需求反馈与产品迭代，14–17K/月',
+    salaryKind: '本届公开', monthlyMin: 14000,
+    salarySourceUrl: 'https://www.nowcoder.com/jobs/detail/464341',
+    salarySourceLabel: '正浩创新校招HR发布的2027具体岗位',
+    exceptionReason: '高薪私企清洁能源：允许售前/客户培训，但不是纯项目交付',
   },
   'oppo-ai-pm-2027': {
     eligible: true,

@@ -25,9 +25,9 @@ function seedStatement(ownerId: string, item: SeedOpportunity) {
     .prepare(`INSERT INTO opportunities (
       row_key, source_id, owner_id, company, role, tracks, ownership, scale, city,
       apply_url, source_url, source_label, start_date, end_date, deadline_note,
-      recommendation, fit_reason, risk_note, degree_gate, compensation, verified_at, stage,
+      recommendation, fit_reason, risk_note, degree_gate, compensation, verified_at, stage, applied_at,
       notes, favorite, archived, is_custom, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '待投递', '', 0, 0, 0, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', 0, 0, 0, ?, ?)
     ON CONFLICT(owner_id, source_id) DO UPDATE SET
       company=excluded.company, role=excluded.role, tracks=excluded.tracks,
       ownership=excluded.ownership, scale=excluded.scale, city=excluded.city,
@@ -59,6 +59,8 @@ function seedStatement(ownerId: string, item: SeedOpportunity) {
       item.degreeGate,
       item.compensation || '未公开',
       item.verifiedAt,
+      item.initialStage || '待投递',
+      item.initialAppliedAt || null,
       now,
       now,
     );

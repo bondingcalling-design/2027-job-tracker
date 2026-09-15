@@ -15,19 +15,59 @@ test('every non-retired seed has an explicit screening decision', () => {
   }
 });
 
-test('new recommendations exclude internet megafirms and project-management roles; private salary floor is 10K', () => {
+test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 18);
+  assert.equal(selected.length, 32);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
-    assert.doesNotMatch(item.role, /项目管理|项目经理|PMO|实施|交付/);
+    if (/项目管理|项目经理|PMO|实施|交付|解决方案|售前|技术支持|营销|Sales100/i.test(item.role)) {
+      assert.ok(screeningReviews[item.id].exceptionReason, item.company);
+    }
     if (item.ownership === '私企') {
-      assert.ok(screeningReviews[item.id].monthlyMin >= 10000, item.company);
-      assert.ok(screeningReviews[item.id].salarySourceUrl, item.company);
+      const review = screeningReviews[item.id];
+      if (review.monthlyMin === undefined) {
+        assert.equal(item.initialStage, '已投递', item.company);
+      } else {
+        assert.ok(review.monthlyMin >= 10000, item.company);
+        assert.ok(review.salarySourceUrl, item.company);
+      }
     }
   }
   assert.ok(selected.some((item) => item.id === 'kylin-product-2027'));
+});
+
+test('vivo platform product starts as submitted without overwriting later user progress', () => {
+  const firstLoad = initial();
+  const vivo = firstLoad.find((item) => item.id === 'vivo-platform-product-2027');
+  assert.equal(vivo.stage, '已投递');
+  assert.equal(vivo.appliedAt, '2026-09-15');
+
+  vivo.stage = '面试';
+  vivo.nextActionAt = '2026-09-22';
+  const reloaded = mergeOpportunities(seedOpportunities, firstLoad, now)
+    .find((item) => item.id === vivo.id);
+  assert.equal(reloaded.stage, '面试');
+  assert.equal(reloaded.nextActionAt, '2026-09-22');
+});
+
+test('broader-title search adds product engineering and exception candidates with reasons', () => {
+  const ids = [
+    'engergy-ai-energy-solution-2027',
+    'fanruan-fde-ai-solution-2027',
+    'siemens-sales100-2027',
+    'kehua-digital-energy-2027',
+    'ecoflow-presales-2027',
+    'nrec-support-2027',
+    'sac-power-ai-service-2027',
+  ];
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.match(item.degreeGate, /本科/);
+    assert.ok(screeningReviews[id].exceptionReason, id);
+    assert.ok(new URL(item.applyUrl));
+  }
 });
 
 test('preparing and already-submitted old entries survive new curation and reload', () => {
