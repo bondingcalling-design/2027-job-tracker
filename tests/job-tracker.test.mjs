@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 32);
+  assert.equal(selected.length, 37);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -27,7 +27,7 @@ test('recommendations exclude internet megafirms; adjacent roles require an expl
     if (item.ownership === '私企') {
       const review = screeningReviews[item.id];
       if (review.monthlyMin === undefined) {
-        assert.equal(item.initialStage, '已投递', item.company);
+        assert.ok(review.exceptionReason, item.company);
       } else {
         assert.ok(review.monthlyMin >= 10000, item.company);
         assert.ok(review.salarySourceUrl, item.company);
@@ -163,4 +163,26 @@ test('continued search adds three concrete bachelor roles without delivery work'
   assert.ok(screeningReviews['nio-energy-product-2027'].monthlyMin >= 10000);
   assert.ok(screeningReviews['autohome-b2b-product-2027'].monthlyMin >= 10000);
   assert.equal(screeningReviews['cmic-ai-product-2027'].salaryKind, '未公开');
+});
+
+test('latest search adds B2B, AI-security, energy and power-product adjacent roles', () => {
+  const ids = [
+    'mingyuan-b2b-ai-product-2027',
+    'threatbook-ai-product-2027',
+    'qiyuan-energy-product-2027',
+    'novastar-product-solution-2027',
+    'sifang-power-service-2027',
+  ];
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.match(item.degreeGate, /本科/);
+    assert.ok(new URL(item.applyUrl));
+    assert.ok(new URL(item.sourceUrl));
+  }
+  assert.equal(screeningReviews['mingyuan-b2b-ai-product-2027'].monthlyMin, 10000);
+  assert.equal(screeningReviews['qiyuan-energy-product-2027'].monthlyMin, 10000);
+  assert.equal(screeningReviews['threatbook-ai-product-2027'].salaryKind, '本届公开');
+  assert.equal(screeningReviews['novastar-product-solution-2027'].salaryKind, '未公开');
+  assert.match(screeningReviews['sifang-power-service-2027'].exceptionReason, /出差|现场/);
 });
