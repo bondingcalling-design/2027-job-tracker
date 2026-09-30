@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 37);
+  assert.equal(selected.length, 39);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -185,4 +185,18 @@ test('latest search adds B2B, AI-security, energy and power-product adjacent rol
   assert.equal(screeningReviews['threatbook-ai-product-2027'].salaryKind, '本届公开');
   assert.equal(screeningReviews['novastar-product-solution-2027'].salaryKind, '未公开');
   assert.match(screeningReviews['sifang-power-service-2027'].exceptionReason, /出差|现场/);
+});
+
+test('latest search also adds two high-salary AI SaaS product roles', () => {
+  const ids = ['beisen-ai-saas-product-2027', 'jiufang-ai-data-product-2027'];
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.match(item.degreeGate, /本科/);
+    assert.ok(new URL(item.applyUrl));
+    assert.ok(new URL(item.sourceUrl));
+    assert.ok(screeningReviews[id].monthlyMin >= 10000);
+  }
+  assert.equal(screeningReviews['beisen-ai-saas-product-2027'].monthlyMin, 15000);
+  assert.equal(screeningReviews['jiufang-ai-data-product-2027'].monthlyMin, 20000);
 });

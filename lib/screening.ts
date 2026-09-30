@@ -48,6 +48,21 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
+  'beisen-ai-saas-product-2027': {
+    eligible: true,
+    reason: 'AI HR SaaS软件产品经理，本科开放，需求分析与功能设计职责明确，校招15–20K/月',
+    salaryKind: '本届公开', monthlyMin: 15000,
+    salarySourceUrl: 'https://career.nankai.edu.cn/correcruit/content/id/89658.html',
+    salarySourceLabel: '北森云计算2027软件产品经理校招公告',
+  },
+  'jiufang-ai-data-product-2027': {
+    eligible: true,
+    reason: 'AI数据与智能运营中台产品经理，本科开放，岗位页20–30K/月×12薪',
+    salaryKind: '本届公开', monthlyMin: 20000,
+    salarySourceUrl: 'https://www.nowcoder.com/jobs/detail/466589?urlSource=sitemap',
+    salarySourceLabel: '九方云2027 AI产品经理具体岗位页',
+    exceptionReason: '高薪AI产品备选：业务偏金融/运营增长而非能源，投递前确认工作节奏与实际产品职责',
+  },
   'mingyuan-b2b-ai-product-2027': {
     eligible: true,
     reason: '本届B端SaaS产品经理，本科可投，AI企业管理场景，转正待遇10K以上',
