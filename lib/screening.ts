@@ -48,6 +48,22 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
+  'hkaco-software-solution-2027': {
+    eligible: true,
+    reason: '企业软件/AI应用解决方案工程师，本科计算机可投，公开区间15–20K/月',
+    salaryKind: '本届公开', monthlyMin: 15000,
+    salarySourceUrl: 'https://career.hebut.edu.cn/home/correcruit/content/id/80647.html',
+    salarySourceLabel: '虹科2027校园招聘岗位表（高校就业网公开区间）',
+    exceptionReason: '高薪B端技术产品相邻岗：售前、客户现场和出差占比高，只投软件方向并先确认交付比例',
+  },
+  'shining3d-product-reserve-2027': {
+    eligible: true,
+    reason: '3D视觉/AI工业产品方向，本科开放，产品经理储备与产品应用工程师岗位，公开待遇10K以上',
+    salaryKind: '本届公开', monthlyMin: 10000,
+    salarySourceUrl: 'https://career.hebut.edu.cn/home/correcruit/content/id/80710.html',
+    salarySourceLabel: '先临三维2027校园招聘公告',
+    exceptionReason: '智能制造与AI硬件产品备选：岗位名称和学历口径需官网确认，产品应用可能有客户现场支持，不投项目管理工程师',
+  },
   'beisen-ai-saas-product-2027': {
     eligible: true,
     reason: 'AI HR SaaS软件产品经理，本科开放，需求分析与功能设计职责明确，校招15–20K/月',
