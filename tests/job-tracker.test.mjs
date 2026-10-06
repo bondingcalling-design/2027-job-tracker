@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 41);
+  assert.equal(selected.length, 46);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -213,4 +213,25 @@ test('October search adds software-solution and industrial-vision product routes
   }
   assert.equal(screeningReviews['hkaco-software-solution-2027'].monthlyMin, 15000);
   assert.equal(screeningReviews['shining3d-product-reserve-2027'].monthlyMin, 10000);
+});
+
+test('October energy search adds five undergraduate storage and digital-factory routes', () => {
+  const ids = [
+    'hyperstrong-energy-solution-2027',
+    'bluetti-energy-product-2027',
+    'inbo-energy-product-engineer-2027',
+    'zhiguang-bms-software-2027',
+    'xinyueneng-cim-energy-2027',
+  ];
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.match(item.degreeGate, /本科/);
+    assert.ok(new URL(item.applyUrl));
+    assert.ok(new URL(item.sourceUrl));
+    assert.ok(screeningReviews[id].exceptionReason, id);
+  }
+  assert.equal(screeningReviews['hyperstrong-energy-solution-2027'].monthlyMin, 10000);
+  assert.equal(screeningReviews['bluetti-energy-product-2027'].salaryKind, '本届公开');
+  assert.equal(screeningReviews['xinyueneng-cim-energy-2027'].salaryKind, '招聘转载参考');
 });
