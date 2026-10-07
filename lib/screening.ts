@@ -34,7 +34,7 @@ const exclusions: [string, string[]][] = [
     'sifang-power-solution-2027', 'luoshu-ai-energy-2027',
   ]],
   ['尚缺同城市应届产品岗的可靠月薪参考，暂不计入高薪推荐', [
-    'spirit-ai-product-2027', 'duxiaoman-ai-pm-2027', 'insta360-ai-pm-2027',
+    'duxiaoman-ai-pm-2027', 'insta360-ai-pm-2027',
     'sigenergy-sales-service-2027', 'hoymiles-product-engineer-2027',
   ]],
   ['未核实到计算机本科匹配的具体产品岗，不用专业大类或集团入口代替岗位', [
@@ -48,6 +48,46 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
+  'cloudview-browser-ai-product-2027': {
+    eligible: true,
+    reason: '云览官方AI内容智能体/AI增长产品经理，本科可投，13–20K/月×15薪',
+    salaryKind: '本届公开', monthlyMin: 13000,
+    salarySourceUrl: 'https://cloudview-inc.com/join/jobs',
+    salarySourceLabel: '云览科技官方2027校园招聘岗位页',
+    exceptionReason: '非能源垂直、业务偏内容/广告：按AI产品匹配与公开薪资纳入，但推荐度排在AI+能源和B端产品之后',
+  },
+  'flypai-ai-agent-product-2027': {
+    eligible: true,
+    reason: '飞派官方AI Agent产品经理，本科专业不限，明确覆盖企业知识库、RAG、工作流和PRD',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://www.flypai.com/jobs.html',
+    salarySourceLabel: '飞派科技官方2027校招岗位页（薪资未公开）',
+    exceptionReason: 'AI/B端产品高度匹配且官网注明弹性工作、不打卡；私企薪资和转正机制未公开，投前必须核实基本月薪与交付/客户现场比例',
+  },
+  'autohome-ai-agent-product-2027': {
+    eligible: true,
+    reason: '车之家本届AI Agent产品经理，本科可投，18–22K/月×16薪，汽车垂类大模型方向',
+    salaryKind: '本届公开', monthlyMin: 18000,
+    salarySourceUrl: 'https://www.nowcoder.com/jobs/detail/466941',
+    salarySourceLabel: '企业校园招聘人员发布的2027具体岗位',
+    exceptionReason: '非能源垂直、北京线下且竞争偏强：按高薪AI产品纳入后排，面试确认非运营支持或纯项目协调',
+  },
+  'xiaopeng-embodied-data-product-2027': {
+    eligible: true,
+    reason: '小鹏官方具身智能数据硬件产品经理，本科可投，岗位职责包含需求分析、方案和产品验证',
+    salaryKind: '招聘转载参考', monthlyMin: 12500,
+    salarySourceUrl: 'https://career.hebut.edu.cn/correcruit/content/id/78926.html',
+    salarySourceLabel: '小鹏集团公开校招薪资参考（本科应届15–17W，往届口径非本届承诺）',
+    exceptionReason: 'AI硬件破格项：大型汽车科技企业且需深入现场、动手验证，薪资用往届本科年薪折算仅作量级参考，投前确认本届Offer与工作节奏',
+  },
+  'spirit-ai-product-2027': {
+    eligible: true,
+    reason: '千寻智能2027具身智能/机器人产品经理，本科计算机、软件、电子相关专业可投，产品职责明确',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://nwd4iy9rd2s.jobs.feishu.cn/campusofSpiritAI/m/position/7672031985867295002/detail',
+    salarySourceLabel: '千寻智能官方2027具身智能产品经理岗位页（薪资未公开）',
+    exceptionReason: 'AI/机器人垂直破格项：官方仅写极具竞争力薪酬，岗位门槛和技术理解要求高，投前确认团队学历偏好、薪资与加班节奏；作为冲刺项',
+  },
   'hyperstrong-energy-solution-2027': {
     eligible: true,
     reason: '储能/算力能源解决方案与电力交易方向，本科计算机可投，公告标注10K以上',
