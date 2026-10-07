@@ -10,6 +10,9 @@ export type ScreeningReview = {
 
 // 2026-09-14：按具体岗位审核；“大厂”仅指互联网超大厂，产业科技企业不因规模自动排除。
 const exclusions: [string, string[]][] = [
+  ['同公司已有更早的主记录；重复岗位默认隐藏，但已有准备/投递进度仍保留', [
+    'cloudview-browser-ai-product-2027', 'autohome-ai-agent-product-2027',
+  ]],
   ['互联网超大厂不再新增推荐；已有准备或投递进度继续保留', [
     'baidu-ai-pm-2027', 'alibaba-cloud-product-2027', 'alibaba-group-product-2027',
     'pdd-campus-2027',
@@ -48,13 +51,53 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
-  'cloudview-browser-ai-product-2027': {
+  'boc-digital-tech-2027': {
     eligible: true,
-    reason: '云览官方AI内容智能体/AI增长产品经理，本科可投，13–20K/月×15薪',
-    salaryKind: '本届公开', monthlyMin: 13000,
-    salarySourceUrl: 'https://cloudview-inc.com/join/jobs',
-    salarySourceLabel: '云览科技官方2027校园招聘岗位页',
-    exceptionReason: '非能源垂直、业务偏内容/广告：按AI产品匹配与公开薪资纳入，但推荐度排在AI+能源和B端产品之后',
+    reason: '中国银行官方2027全球校招，信息科技/数字金融岗位本科开放，网申10月9日截止',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://www.boc.cn/aboutboc/bi4/202609/t20260903_25689311.html',
+    salarySourceLabel: '中国银行官方2027全球校园招聘公告',
+    exceptionReason: '央企银行保底项：岗位按机构差异很大，需逐岗确认信息科技/数字金融，不把柜面或营销岗当作产品岗位',
+  },
+  'cmb-chengdu-digital-finance-2027': {
+    eligible: true,
+    reason: '招商银行成都分行官方数字金融岗，本科可投，10月10日截止，理工科优先',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://cmb-recruitment-mobile.paas.cmbchina.com/positionList/school?orgId=102518&recruitmentTypeId=96574F8D-C7ED-4772-AE7C-BAC896D190C',
+    salarySourceLabel: '招商银行官方校园招聘岗位列表',
+    exceptionReason: '银行数字化岗位破格项：可能有分行轮岗和业务培养，投前确认是否进入数字金融产品/数据团队，排在垂直能源和中厂产品之后',
+  },
+  'hzbank-ai-tech-2027': {
+    eligible: true,
+    reason: '杭州银行总行信息技术部培训生，本科开放，人工智能/软件研发/数据研发方向，10月25日截止',
+    salaryKind: '本届公开', monthlyMin: 10000,
+    salarySourceUrl: 'https://jobs.tiangong.edu.cn/correcruit/content/id/56188.html',
+    salarySourceLabel: '杭州银行2027秋季校园招聘公告（标注10000元以上）',
+    exceptionReason: '国企银行科技岗：培训生可能轮岗，投递时优先人工智能/数据研发，确认是否能接触需求分析和平台产品',
+  },
+  'nbcb-fintech-product-2027': {
+    eligible: true,
+    reason: '宁波银行总行金融科技定向生，本科计算机/人工智能可投，岗位方向明确含产品经理',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://job.zzu.edu.cn/campus/view/id/1018779',
+    salarySourceLabel: '宁波银行2027总行金融科技定向生公告',
+    exceptionReason: '金融科技B端高匹配项：岗位池含开发、数据和运维，投递时锁定产品经理/数据研发/AI应用；截止日期以官方岗位状态为准',
+  },
+  'suzhou-bank-ai-tech-2027': {
+    eligible: true,
+    reason: '苏州银行信息科技类本科岗，明确涉及AI、智能体试点和系统需求分析，10月25日截止',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://jy.tust.edu.cn/correcruit/content/id/46770.html',
+    salarySourceLabel: '苏州银行2027秋季校园招聘公告',
+    exceptionReason: '国企银行AI/需求分析破格项：职责也包含技术支持和项目跟踪，必须面试确认产品/需求分析占比，避免长期运维',
+  },
+  'citic-card-product-ai-2027': {
+    eligible: true,
+    reason: '中信银行信用卡中心本科产品经理/AI应用开发岗，网申暂定10月18日截止',
+    salaryKind: '本届公开', monthlyMin: 10000,
+    salarySourceUrl: 'https://jobs.tiangong.edu.cn/correcruit/content/id/55652.html',
+    salarySourceLabel: '中信银行信用卡中心2027秋季校园招聘公告（标注10000元以上）',
+    exceptionReason: '央企金融科技产品岗：优先产品及渠道、AI应用开发，回避纯营销/客服/渠道执行；需确认具体部门和英语四级要求',
   },
   'flypai-ai-agent-product-2027': {
     eligible: true,
@@ -63,14 +106,6 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     salarySourceUrl: 'https://www.flypai.com/jobs.html',
     salarySourceLabel: '飞派科技官方2027校招岗位页（薪资未公开）',
     exceptionReason: 'AI/B端产品高度匹配且官网注明弹性工作、不打卡；私企薪资和转正机制未公开，投前必须核实基本月薪与交付/客户现场比例',
-  },
-  'autohome-ai-agent-product-2027': {
-    eligible: true,
-    reason: '车之家本届AI Agent产品经理，本科可投，18–22K/月×16薪，汽车垂类大模型方向',
-    salaryKind: '本届公开', monthlyMin: 18000,
-    salarySourceUrl: 'https://www.nowcoder.com/jobs/detail/466941',
-    salarySourceLabel: '企业校园招聘人员发布的2027具体岗位',
-    exceptionReason: '非能源垂直、北京线下且竞争偏强：按高薪AI产品纳入后排，面试确认非运营支持或纯项目协调',
   },
   'xiaopeng-embodied-data-product-2027': {
     eligible: true,

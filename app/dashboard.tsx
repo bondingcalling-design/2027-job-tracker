@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowUpRight,
+  ArrowDownUp,
   BriefcaseBusiness,
   CalendarClock,
   Check,
@@ -77,6 +78,7 @@ type Opportunity = {
   archived: boolean;
   isCustom: boolean;
   updatedAt?: string;
+  createdAt?: string;
 };
 
 const TRACKS = [
@@ -98,6 +100,16 @@ const STAGES = [
 ];
 const OWNERSHIPS = ['全部性质', '央企', '国企', '私企', '外企', '混合所有制'];
 const SCALES = ['全部规模', '中厂', '成长公司', '大型科技企业', '大厂'];
+const STAGE_ORDER: Record<string, number> = {
+  待投递: 0,
+  准备中: 1,
+  已投递: 2,
+  笔试: 3,
+  面试: 4,
+  Offer: 5,
+  已拒绝: 6,
+  放弃: 7,
+};
 const EMPTY: Opportunity = {
   id: '',
   company: '',
@@ -192,6 +204,7 @@ export default function Dashboard() {
   const [sort, setSort] = useState('recommended');
   const [favoriteOnly, setFavoriteOnly] = useState(false);
   const [upcomingOnly, setUpcomingOnly] = useState(false);
+  const [showAbandoned, setShowAbandoned] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
@@ -229,6 +242,7 @@ export default function Dashboard() {
     sort,
     favoriteOnly,
     upcomingOnly,
+    showAbandoned,
     showArchived,
     pageSize,
   ]);
@@ -242,9 +256,10 @@ export default function Dashboard() {
   const patchItem = useCallback(
     async (id: string, changes: Partial<Opportunity>) => {
       const previous = items.find((item) => item.id === id);
+      const editedAt = new Date().toISOString();
       setItems((current) =>
         current.map((item) =>
-          item.id === id ? { ...item, ...changes } : item,
+          item.id === id ? { ...item, ...changes, updatedAt: editedAt } : item,
         ),
       );
       setSavingIds((current) => new Set(current).add(id));
@@ -282,7 +297,12 @@ export default function Dashboard() {
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     const result = items.filter((item) => {
-      if (!isOpportunityInScope(item, retiredSeedIds)) return false;
+      const abandonedVisible =
+        showAbandoned &&
+        item.stage === '放弃' &&
+        !retiredSeedIds.includes(item.id);
+      if (!isOpportunityInScope(item, retiredSeedIds) && !abandonedVisible)
+        return false;
       if (item.archived !== showArchived) return false;
       if (
         normalized &&
@@ -318,8 +338,21 @@ export default function Dashboard() {
         );
       if (sort === 'company')
         return a.company.localeCompare(b.company, 'zh-CN');
-      if (sort === 'updated')
-        return (b.updatedAt || '').localeCompare(a.updatedAt || '');
+      if (sort === 'stage-updated-desc' || sort === 'stage-updated-asc') {
+        const stageOrder =
+          (STAGE_ORDER[a.stage] ?? 99) - (STAGE_ORDER[b.stage] ?? 99);
+        if (stageOrder) return stageOrder;
+        const edited = (b.updatedAt || b.createdAt || '').localeCompare(
+          a.updatedAt || a.createdAt || '',
+        );
+        return sort.endsWith('asc') ? -edited : edited;
+      }
+      if (sort === 'updated-desc' || sort === 'updated-asc') {
+        const edited = (b.updatedAt || b.createdAt || '').localeCompare(
+          a.updatedAt || a.createdAt || '',
+        );
+        return sort.endsWith('asc') ? -edited : edited;
+      }
       if (sort === 'midfirst')
         return (
           Number(b.scale === '中厂') - Number(a.scale === '中厂') ||
@@ -340,6 +373,7 @@ export default function Dashboard() {
     sort,
     favoriteOnly,
     upcomingOnly,
+    showAbandoned,
     showArchived,
   ]);
 
@@ -396,6 +430,7 @@ export default function Dashboard() {
     setStage('全部阶段');
     setFavoriteOnly(false);
     setUpcomingOnly(false);
+    setShowAbandoned(false);
     setShowArchived(false);
     setSort('recommended');
   }
@@ -563,7 +598,7 @@ export default function Dashboard() {
               私企常规项月薪下限 ≥ 1 万，央国企、外企与高福利岗位可标明理由破格收录。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              10.08 更新 · 新增云览科技、飞派科技、车之家AI、小鹏具身智能，并重新放回千寻智能具身产品岗；连同上一轮能源/工业岗位共 51 条。提醒只读取你已投岗位的“下一步日期”，未投企业不提醒。
+              10.08 更新 · 去重云览科技与车之家AI重复记录，新增中国银行、招行成都、杭州银行、宁波银行、苏州银行、中信信用卡中心等银行科技/产品岗位；当前 55 条。提醒只读取你已投岗位的“下一步日期”，未投企业不提醒。
               本科符合公开条件不代表保证通过简历筛选。
             </p>
           </div>
@@ -680,6 +715,19 @@ export default function Dashboard() {
                 </Button>
                 <Button
                   size="sm"
+                  variant={showAbandoned ? 'secondary' : 'ghost'}
+                  onClick={() => {
+                    setShowAbandoned((value) => {
+                      const next = !value;
+                      if (!next && stage === '放弃') setStage('全部阶段');
+                      return next;
+                    });
+                  }}
+                >
+                  {showAbandoned ? '隐藏已放弃' : '查看已放弃'}
+                </Button>
+                <Button
+                  size="sm"
                   variant={showArchived ? 'secondary' : 'ghost'}
                   onClick={() => setShowArchived((value) => !value)}
                 >
@@ -736,7 +784,7 @@ export default function Dashboard() {
                 onChange={(event) => setStage(event.target.value)}
               >
                 <NativeSelectOption>全部阶段</NativeSelectOption>
-                {STAGES.filter((item) => item !== '放弃').map((item) => (
+                {STAGES.filter((item) => showAbandoned || item !== '放弃').map((item) => (
                   <NativeSelectOption key={item}>{item}</NativeSelectOption>
                 ))}
               </NativeSelect>
@@ -749,6 +797,12 @@ export default function Dashboard() {
                 <NativeSelectOption value="recommended">
                   推荐度优先
                 </NativeSelectOption>
+                <NativeSelectOption value="stage-updated-desc">
+                  同阶段 · 最近修改
+                </NativeSelectOption>
+                <NativeSelectOption value="stage-updated-asc">
+                  同阶段 · 最早修改
+                </NativeSelectOption>
                 <NativeSelectOption value="midfirst">
                   中厂优先
                 </NativeSelectOption>
@@ -758,10 +812,30 @@ export default function Dashboard() {
                 <NativeSelectOption value="company">
                   企业名称
                 </NativeSelectOption>
-                <NativeSelectOption value="updated">
-                  最近编辑
+                <NativeSelectOption value="updated-desc">
+                  全表 · 最近编辑
+                </NativeSelectOption>
+                <NativeSelectOption value="updated-asc">
+                  全表 · 最早编辑
                 </NativeSelectOption>
               </NativeSelect>
+              {sort.startsWith('stage-updated') || sort.startsWith('updated-') ? (
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setSort((value) => {
+                      if (value === 'stage-updated-desc') return 'stage-updated-asc';
+                      if (value === 'stage-updated-asc') return 'stage-updated-desc';
+                      if (value === 'updated-desc') return 'updated-asc';
+                      if (value === 'updated-asc') return 'updated-desc';
+                      return 'stage-updated-desc';
+                    })
+                  }
+                  title="切换最近/最早修改"
+                >
+                  <ArrowDownUp /> 倒序切换
+                </Button>
+              ) : null}
               <Button
                 variant={upcomingOnly ? 'secondary' : 'outline'}
                 onClick={() => setUpcomingOnly((value) => !value)}
@@ -826,7 +900,11 @@ export default function Dashboard() {
                 <MobileCard
                   key={item.id}
                   item={item}
+                  expanded={expandedId === item.id}
                   saving={savingIds.has(item.id)}
+                  onExpand={() =>
+                    setExpandedId((id) => (id === item.id ? null : item.id))
+                  }
                   onPatch={(changes) => void patchItem(item.id, changes)}
                   onEdit={() => setEditing(item)}
                 />
@@ -955,10 +1033,15 @@ function OpportunityRows({
   const checked = !['待投递', '准备中', '放弃'].includes(item.stage);
   return (
     <>
-      <TableRow className="h-[78px]">
+      <TableRow
+        className="h-[78px] cursor-pointer"
+        onClick={onExpand}
+        data-state={expanded ? 'expanded' : undefined}
+      >
         <TableCell>
           <Checkbox
             checked={checked}
+            onClick={(event) => event.stopPropagation()}
             onCheckedChange={(value) =>
               onPatch({
                 stage: value ? '已投递' : '待投递',
@@ -971,8 +1054,11 @@ function OpportunityRows({
         <TableCell className="max-w-[330px]">
           <button
             type="button"
-            onClick={onExpand}
-            className="group w-full text-left"
+            onClick={(event) => {
+              event.stopPropagation();
+              onExpand();
+            }}
+            className="group w-full cursor-pointer text-left"
           >
             <span className="inline-flex items-center gap-1 font-semibold tracking-tight group-hover:text-primary">
               {item.favorite ? (
@@ -1035,6 +1121,7 @@ function OpportunityRows({
           <NativeSelect
             size="sm"
             value={item.stage}
+            onClick={(event) => event.stopPropagation()}
             onChange={(event) =>
               onPatch({
                 stage: event.target.value,
@@ -1061,6 +1148,7 @@ function OpportunityRows({
             type="date"
             className="h-7 w-[134px] text-xs"
             value={item.nextActionAt || ''}
+            onClick={(event) => event.stopPropagation()}
             onChange={(event) =>
               onPatch({ nextActionAt: event.target.value || null })
             }
@@ -1072,7 +1160,10 @@ function OpportunityRows({
             <Button
               size="icon-sm"
               variant="ghost"
-              onClick={() => onPatch({ favorite: !item.favorite })}
+              onClick={(event) => {
+                event.stopPropagation();
+                onPatch({ favorite: !item.favorite });
+              }}
               aria-label={item.favorite ? '取消收藏' : '收藏'}
             >
               {item.favorite ? <StarOff /> : <Star />}
@@ -1080,7 +1171,10 @@ function OpportunityRows({
             <Button
               size="icon-sm"
               variant="ghost"
-              onClick={onEdit}
+              onClick={(event) => {
+                event.stopPropagation();
+                onEdit();
+              }}
               aria-label="编辑"
             >
               <Edit3 />
@@ -1094,6 +1188,7 @@ function OpportunityRows({
                 href={item.applyUrl}
                 target="_blank"
                 rel="noreferrer"
+                onClick={(event) => event.stopPropagation()}
                 aria-label={`打开${item.company}网申`}
               >
                 <ArrowUpRight />
@@ -1142,23 +1237,28 @@ function OpportunityRows({
 
 function MobileCard({
   item,
+  expanded,
   saving,
+  onExpand,
   onPatch,
   onEdit,
 }: {
   item: Opportunity;
+  expanded: boolean;
   saving: boolean;
+  onExpand: () => void;
   onPatch: (changes: Partial<Opportunity>) => void;
   onEdit: () => void;
 }) {
   const checked = !['待投递', '准备中', '放弃'].includes(item.stage);
   return (
-    <article className="p-4">
+    <article className="cursor-pointer p-4" onClick={onExpand}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <Checkbox
               checked={checked}
+              onClick={(event) => event.stopPropagation()}
               onCheckedChange={(value) =>
                 onPatch({
                   stage: value ? '已投递' : '待投递',
@@ -1223,6 +1323,7 @@ function MobileCard({
           className="flex-1"
           size="sm"
           value={item.stage}
+          onClick={(event) => event.stopPropagation()}
           onChange={(event) => onPatch({ stage: event.target.value })}
         >
           {STAGES.map((value) => (
@@ -1232,7 +1333,10 @@ function MobileCard({
         <Button
           size="icon-sm"
           variant="ghost"
-          onClick={() => onPatch({ favorite: !item.favorite })}
+          onClick={(event) => {
+            event.stopPropagation();
+            onPatch({ favorite: !item.favorite });
+          }}
           aria-label={
             item.favorite ? `取消收藏${item.company}` : `收藏${item.company}`
           }
@@ -1242,7 +1346,10 @@ function MobileCard({
         <Button
           size="icon-sm"
           variant="ghost"
-          onClick={onEdit}
+          onClick={(event) => {
+            event.stopPropagation();
+            onEdit();
+          }}
           aria-label={`编辑${item.company}`}
         >
           <Edit3 />
@@ -1253,6 +1360,7 @@ function MobileCard({
             href={item.applyUrl}
             target="_blank"
             rel="noreferrer"
+            onClick={(event) => event.stopPropagation()}
           >
             网申
             <ArrowUpRight />
@@ -1264,6 +1372,19 @@ function MobileCard({
           <LoaderCircle className="size-2.5 animate-spin" />
           保存中
         </p>
+      ) : null}
+      {expanded ? (
+        <div className="mt-4 grid gap-3 border-t border-border pt-3 text-xs leading-5 sm:grid-cols-2">
+          <Detail label="为什么推荐" value={item.fitReason} />
+          <Detail label="风险 / 准备重点" value={item.riskNote} />
+          <Detail label="学历门槛" value={item.degreeGate} />
+          <div>
+            <p className="font-semibold">核实与备注</p>
+            <p className="mt-1 text-muted-foreground">{item.verifiedAt} · {item.sourceLabel}</p>
+            <ScreeningNote item={item} />
+            {item.notes ? <p className="mt-2 whitespace-pre-wrap">{item.notes}</p> : null}
+          </div>
+        </div>
       ) : null}
     </article>
   );

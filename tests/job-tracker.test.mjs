@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 51);
+  assert.equal(selected.length, 55);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -236,11 +236,9 @@ test('October energy search adds five undergraduate storage and digital-factory 
   assert.equal(screeningReviews['xinyueneng-cim-energy-2027'].salaryKind, '招聘转载参考');
 });
 
-test('October AI product search adds five concrete undergraduate routes', () => {
+test('October AI product search adds three concrete undergraduate routes without duplicating prior companies', () => {
   const ids = [
-    'cloudview-browser-ai-product-2027',
     'flypai-ai-agent-product-2027',
-    'autohome-ai-agent-product-2027',
     'xiaopeng-embodied-data-product-2027',
     'spirit-ai-product-2027',
   ];
@@ -251,9 +249,30 @@ test('October AI product search adds five concrete undergraduate routes', () => 
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
   }
-  assert.equal(screeningReviews['cloudview-browser-ai-product-2027'].monthlyMin, 13000);
-  assert.equal(screeningReviews['autohome-ai-agent-product-2027'].monthlyMin, 18000);
   assert.equal(screeningReviews['xiaopeng-embodied-data-product-2027'].monthlyMin, 12500);
   assert.equal(screeningReviews['flypai-ai-agent-product-2027'].salaryKind, '未公开');
   assert.equal(screeningReviews['spirit-ai-product-2027'].salaryKind, '未公开');
+});
+
+test('October bank search adds six concrete undergraduate technology and product routes', () => {
+  const ids = [
+    'boc-digital-tech-2027',
+    'cmb-chengdu-digital-finance-2027',
+    'hzbank-ai-tech-2027',
+    'nbcb-fintech-product-2027',
+    'suzhou-bank-ai-tech-2027',
+    'citic-card-product-ai-2027',
+  ];
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.match(item.degreeGate, /本科/);
+    assert.ok(new URL(item.applyUrl));
+    assert.ok(new URL(item.sourceUrl));
+    assert.match(item.deadlineNote, /截止|截至|结束|滚动|状态/);
+  }
+  assert.equal(screeningReviews['hzbank-ai-tech-2027'].monthlyMin, 10000);
+  assert.equal(screeningReviews['citic-card-product-ai-2027'].monthlyMin, 10000);
+  assert.equal(seedOpportunities.some((item) => item.id === 'cloudview-browser-ai-product-2027'), false);
+  assert.equal(seedOpportunities.some((item) => item.id === 'autohome-ai-agent-product-2027'), false);
 });
