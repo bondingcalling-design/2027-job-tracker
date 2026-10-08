@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 55);
+  assert.equal(selected.length, 60);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -275,4 +275,25 @@ test('October bank search adds six concrete undergraduate technology and product
   assert.equal(screeningReviews['citic-card-product-ai-2027'].monthlyMin, 10000);
   assert.equal(seedOpportunities.some((item) => item.id === 'cloudview-browser-ai-product-2027'), false);
   assert.equal(seedOpportunities.some((item) => item.id === 'autohome-ai-agent-product-2027'), false);
+});
+
+test('October follow-up adds five non-duplicate bank, logistics-tech and energy routes', () => {
+  const ids = [
+    'sf-tech-product-data-2027',
+    'bankcomm-fintech-2027',
+    'cgb-fintech-product-2027',
+    'bankofbeijing-ai-tech-2027',
+    'mingyang-smart-energy-ai-2027',
+  ];
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.match(item.degreeGate, /本科/);
+    assert.ok(new URL(item.applyUrl));
+    assert.ok(new URL(item.sourceUrl));
+    assert.match(item.deadlineNote, /截止|截至|结束|滚动|状态/);
+  }
+  assert.equal(screeningReviews['sf-tech-product-data-2027'].monthlyMin, 20000);
+  assert.equal(screeningReviews['bankofbeijing-ai-tech-2027'].monthlyMin, 15000);
+  assert.equal(screeningReviews['mingyang-smart-energy-ai-2027'].salaryKind, '往届参考');
 });
