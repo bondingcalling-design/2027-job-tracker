@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 60);
+  assert.equal(selected.length, 70);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -296,4 +296,38 @@ test('October follow-up adds five non-duplicate bank, logistics-tech and energy 
   assert.equal(screeningReviews['sf-tech-product-data-2027'].monthlyMin, 20000);
   assert.equal(screeningReviews['bankofbeijing-ai-tech-2027'].monthlyMin, 15000);
   assert.equal(screeningReviews['mingyang-smart-energy-ai-2027'].salaryKind, '往届参考');
+});
+
+test('October 9 update adds exactly ten non-duplicate bachelor routes', () => {
+  const ids = [
+    'ztccloud-b2b-product-2027',
+    'seichitech-product-information-2027',
+    'kingdee-ai-product-2027',
+    'goldwind-product-rd-2027',
+    'nsfocus-security-product-2027',
+    'ygsoft-ai-requirements-2027',
+    'sgdt-ai-energy-digital-2027',
+    'czbank-ai-application-2027',
+    'cmbc-tech-ai-development-2027',
+    'huaneng-beijing-digital-2027',
+  ];
+  assert.equal(ids.length, 10);
+  assert.equal(new Set(ids).size, 10);
+  const companies = new Set();
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.match(item.degreeGate, /本科/);
+    assert.ok(new URL(item.applyUrl));
+    assert.ok(new URL(item.sourceUrl));
+    assert.equal(item.verifiedAt, '2026-10-09');
+    assert.equal(companies.has(item.company), false, item.company);
+    companies.add(item.company);
+  }
+  for (const id of ['ztccloud-b2b-product-2027', 'seichitech-product-information-2027', 'kingdee-ai-product-2027', 'goldwind-product-rd-2027', 'nsfocus-security-product-2027']) {
+    assert.ok(screeningReviews[id].monthlyMin >= 10000, id);
+  }
+  for (const id of ['ygsoft-ai-requirements-2027', 'sgdt-ai-energy-digital-2027', 'czbank-ai-application-2027', 'cmbc-tech-ai-development-2027', 'huaneng-beijing-digital-2027']) {
+    assert.match(seedOpportunities.find((item) => item.id === id).deadlineNote, /截止|截至/);
+  }
 });
