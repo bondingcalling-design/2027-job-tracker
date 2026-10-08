@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { seedOpportunities, retiredSeedIds } from '../lib/opportunities.ts';
-import { mergeOpportunities } from '../lib/opportunity-state.ts';
+import { mergeOpportunities, normalizeCompanyName } from '../lib/opportunity-state.ts';
 import { isOpportunityInScope, screeningReviews } from '../lib/screening.ts';
 
 const now = '2026-09-10T08:00:00.000Z';
@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 80);
+  assert.equal(selected.length, 74);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -332,22 +332,24 @@ test('October 9 update adds exactly ten non-duplicate bachelor routes', () => {
   }
 });
 
-test('latest ten prioritize computer-major B2B and AI routes instead of banks or power majors', () => {
-  const ids = [
-    'hundsun-requirements-ai-2027',
+test('latest review keeps only four high-confidence computer-major product routes', () => {
+  const keptIds = [
     'pylontech-cloud-product-2027',
-    'techen-ai-energy-application-2027',
-    'iwhalecloud-product-trainee-2027',
     'pudurobotics-product-manager-2027',
     'cnnc-huahui-ai-product-2027',
+    'streamax-platform-product-2027',
+  ];
+  const removedIds = [
+    'hundsun-requirements-ai-2027',
+    'techen-ai-energy-application-2027',
+    'iwhalecloud-product-trainee-2027',
     'sundray-enterprise-ai-development-2027',
     'rigol-it-ai-application-2027',
-    'streamax-platform-product-2027',
     'chinsoft-requirements-analysis-2027',
   ];
-  assert.equal(ids.length, 10);
+  assert.equal(keptIds.length, 4);
   const companies = new Set();
-  for (const id of ids) {
+  for (const id of keptIds) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
     assert.ok(item && screeningReviews[id].eligible, id);
     assert.match(item.degreeGate, /本科/);
@@ -365,4 +367,39 @@ test('latest ten prioritize computer-major B2B and AI routes instead of banks or
       assert.ok(screeningReviews[id].salarySourceUrl, item.company);
     }
   }
+  for (const id of removedIds) {
+    assert.ok(retiredSeedIds.includes(id), id);
+    assert.equal(visible(initial()).some((item) => item.id === id), false, id);
+  }
+});
+
+test('company-level dedup keeps existing user progress and suppresses a new seed card', () => {
+  assert.equal(normalizeCompanyName('恒生电子股份有限公司'), normalizeCompanyName('恒生电子'));
+  const stored = initial().filter((item) => item.id !== 'hundsun-requirements-ai-2027');
+  const custom = {
+    ...stored[0],
+    id: 'manual-hundsun-interview',
+    company: '恒生电子股份有限公司',
+    role: '产品经理',
+    stage: '面试',
+    isCustom: true,
+    notes: '已经进入面试',
+  };
+  const reloaded = mergeOpportunities(seedOpportunities, [...stored, custom], now);
+  assert.equal(reloaded.some((item) => item.id === 'hundsun-requirements-ai-2027'), false);
+  assert.equal(reloaded.filter((item) => normalizeCompanyName(item.company) === normalizeCompanyName('恒生电子')).length, 1);
+  assert.equal(reloaded.find((item) => item.id === custom.id).stage, '面试');
+
+  const withoutPylontech = initial().filter((item) => item.id !== 'pylontech-cloud-product-2027');
+  const olderWaitingRecord = {
+    ...withoutPylontech[0],
+    id: 'older-pylontech-record',
+    company: '派能科技股份有限公司',
+    role: '已有岗位',
+    stage: '待投递',
+    isCustom: false,
+  };
+  const waitingReloaded = mergeOpportunities(seedOpportunities, [...withoutPylontech, olderWaitingRecord], now);
+  assert.equal(waitingReloaded.some((item) => item.id === 'pylontech-cloud-product-2027'), false);
+  assert.equal(waitingReloaded.filter((item) => normalizeCompanyName(item.company) === normalizeCompanyName('派能科技')).length, 1);
 });

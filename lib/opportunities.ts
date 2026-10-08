@@ -23,6 +23,12 @@ export type SeedOpportunity = {
 };
 
 export const retiredSeedIds = [
+  'hundsun-requirements-ai-2027',
+  'techen-ai-energy-application-2027',
+  'iwhalecloud-product-trainee-2027',
+  'sundray-enterprise-ai-development-2027',
+  'rigol-it-ai-application-2027',
+  'chinsoft-requirements-analysis-2027',
   'wondershare-ai-pm-2027',
   'ct-digital-life-pm-2027',
   'cecloud-pm-2027',
