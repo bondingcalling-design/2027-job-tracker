@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 70);
+  assert.equal(selected.length, 80);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -329,5 +329,40 @@ test('October 9 update adds exactly ten non-duplicate bachelor routes', () => {
   }
   for (const id of ['ygsoft-ai-requirements-2027', 'sgdt-ai-energy-digital-2027', 'czbank-ai-application-2027', 'cmbc-tech-ai-development-2027', 'huaneng-beijing-digital-2027']) {
     assert.match(seedOpportunities.find((item) => item.id === id).deadlineNote, /截止|截至/);
+  }
+});
+
+test('latest ten prioritize computer-major B2B and AI routes instead of banks or power majors', () => {
+  const ids = [
+    'hundsun-requirements-ai-2027',
+    'pylontech-cloud-product-2027',
+    'techen-ai-energy-application-2027',
+    'iwhalecloud-product-trainee-2027',
+    'pudurobotics-product-manager-2027',
+    'cnnc-huahui-ai-product-2027',
+    'sundray-enterprise-ai-development-2027',
+    'rigol-it-ai-application-2027',
+    'streamax-platform-product-2027',
+    'chinsoft-requirements-analysis-2027',
+  ];
+  assert.equal(ids.length, 10);
+  const companies = new Set();
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.match(item.degreeGate, /本科/);
+    assert.match(item.degreeGate, /计算机|信息技术|软件|人工智能/);
+    assert.doesNotMatch(item.company, /银行/);
+    assert.doesNotMatch(item.role, /电气|电力专业|项目管理|项目经理|PMO|实施交付/);
+    assert.ok(new URL(item.applyUrl));
+    assert.ok(new URL(item.sourceUrl));
+    assert.equal(item.verifiedAt, '2026-10-09');
+    assert.equal(companies.has(item.company), false, item.company);
+    companies.add(item.company);
+    assert.equal(seedOpportunities.filter((seed) => seed.company === item.company).length, 1, item.company);
+    if (item.ownership === '私企') {
+      assert.ok(screeningReviews[id].monthlyMin >= 10000, item.company);
+      assert.ok(screeningReviews[id].salarySourceUrl, item.company);
+    }
   }
 });
