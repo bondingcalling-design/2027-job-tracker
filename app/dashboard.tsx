@@ -598,7 +598,7 @@ export default function Dashboard() {
               私企常规项月薪下限 ≥ 1 万，央国企、外企与高福利岗位可标明理由破格收录。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              10.08 更新 · 去重云览科技与车之家AI重复记录，新增中国银行、招行成都、杭州银行、宁波银行、苏州银行、中信信用卡中心、交行、广发、北京银行、顺丰科技、明阳能源等银行/产业科技岗位；当前 60 条。提醒只读取你已投岗位的“下一步日期”，未投企业不提醒。
+              10.09 更新 · 列表已隐藏“下一步”整列；原有日期不会删除，仍可在编辑窗口中填写，提醒只读取你已投岗位的下一步日期。当前 60 条。
               本科符合公开条件不代表保证通过简历筛选。
             </p>
           </div>
@@ -846,7 +846,7 @@ export default function Dashboard() {
           </div>
 
           <div className="hidden overflow-x-auto md:block">
-            <Table className="min-w-[1340px]">
+            <Table className="min-w-[1190px]">
               <TableHeader className="bg-muted/55">
                 <TableRow>
                   <TableHead className="w-[44px]">完成</TableHead>
@@ -857,7 +857,6 @@ export default function Dashboard() {
                   <TableHead>待遇</TableHead>
                   <TableHead>推荐</TableHead>
                   <TableHead>我的阶段</TableHead>
-                  <TableHead>下一步</TableHead>
                   <TableHead className="text-right">操作</TableHead>
                 </TableRow>
               </TableHeader>
@@ -1143,18 +1142,6 @@ function OpportunityRows({
             </span>
           ) : null}
         </TableCell>
-        <TableCell>
-          <Input
-            type="date"
-            className="h-7 w-[134px] text-xs"
-            value={item.nextActionAt || ''}
-            onClick={(event) => event.stopPropagation()}
-            onChange={(event) =>
-              onPatch({ nextActionAt: event.target.value || null })
-            }
-            aria-label={`${item.company}下一步日期`}
-          />
-        </TableCell>
         <TableCell className="text-right">
           <div className="flex justify-end gap-1">
             <Button
@@ -1199,7 +1186,7 @@ function OpportunityRows({
       </TableRow>
       {expanded ? (
         <TableRow className="bg-muted/22">
-          <TableCell colSpan={10} className="whitespace-normal">
+          <TableCell colSpan={9} className="whitespace-normal">
             <div className="grid min-w-0 gap-5 px-2 py-3 text-xs leading-5 lg:grid-cols-2 xl:grid-cols-4">
               <Detail label="为什么推荐" value={item.fitReason} />
               <Detail label="风险 / 准备重点" value={item.riskNote} />
@@ -1429,7 +1416,7 @@ function LoadingRows() {
     <>
       {Array.from({ length: 5 }, (_, index) => (
         <TableRow key={index} className="h-[78px]">
-          <TableCell colSpan={10}>
+          <TableCell colSpan={9}>
             <div className="h-8 animate-pulse rounded-lg bg-muted" />
           </TableCell>
         </TableRow>
@@ -1442,7 +1429,7 @@ function EmptyRow() {
   return (
     <TableRow>
       <TableCell
-        colSpan={10}
+        colSpan={9}
         className="h-40 text-center text-sm text-muted-foreground"
       >
         没有符合当前筛选的机会，试试清空筛选或切换“归档”。
