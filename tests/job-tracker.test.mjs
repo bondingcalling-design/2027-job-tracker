@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 74);
+  assert.equal(selected.length, 69);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -254,16 +254,14 @@ test('October AI product search adds three concrete undergraduate routes without
   assert.equal(screeningReviews['spirit-ai-product-2027'].salaryKind, '未公开');
 });
 
-test('October bank search adds six concrete undergraduate technology and product routes', () => {
-  const ids = [
-    'boc-digital-tech-2027',
-    'cmb-chengdu-digital-finance-2027',
-    'hzbank-ai-tech-2027',
-    'nbcb-fintech-product-2027',
-    'suzhou-bank-ai-tech-2027',
-    'citic-card-product-ai-2027',
+test('bank review keeps the three valid undergraduate routes from the first batch', () => {
+  const keptIds = [
+    'hzbank-ai-tech-2027', 'nbcb-fintech-product-2027', 'citic-card-product-ai-2027',
   ];
-  for (const id of ids) {
+  const retiredIds = [
+    'boc-digital-tech-2027', 'cmb-chengdu-digital-finance-2027', 'suzhou-bank-ai-tech-2027',
+  ];
+  for (const id of keptIds) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
     assert.ok(item && screeningReviews[id].eligible, id);
     assert.match(item.degreeGate, /本科/);
@@ -273,19 +271,24 @@ test('October bank search adds six concrete undergraduate technology and product
   }
   assert.equal(screeningReviews['hzbank-ai-tech-2027'].monthlyMin, 10000);
   assert.equal(screeningReviews['citic-card-product-ai-2027'].monthlyMin, 10000);
+  assert.equal(screeningReviews['nbcb-fintech-product-2027'].monthlyMin, 10000);
+  assert.equal(seedOpportunities.find((item) => item.id === 'nbcb-fintech-product-2027').recommendation, 5);
+  for (const id of retiredIds) {
+    assert.ok(retiredSeedIds.includes(id), id);
+    assert.equal(screeningReviews[id].eligible, false, id);
+  }
   assert.equal(seedOpportunities.some((item) => item.id === 'cloudview-browser-ai-product-2027'), false);
   assert.equal(seedOpportunities.some((item) => item.id === 'autohome-ai-agent-product-2027'), false);
 });
 
-test('October follow-up adds five non-duplicate bank, logistics-tech and energy routes', () => {
-  const ids = [
+test('October follow-up keeps four non-duplicate bank, logistics-tech and energy routes', () => {
+  const keptIds = [
     'sf-tech-product-data-2027',
     'bankcomm-fintech-2027',
-    'cgb-fintech-product-2027',
     'bankofbeijing-ai-tech-2027',
     'mingyang-smart-energy-ai-2027',
   ];
-  for (const id of ids) {
+  for (const id of keptIds) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
     assert.ok(item && screeningReviews[id].eligible, id);
     assert.match(item.degreeGate, /本科/);
@@ -294,11 +297,14 @@ test('October follow-up adds five non-duplicate bank, logistics-tech and energy 
     assert.match(item.deadlineNote, /截止|截至|结束|滚动|状态/);
   }
   assert.equal(screeningReviews['sf-tech-product-data-2027'].monthlyMin, 20000);
-  assert.equal(screeningReviews['bankofbeijing-ai-tech-2027'].monthlyMin, 15000);
+  assert.equal(screeningReviews['bankcomm-fintech-2027'].monthlyMin, 10500);
+  assert.equal(screeningReviews['bankofbeijing-ai-tech-2027'].salaryKind, '招聘转载参考');
   assert.equal(screeningReviews['mingyang-smart-energy-ai-2027'].salaryKind, '往届参考');
+  assert.ok(retiredSeedIds.includes('cgb-fintech-product-2027'));
+  assert.equal(screeningReviews['cgb-fintech-product-2027'].eligible, false);
 });
 
-test('October 9 update adds exactly ten non-duplicate bachelor routes', () => {
+test('October 9 update retains nine reviewed bachelor routes after the bank audit', () => {
   const ids = [
     'ztccloud-b2b-product-2027',
     'seichitech-product-information-2027',
@@ -308,11 +314,10 @@ test('October 9 update adds exactly ten non-duplicate bachelor routes', () => {
     'ygsoft-ai-requirements-2027',
     'sgdt-ai-energy-digital-2027',
     'czbank-ai-application-2027',
-    'cmbc-tech-ai-development-2027',
     'huaneng-beijing-digital-2027',
   ];
-  assert.equal(ids.length, 10);
-  assert.equal(new Set(ids).size, 10);
+  assert.equal(ids.length, 9);
+  assert.equal(new Set(ids).size, 9);
   const companies = new Set();
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
@@ -320,16 +325,55 @@ test('October 9 update adds exactly ten non-duplicate bachelor routes', () => {
     assert.match(item.degreeGate, /本科/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
-    assert.equal(item.verifiedAt, '2026-10-09');
+    assert.match(item.verifiedAt, /^2026-10-(09|12)$/);
     assert.equal(companies.has(item.company), false, item.company);
     companies.add(item.company);
   }
   for (const id of ['ztccloud-b2b-product-2027', 'seichitech-product-information-2027', 'kingdee-ai-product-2027', 'goldwind-product-rd-2027', 'nsfocus-security-product-2027']) {
     assert.ok(screeningReviews[id].monthlyMin >= 10000, id);
   }
-  for (const id of ['ygsoft-ai-requirements-2027', 'sgdt-ai-energy-digital-2027', 'czbank-ai-application-2027', 'cmbc-tech-ai-development-2027', 'huaneng-beijing-digital-2027']) {
+  for (const id of ['ygsoft-ai-requirements-2027', 'sgdt-ai-energy-digital-2027', 'czbank-ai-application-2027', 'huaneng-beijing-digital-2027']) {
     assert.match(seedOpportunities.find((item) => item.id === id).deadlineNote, /截止|截至/);
   }
+  assert.ok(retiredSeedIds.includes('cmbc-tech-ai-development-2027'));
+  assert.equal(screeningReviews['cmbc-tech-ai-development-2027'].eligible, false);
+});
+
+test('October 12 bank audit removes expired, master-only, low-pay and resume-mismatched entries', () => {
+  const keptIds = [
+    'czbank-ai-application-2027',
+    'hzbank-ai-tech-2027',
+    'nbcb-fintech-product-2027',
+    'citic-card-product-ai-2027',
+    'bankcomm-fintech-2027',
+    'bankofbeijing-ai-tech-2027',
+  ];
+  const removedIds = [
+    'boc-digital-tech-2027',
+    'cmb-chengdu-digital-finance-2027',
+    'suzhou-bank-ai-tech-2027',
+    'cgb-fintech-product-2027',
+    'cmbc-tech-ai-development-2027',
+  ];
+  for (const id of keptIds) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.match(item.degreeGate, /本科/);
+    assert.equal(item.verifiedAt, '2026-10-12');
+    assert.ok(new URL(item.applyUrl));
+    assert.ok(new URL(item.sourceUrl));
+    if (screeningReviews[id].monthlyMin !== undefined) {
+      assert.ok(screeningReviews[id].monthlyMin >= 10000, id);
+    }
+  }
+  for (const id of removedIds) {
+    assert.ok(retiredSeedIds.includes(id), id);
+    assert.equal(screeningReviews[id].eligible, false, id);
+    assert.equal(visible(initial()).some((item) => item.id === id), false, id);
+  }
+  assert.match(seedOpportunities.find((item) => item.id === 'nbcb-fintech-product-2027').role, /产品经理/);
+  assert.match(seedOpportunities.find((item) => item.id === 'bankcomm-fintech-2027').role, /产品规划|需求分析/);
+  assert.match(seedOpportunities.find((item) => item.id === 'bankofbeijing-ai-tech-2027').role, /AI产品经理/);
 });
 
 test('latest review keeps only four high-confidence computer-major product routes', () => {
