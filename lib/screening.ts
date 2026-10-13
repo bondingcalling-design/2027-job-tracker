@@ -51,6 +51,42 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
+  'cm-terminal-product-2027': {
+    eligible: true,
+    reason: '10月14日23:59截止，普通校招本科计算机可投，省公司产品经理或繁星智算AI硬件产品经理；不走博士金种子专项',
+    salaryKind: '本届公开', monthlyMin: 10000,
+    salarySourceUrl: 'https://career.hebut.edu.cn/correcruit/content/id/80298.html',
+    salarySourceLabel: '河北工业大学就业网刊登企业本届校招项目10K+/月，非具体产品岗承诺',
+    exceptionReason: '央企产品例外：省公司产品归市场类，须先确认是否偏零售渠道/KPI；AI硬件需核实硬件经验要求',
+  },
+  'cnpc-zhejiang-digital-2027': {
+    eligible: true,
+    reason: '10月15日23:59:59截止；具体数智化与信息工程岗招2人，明确接受计算机/软件/AI本科，不是电力专业岗',
+    salaryKind: '未公开',
+    exceptionReason: '央企能源数字化例外：无具体产品职责描述，优先核查是否负责需求和信息系统建设，而非站点运维',
+  },
+  'wasu-product-trainee-2027': {
+    eligible: true,
+    reason: '10月20日截止；具体产品管培生覆盖需求、规划、AI新场景、研发协同，本科计算机可投',
+    salaryKind: '本届公开', monthlyMin: 10000,
+    salarySourceUrl: 'https://career.nankai.edu.cn/correcruit/content/id/117198.html',
+    salarySourceLabel: '南开就业网刊登本届校招项目10–15K/月，非单个产品岗保证',
+    exceptionReason: '国企产品高匹配项，但管培需多岗轮岗和基层实践；面试确认轮岗后能否留产品团队',
+  },
+  'sinopec-hubei-ai-management-2027': {
+    eligible: true,
+    reason: '10月28日17:00截止；湖北石油AI管理具体岗位，本科和计算机类明确可投，7.5–8.5K/月为本届高校公开区间',
+    salaryKind: '本届公开', monthlyMin: 7500,
+    salarySourceUrl: 'https://hbue.91wllm.cn/campus/view/id/1005788',
+    salarySourceLabel: '湖北经济学院就业网本届人工智能管理岗7.5–8.5K/月',
+    exceptionReason: '央企能源AI例外：不以私企10K门槛删除，但需确认AI职责而不是长期基层轮岗',
+  },
+  'sinopec-shengli-ai-application-2027': {
+    eligible: true,
+    reason: '10月28日17:00截止；AI研发应用岗招10人，明确接受计算机本科，能源垂直技术应用',
+    salaryKind: '未公开',
+    exceptionReason: '央企AI能源技术例外：偏研发而非产品，须核实部门、井场/出差要求；待遇未公开不按私企下限筛除',
+  },
   'xiangyu-digital-operations-2027': {
     eligible: true,
     reason: '市属国企的供应链数字产品岗，本科开放，职责覆盖需求到上线、迭代、体验优化与产品运营，与你的B端经历直接相关',

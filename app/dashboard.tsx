@@ -422,6 +422,22 @@ export default function Dashboard() {
       .slice(0, 6);
   }, [items]);
 
+  const applicationDeadlines = useMemo(() => items
+    .filter((item) =>
+      !item.archived &&
+      isOpportunityInScope(item, retiredSeedIds) &&
+      ['待投递', '准备中'].includes(item.stage) &&
+      (() => {
+        const days = daysUntil(item.endDate);
+        return days !== null && days >= 0 && days <= 14;
+      })(),
+    )
+    .sort((a, b) =>
+      (a.endDate || '').localeCompare(b.endDate || '') ||
+      b.recommendation - a.recommendation,
+    )
+    .slice(0, 6), [items]);
+
   function resetFilters() {
     setQuery('');
     setTrack('全部方向');
@@ -598,8 +614,7 @@ export default function Dashboard() {
               私企常规项月薪下限 ≥ 1 万，央国企、外企与高福利岗位可标明理由破格收录。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              10.09 复核 · 撤下重复恒生及5条证据或匹配度不足的岗位；本轮只保留派能、普渡、中核华辉、锐明4条，当前 74 条。已有同公司记录时不再生成重复卡片。
-              本科符合公开条件不代表保证通过简历筛选。
+              只按有明确网申截止日的岗位提醒；已投递岗位不会显示网申催办。逐岗核验本科和计算机专业要求，保留你自己的阶段、备注与放弃决定。
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -631,6 +646,39 @@ export default function Dashboard() {
             </Button>
           </div>
         </header>
+
+        {applicationDeadlines.length > 0 ? (
+          <section
+            aria-label="近期网申截止"
+            className="mt-5 overflow-hidden rounded-[18px] border border-red-200 bg-red-50/70"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-red-200 px-4 py-3 text-sm font-semibold text-red-950">
+              <span className="flex items-center gap-2"><CalendarClock className="size-4 text-red-700" />近期网申截止</span>
+              <span className="font-normal text-red-800">仅待投递 / 准备中 · 不含笔试提醒</span>
+            </div>
+            <div className="grid gap-px bg-red-200 sm:grid-cols-2 xl:grid-cols-3">
+              {applicationDeadlines.map((item) => (
+                <a
+                  key={item.id}
+                  href={item.applyUrl || item.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group bg-red-50 px-4 py-3 transition-colors hover:bg-white"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <strong className="text-sm text-red-950">{localDate(item.endDate)}</strong>
+                    <span className="text-xs text-red-700">{daysUntil(item.endDate) === 0 ? '今天截止' : `还剩 ${daysUntil(item.endDate)} 天`}</span>
+                  </div>
+                  <p className="mt-1 flex items-center gap-1 text-sm font-medium text-foreground">
+                    {item.company}
+                    <ArrowUpRight className="size-3.5 shrink-0 opacity-60 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{item.role}</p>
+                </a>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {workflowAlerts.length > 0 ? (
           <section
