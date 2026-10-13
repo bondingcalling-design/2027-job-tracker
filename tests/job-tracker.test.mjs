@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 68);
+  assert.equal(selected.length, 69);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -440,7 +440,7 @@ test('October 13 SOE review adds only concrete undergraduate computer routes', (
   assert.match(seedOpportunities.find((item) => item.id === 'scc-software-digital-2027').riskNote, /不是产品经理/);
 });
 
-test('October 14 employer review keeps only Uniview as a conditional, non-duplicate candidate', () => {
+test('October 14 employer review keeps Uniview conditional and INVT as a low-priority welfare exception', () => {
   const item = seedOpportunities.find((opportunity) => opportunity.id === 'uniview-ai-software-energy-product-2027');
   assert.ok(item);
   assert.equal(item.company, '宇视科技');
@@ -450,7 +450,16 @@ test('October 14 employer review keeps only Uniview as a conditional, non-duplic
   assert.equal(screeningReviews[item.id].salaryKind, '未公开');
   assert.equal(screeningReviews[item.id].monthlyMin, undefined);
   assert.equal(seedOpportunities.filter((opportunity) => opportunity.company === '宇视科技').length, 1);
-  for (const company of ['英威腾', '中国通服四川', '天池能源']) {
+  const invt = seedOpportunities.find((opportunity) => opportunity.id === 'invt-it-development-2027');
+  assert.ok(invt);
+  assert.equal(invt.company, '英威腾');
+  assert.equal(invt.recommendation, 2);
+  assert.match(invt.degreeGate, /计算机/);
+  assert.match(invt.compensation, /薪资未公开/);
+  assert.match(screeningReviews[invt.id].exceptionReason, /福利破格/);
+  assert.equal(screeningReviews[invt.id].monthlyMin, undefined);
+  assert.equal(seedOpportunities.filter((opportunity) => opportunity.company === '英威腾').length, 1);
+  for (const company of ['中国通服四川', '天池能源']) {
     assert.equal(seedOpportunities.some((opportunity) => opportunity.company.includes(company)), false, company);
   }
 });

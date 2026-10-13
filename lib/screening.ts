@@ -78,6 +78,14 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
+  'invt-it-development-2027': {
+    eligible: true,
+    reason: '英威腾2027深圳开发工程师明确接受计算机本科；按福利较好但非产品岗的低优先级候选收录',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://51uns.bysjy.com.cn/Lecture/Details/717013?schoolCode=10700',
+    salarySourceLabel: '英威腾2027校招简章（仅列福利，未披露该岗位薪资）',
+    exceptionReason: '福利破格而非“年薪≥15万”的交付岗破格：校招简章列双休、八小时、五险一金与培养机制；实际岗位偏Java开发，与你的产品经历并非直接对应，推荐度2/5，先核岗位与待遇再决定投递',
+  },
   'uniview-ai-software-energy-product-2027': {
     eligible: true,
     reason: '2027校招明确列出AI软件开发与储能产品经理，本科开放；储能产品单岗专业待核，按中等优先级保留一次核验机会',
@@ -676,7 +684,7 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     salaryKind: '本届公开', monthlyMin: 10000,
     salarySourceUrl: 'https://career.hebut.edu.cn/correcruit/content/id/79145.html',
     salarySourceLabel: '高校就业网2027校招岗位与待遇页',
-    exceptionReason: '高薪私企AI+能源：允许售前/交付，但优先AIDC解决方案而非纯项目管理',
+    exceptionReason: 'AI+能源售前相邻岗：保留的是方案方向，不把纯交付自动纳入；现有10K+仅为校招项目口径，若具体职责偏项目/交付，须先核实有保证的年包约15万元及以上',
   },
   'teld-solution-2027': {
     eligible: true,

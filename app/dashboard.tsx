@@ -611,7 +611,8 @@ export default function Dashboard() {
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
               聚焦 B 端 / AI / 能源产品与产品工程、技术产品、解决方案等相邻岗位；
-              私企常规项月薪下限 ≥ 1 万，央国企、外企与高福利岗位可标明理由破格收录。
+              私企常规项月薪下限 ≥ 1 万；私企项目/交付岗仅在可核实年薪约 15 万以上时放宽，
+              央国企约 12 万年包及较好福利可放宽岗位匹配度。高福利例外须注明薪资未知与风险。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
               只按有明确网申截止日的岗位提醒；已投递岗位不会显示网申催办。逐岗核验本科和计算机专业要求，保留你自己的阶段、备注与放弃决定。
