@@ -51,6 +51,30 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
+  'xiangyu-digital-operations-2027': {
+    eligible: true,
+    reason: '市属国企的供应链数字产品岗，本科开放，职责覆盖需求到上线、迭代、体验优化与产品运营，与你的B端经历直接相关',
+    salaryKind: '本届公开', monthlyMin: 10000,
+    salarySourceUrl: 'https://career.nankai.edu.cn/correcruit/content/id/117501.html',
+    salarySourceLabel: '象屿股份2027秋招项目公开10–15K/月区间，非单一子岗Offer承诺',
+    exceptionReason: '国企B端产品高匹配项：只选数字化运营，避开贸易、物流销售和泛运营岗；面试确认产品工作与推广运营占比',
+  },
+  'huali-ai-system-2027': {
+    eligible: true,
+    reason: '华虹集团下属国企的本科计算机岗位，AI岗明确覆盖RAG知识库与AI工作流，系统岗覆盖需求、方案与知识工程',
+    salaryKind: '本届公开', monthlyMin: 8000,
+    salarySourceUrl: 'https://job.hdu.edu.cn/teachin/view?id=137128',
+    salarySourceLabel: '上海华力2027系统开发与运维工程师8–12K/月高校岗位页',
+    exceptionReason: '国企AI/知识工程例外：不按私企10K下限删除，但上海性价比一般，且系统岗含较多基础设施运维，排在纯产品岗之后',
+  },
+  'scc-software-digital-2027': {
+    eligible: true,
+    reason: '央企制造数字化岗位，计算机本科明确可投，职责含需求分析、数据梳理、方案设计及智能化项目',
+    salaryKind: '本届公开',
+    salarySourceUrl: 'https://career.nankai.edu.cn/recruitment/content/type/2/id/6075.html',
+    salarySourceLabel: '深南电路2027本科年收入9–17.5万元，包含基本年薪、补贴与盈利分享',
+    exceptionReason: '央企制造数字化例外：年收入不能直接折算月基本工资；岗位偏开发并可能含实施运维，只作为B端产品相邻路线',
+  },
   'hundsun-requirements-ai-2027': {
     eligible: true,
     reason: '2027需求分析师明确接受计算机本科，职责与B端需求和产品协同直接相关，具体岗位12–25K×14薪',

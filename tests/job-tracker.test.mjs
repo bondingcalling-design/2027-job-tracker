@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 69);
+  assert.equal(selected.length, 72);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -415,6 +415,29 @@ test('latest review keeps only four high-confidence computer-major product route
     assert.ok(retiredSeedIds.includes(id), id);
     assert.equal(visible(initial()).some((item) => item.id === id), false, id);
   }
+});
+
+test('October 13 SOE review adds only concrete undergraduate computer routes', () => {
+  const ids = [
+    'xiangyu-digital-operations-2027',
+    'huali-ai-system-2027',
+    'scc-software-digital-2027',
+  ];
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.match(item.degreeGate, /本科/);
+    assert.match(item.degreeGate, /计算机/);
+    assert.ok(new URL(item.applyUrl));
+    assert.ok(new URL(item.sourceUrl));
+    assert.equal(item.verifiedAt, '2026-10-13');
+    assert.match(item.deadlineNote, /截止|滚动/);
+    assert.notEqual(item.ownership, '私企');
+  }
+  assert.equal(seedOpportunities.filter((item) => /深南电路|上海华力|厦门象屿/.test(item.company)).length, 3);
+  assert.equal(seedOpportunities.find((item) => item.id === 'xiangyu-digital-operations-2027').recommendation, 5);
+  assert.match(seedOpportunities.find((item) => item.id === 'huali-ai-system-2027').riskNote, /运维/);
+  assert.match(seedOpportunities.find((item) => item.id === 'scc-software-digital-2027').riskNote, /不是产品经理/);
 });
 
 test('company-level dedup keeps existing user progress and suppresses a new seed card', () => {
