@@ -48,7 +48,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { retiredSeedIds } from '@/lib/opportunities';
-import { isOpportunityInScope, isProtectedFromScreening, screeningReviews } from '@/lib/screening';
+import { getPreferredCityNote, isOpportunityInScope, isProtectedFromScreening, locationExclusions, screeningReviews } from '@/lib/screening';
 
 type Opportunity = {
   id: string;
@@ -615,6 +615,9 @@ export default function Dashboard() {
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
               只按有明确网申截止日的岗位提醒；已投递岗位不会显示网申催办。逐岗核验本科和计算机专业要求，保留你自己的阶段、备注与放弃决定。
+            </p>
+            <p className="mt-2 inline-flex max-w-2xl rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs leading-5 text-amber-900">
+              城市边界：北京、西安不投；优先一线／新一线及沿海、南方高科技城市。多城市岗位须核对具体工作地。
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1428,14 +1431,16 @@ function MobileCard({
 function ScreeningNote({ item }: { item: Opportunity }) {
   const review = screeningReviews[item.id];
   if (!review) return null;
+  const preferredCityNote = getPreferredCityNote(item.city);
   return (
     <div className="mt-2 min-w-0 space-y-1 whitespace-normal break-words text-xs leading-5 text-muted-foreground">
       {review.exceptionReason ? (
         <p className="text-orange-700">破格推荐：{review.exceptionReason}</p>
       ) : null}
       {isProtectedFromScreening(item) ? (
-        <p className="text-amber-700">已有准备 / 投递，按你的选择保留。{review.reason}</p>
+        <p className="text-amber-700">已有准备 / 投递，按你的选择保留。{locationExclusions[item.id] || review.reason}</p>
       ) : null}
+      {preferredCityNote ? <p className="text-amber-700">城市提醒：{preferredCityNote}</p> : null}
       {review.salaryKind ? <p>薪资口径：{review.salaryKind}</p> : null}
       {review.salarySourceUrl ? (
         <a className="inline-flex max-w-full items-start gap-1 text-primary hover:underline"

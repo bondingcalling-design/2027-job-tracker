@@ -18,12 +18,14 @@ const progressFields = [
 ] as const;
 
 export function normalizeCompanyName(company: string) {
-  return company
+  const normalized = company
     .normalize('NFKC')
     .toLowerCase()
     .replace(/[（(][^）)]*[）)]/g, '')
     .replace(/(?:集团股份有限公司|股份有限公司|有限责任公司|有限公司|控股集团|科技集团|集团)$/g, '')
     .replace(/[^a-z0-9\u3400-\u9fff]/g, '');
+  // 同一雇主在不同招聘页使用的简称；不合并不同子公司。
+  return normalized === '帆软软件' ? '帆软' : normalized;
 }
 
 function hasUserDecision(item: StoredOpportunity | undefined) {
@@ -46,12 +48,30 @@ export function mergeOpportunities(
     storedByCompany.set(key, [...(storedByCompany.get(key) || []), item]);
   }
 
+  const seedIds = new Set(seeds.map((item) => item.id));
+  const preferredSeedByCompany = new Map<string, SeedOpportunity>();
+  for (const item of seeds) {
+    const key = normalizeCompanyName(item.company);
+    const preferred = preferredSeedByCompany.get(key);
+    if (!preferred || item.recommendation > preferred.recommendation) {
+      preferredSeedByCompany.set(key, item);
+    }
+  }
+
   const skippedSeedIds = new Set<string>();
   const dedupedSeeds = seeds.filter((item) => {
     const previous = previousById.get(item.id);
     if (hasUserDecision(previous)) return true;
-    const sameCompany = storedByCompany.get(normalizeCompanyName(item.company)) || [];
-    const duplicate = sameCompany.some((storedItem) => storedItem.id !== item.id);
+    const key = normalizeCompanyName(item.company);
+    if (preferredSeedByCompany.get(key)?.id !== item.id) {
+      skippedSeedIds.add(item.id);
+      return false;
+    }
+    const sameCompany = storedByCompany.get(key) || [];
+    const duplicate = sameCompany.some((storedItem) =>
+      storedItem.id !== item.id &&
+      (!seedIds.has(storedItem.id) || hasUserDecision(storedItem)),
+    );
     if (duplicate) skippedSeedIds.add(item.id);
     return !duplicate;
   });
@@ -76,7 +96,6 @@ export function mergeOpportunities(
     }
     return next;
   });
-  const seedIds = new Set(seeds.map((item) => item.id));
   // 已导入的种子按ID去重。移出推荐的历史记录仍保存，不能变成自定义记录重新出现。
   // 同公司已有用户决策时，新种子不会再生成第二张卡；被跳过的新种子历史也一并丢弃。
   const historyAndCustom = [...previousById.values()].filter((item) =>

@@ -8,6 +8,33 @@ export type ScreeningReview = {
   exceptionReason?: string;
 };
 
+// 城市边界独立于岗位质量：不去北京、西安；其他小城市若没有明确的目标城市工作地，先不占待投递列表。
+export const locationExclusions: Record<string, string> = {
+  'cnnc-huahui-ai-product-2027': '该AI产品经理目前仅列北京，与你明确不去北京的选择冲突。',
+  'huaneng-beijing-digital-2027': '工作地仅北京。',
+  'bankofbeijing-ai-tech-2027': '工作地仅北京及顺义研发中心。',
+  'huice-b2b-product-2027': '具体产品经理岗位仅北京。',
+  'autohome-b2b-product-2027': '具体B端产品经理岗位仅北京。',
+  'ninebot-navimow-product-2027': '未岚大陆这条软件产品经理岗位仅北京。',
+  'sinopec-shengli-ai-application-2027': '工作地以山东东营为主，不在你优先的一线、新一线或南方沿海高科技城市范围。',
+  'cmcc-qinghai-solution-2027': '岗位主要在青海各地，与你的目标城市不符。',
+  'wisdom-power-solution-marketing-2027': '岗位基于烟台并要求驻外，尚不能锁定你愿意常驻的目标城市。',
+};
+
+const preferredCityNames = [
+  '上海', '深圳', '广州', '杭州', '成都', '武汉', '南京', '苏州', '合肥', '长沙',
+  '东莞', '无锡', '宁波', '青岛', '厦门', '福州', '珠海', '惠州', '常州', '天津',
+];
+
+export function getPreferredCityNote(city: string) {
+  if (!/北京|西安/.test(city)) return null;
+  const preferred = preferredCityNames.filter((name) => city.includes(name));
+  if (preferred.length === 0) {
+    return '北京/西安不投；只有在网申页确认这条具体岗位可选你接受的城市后才继续。';
+  }
+  return `只考虑${preferred.join('、')}等可接受城市；北京/西安不投。多城市公告不等于该具体岗位每个城市都有名额，请在网申页逐岗核对。`;
+}
+
 // 2026-09-14：按具体岗位审核；“大厂”仅指互联网超大厂，产业科技企业不因规模自动排除。
 const exclusions: [string, string[]][] = [
   ['同公司已有更早的主记录；重复岗位默认隐藏，但已有准备/投递进度仍保留', [
@@ -737,9 +764,10 @@ export function isOpportunityInScope(item: ProgressItem, retiredIds: readonly st
   if (item.stage === '放弃' || retiredIds.includes(item.id)) return false;
   if (protectedStages.has(item.stage)) return true;
   const review = screeningReviews[item.id];
-  return review ? review.eligible : item.isCustom;
+  return (review ? review.eligible : item.isCustom) && !locationExclusions[item.id];
 }
 
 export function isProtectedFromScreening(item: ProgressItem) {
-  return protectedStages.has(item.stage) && screeningReviews[item.id]?.eligible === false;
+  return protectedStages.has(item.stage) &&
+    (screeningReviews[item.id]?.eligible === false || Boolean(locationExclusions[item.id]));
 }

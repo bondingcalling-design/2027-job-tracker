@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { seedOpportunities, retiredSeedIds } from '../lib/opportunities.ts';
 import { mergeOpportunities, normalizeCompanyName } from '../lib/opportunity-state.ts';
-import { isOpportunityInScope, screeningReviews } from '../lib/screening.ts';
+import { getPreferredCityNote, isOpportunityInScope, locationExclusions, screeningReviews } from '../lib/screening.ts';
 
 const now = '2026-09-10T08:00:00.000Z';
 const initial = () => mergeOpportunities(seedOpportunities, [], now);
@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 78);
+  assert.equal(selected.length, 68);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -453,6 +453,42 @@ test('October 14 employer review keeps only Uniview as a conditional, non-duplic
   for (const company of ['英威腾', '中国通服四川', '天池能源']) {
     assert.equal(seedOpportunities.some((opportunity) => opportunity.company.includes(company)), false, company);
   }
+});
+
+test('city screening hides only unstarted out-of-scope locations and preserves progress', () => {
+  const stored = initial();
+  for (const id of Object.keys(locationExclusions)) {
+    const item = stored.find((opportunity) => opportunity.id === id);
+    assert.ok(item, id);
+    assert.equal(item.stage, '待投递');
+    assert.equal(isOpportunityInScope(item, retiredSeedIds), false, id);
+    item.stage = '准备中';
+    item.notes = '用户已有准备进度';
+    assert.equal(isOpportunityInScope(item, retiredSeedIds), true, id);
+  }
+  assert.equal(Object.keys(locationExclusions).length, 9);
+  assert.match(getPreferredCityNote('北京 / 上海 / 西安 / 深圳'), /上海.*深圳.*北京\/西安不投/);
+  assert.match(getPreferredCityNote('北京 / 河北 / 江苏'), /确认.*城市/);
+  assert.equal(getPreferredCityNote('上海 / 深圳'), null);
+});
+
+test('same-employer alias keeps one Fanruan card unless the user progressed another role', () => {
+  assert.equal(normalizeCompanyName('帆软软件'), normalizeCompanyName('帆软'));
+  const fresh = initial();
+  assert.deepEqual(fresh.filter((item) => normalizeCompanyName(item.company) === '帆软').map((item) => item.id), [
+    'fanruan-product-2027',
+  ]);
+  const oldFde = seedOpportunities.find((item) => item.id === 'fanruan-fde-ai-solution-2027');
+  const previous = [{
+    ...oldFde,
+    compensation: oldFde.compensation || '未公开',
+    stage: '准备中', appliedAt: null, nextActionAt: null, notes: '正在准备FDE',
+    favorite: true, archived: false, isCustom: false,
+  }];
+  const reloaded = mergeOpportunities(seedOpportunities, previous, now);
+  const fanruan = reloaded.filter((item) => normalizeCompanyName(item.company) === '帆软');
+  assert.deepEqual(fanruan.map((item) => item.id), ['fanruan-fde-ai-solution-2027']);
+  assert.equal(fanruan[0].notes, '正在准备FDE');
 });
 
 test('company-level dedup keeps existing user progress and suppresses a new seed card', () => {
