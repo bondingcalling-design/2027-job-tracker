@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 77);
+  assert.equal(selected.length, 78);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -438,6 +438,21 @@ test('October 13 SOE review adds only concrete undergraduate computer routes', (
   assert.equal(seedOpportunities.find((item) => item.id === 'xiangyu-digital-operations-2027').recommendation, 5);
   assert.match(seedOpportunities.find((item) => item.id === 'huali-ai-system-2027').riskNote, /运维/);
   assert.match(seedOpportunities.find((item) => item.id === 'scc-software-digital-2027').riskNote, /不是产品经理/);
+});
+
+test('October 14 employer review keeps only Uniview as a conditional, non-duplicate candidate', () => {
+  const item = seedOpportunities.find((opportunity) => opportunity.id === 'uniview-ai-software-energy-product-2027');
+  assert.ok(item);
+  assert.equal(item.company, '宇视科技');
+  assert.equal(item.verifiedAt, '2026-10-14');
+  assert.match(item.role, /AI软件开发工程师.*储能产品经理/);
+  assert.match(item.degreeGate, /具体岗位.*未公开/);
+  assert.equal(screeningReviews[item.id].salaryKind, '未公开');
+  assert.equal(screeningReviews[item.id].monthlyMin, undefined);
+  assert.equal(seedOpportunities.filter((opportunity) => opportunity.company === '宇视科技').length, 1);
+  for (const company of ['英威腾', '中国通服四川', '天池能源']) {
+    assert.equal(seedOpportunities.some((opportunity) => opportunity.company.includes(company)), false, company);
+  }
 });
 
 test('company-level dedup keeps existing user progress and suppresses a new seed card', () => {

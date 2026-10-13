@@ -51,6 +51,14 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
+  'uniview-ai-software-energy-product-2027': {
+    eligible: true,
+    reason: '2027校招明确列出AI软件开发与储能产品经理，本科开放；储能产品单岗专业待核，按中等优先级保留一次核验机会',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://career.hebut.edu.cn/home/correcruit/content/id/81293.html',
+    salarySourceLabel: '河北工大就业网本届企业招聘页10K+标注，非这两个具体岗位承诺',
+    exceptionReason: 'AIoT与储能产品方向高度相关，暂作核验候选而非达标薪资推荐；具体专业、单岗月薪和工作内容均需先在官网确认，低于10K则放弃',
+  },
   'cm-terminal-product-2027': {
     eligible: true,
     reason: '10月14日23:59截止，普通校招本科计算机可投，省公司产品经理或繁星智算AI硬件产品经理；不走博士金种子专项',

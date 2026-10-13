@@ -45,6 +45,27 @@ export const retiredSeedIds = [
 
 export const seedOpportunities: SeedOpportunity[] = [
   {
+    id: 'uniview-ai-software-energy-product-2027',
+    company: '宇视科技',
+    role: 'AI软件开发工程师 / 储能产品经理（专业待核）',
+    tracks: ['AI应用产品', 'B端软件/平台', '能源数字化/央国企', '智能硬件/IoT'],
+    ownership: '私企',
+    scale: '产业科技中厂',
+    city: '杭州 / 济南（AI软件）；杭州（储能产品）',
+    applyUrl: 'https://talent.uniview.com/',
+    sourceUrl: 'https://career.hebut.edu.cn/home/correcruit/content/id/81293.html',
+    sourceLabel: '宇视2027校招完整岗位清单与高校薪酬标注',
+    startDate: null,
+    endDate: null,
+    deadlineNote: '高校公告9月24日发布，实际网申开始日与统一截止日均未公布；10月15日19:00有线上宣讲（不是截止日）',
+    recommendation: 3,
+    fitReason: '2027清单确有AI软件开发及储能产品经理：前者是计算机专业的AI/软件切入口，后者可衔接储能和产品经历；宇视业务还覆盖AIoT与能源场景。',
+    riskNote: '校招简章只列岗位名称与城市，没有这两个单岗的专业/JD；储能产品可能偏逆变器或电池硬件，务必先在官网确认计算机本科可投及软件/平台工作占比。网页所列10K+是本届高校发布的整体招聘标注，不是这两个岗位的承诺薪资。',
+    degreeGate: '本届校招整体开放本科、不限制专业；两个具体岗位的专业与学历细则未公开，投递前须逐岗核验，不推断985/211门槛',
+    verifiedAt: '2026-10-14',
+    compensation: '单岗薪资未公开；高校本届招聘总页标注10K+，仅供参考；公积金按月薪全额的12%缴纳',
+  },
+  {
     id: 'cm-terminal-product-2027',
     company: '中国移动终端公司',
     role: '产品经理（省公司） / AI硬件产品经理（繁星智算）',
