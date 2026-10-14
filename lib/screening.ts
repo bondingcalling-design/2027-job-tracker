@@ -16,6 +16,7 @@ export const locationExclusions: Record<string, string> = {
   'huice-b2b-product-2027': '具体产品经理岗位仅北京。',
   'autohome-b2b-product-2027': '具体B端产品经理岗位仅北京。',
   'ninebot-navimow-product-2027': '未岚大陆这条软件产品经理岗位仅北京。',
+  'bankcomm-fintech-2027': '仅交通银行大连分行；你已明确不考虑这条岗位，且分行储备生未保证长期从事产品/需求分析。',
   'sinopec-shengli-ai-application-2027': '工作地以山东东营为主，不在你优先的一线、新一线或南方沿海高科技城市范围。',
   'cmcc-qinghai-solution-2027': '岗位主要在青海各地，与你的目标城市不符。',
   'wisdom-power-solution-marketing-2027': '岗位基于烟台并要求驻外，尚不能锁定你愿意常驻的目标城市。',
@@ -371,12 +372,12 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     exceptionReason: 'B端数据产品高薪破格项：产业科技而非互联网超大厂，但业务节奏可能偏快；优先产品/数据产品，确认固定薪资和驻场比例',
   },
   'bankcomm-fintech-2027': {
-    eligible: true,
-    reason: '大连分行金融科技储备生本科开放，具体职责含产品规划、需求细化、迭代和数据运营，10月18日截止',
+    eligible: false,
+    reason: '仅大连分行，与你确认的目标城市不符；公告只列“金融科技储备生”，未承诺长期从事产品/需求分析，本届薪资也未公开。待投递推荐撤下，已有准备/投递进度仍按原规则保留',
     salaryKind: '往届参考', monthlyMin: 10500,
     salarySourceUrl: 'https://myjob.dlmu.edu.cn/teachin/view/id/149419',
     salarySourceLabel: '往届同分行同名金融科技储备生10.5–15K；本届薪资未公开',
-    exceptionReason: '央企银行产品相邻岗：岗位同时写明高节奏和客户营销服务，面试确认长期职责后再继续',
+    exceptionReason: '不再以往届薪资和金融科技类别替代本届具体岗位职责、城市匹配及待遇证据',
   },
   'cgb-fintech-product-2027': {
     eligible: false,

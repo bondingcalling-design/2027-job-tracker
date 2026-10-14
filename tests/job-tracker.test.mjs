@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 69);
+  assert.equal(selected.length, 68);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -281,10 +281,9 @@ test('bank review keeps the three valid undergraduate routes from the first batc
   assert.equal(seedOpportunities.some((item) => item.id === 'autohome-ai-agent-product-2027'), false);
 });
 
-test('October follow-up keeps four non-duplicate bank, logistics-tech and energy routes', () => {
+test('October follow-up retains three eligible logistics-tech and energy routes after Dalian re-screening', () => {
   const keptIds = [
     'sf-tech-product-data-2027',
-    'bankcomm-fintech-2027',
     'bankofbeijing-ai-tech-2027',
     'mingyang-smart-energy-ai-2027',
   ];
@@ -298,6 +297,7 @@ test('October follow-up keeps four non-duplicate bank, logistics-tech and energy
   }
   assert.equal(screeningReviews['sf-tech-product-data-2027'].monthlyMin, 20000);
   assert.equal(screeningReviews['bankcomm-fintech-2027'].monthlyMin, 10500);
+  assert.equal(screeningReviews['bankcomm-fintech-2027'].eligible, false);
   assert.equal(screeningReviews['bankofbeijing-ai-tech-2027'].salaryKind, '招聘转载参考');
   assert.equal(screeningReviews['mingyang-smart-energy-ai-2027'].salaryKind, '往届参考');
   assert.ok(retiredSeedIds.includes('cgb-fintech-product-2027'));
@@ -345,7 +345,6 @@ test('October 12 bank audit removes expired, master-only, low-pay and resume-mis
     'hzbank-ai-tech-2027',
     'nbcb-fintech-product-2027',
     'citic-card-product-ai-2027',
-    'bankcomm-fintech-2027',
     'bankofbeijing-ai-tech-2027',
   ];
   const removedIds = [
@@ -372,7 +371,7 @@ test('October 12 bank audit removes expired, master-only, low-pay and resume-mis
     assert.equal(visible(initial()).some((item) => item.id === id), false, id);
   }
   assert.match(seedOpportunities.find((item) => item.id === 'nbcb-fintech-product-2027').role, /产品经理/);
-  assert.match(seedOpportunities.find((item) => item.id === 'bankcomm-fintech-2027').role, /产品规划|需求分析/);
+  assert.match(seedOpportunities.find((item) => item.id === 'bankcomm-fintech-2027').role, /产品方向未确认/);
   assert.match(seedOpportunities.find((item) => item.id === 'bankofbeijing-ai-tech-2027').role, /AI产品经理/);
 });
 
@@ -475,7 +474,12 @@ test('city screening hides only unstarted out-of-scope locations and preserves p
     item.notes = '用户已有准备进度';
     assert.equal(isOpportunityInScope(item, retiredSeedIds), true, id);
   }
-  assert.equal(Object.keys(locationExclusions).length, 9);
+  assert.equal(Object.keys(locationExclusions).length, 10);
+  const dalian = stored.find((opportunity) => opportunity.id === 'bankcomm-fintech-2027');
+  assert.ok(dalian);
+  assert.equal(screeningReviews[dalian.id].eligible, false);
+  assert.equal(isOpportunityInScope({ ...dalian, stage: '待投递' }, retiredSeedIds), false);
+  assert.equal(isOpportunityInScope({ ...dalian, stage: '已投递' }, retiredSeedIds), true);
   assert.match(getPreferredCityNote('北京 / 上海 / 西安 / 深圳'), /上海.*深圳.*北京\/西安不投/);
   assert.match(getPreferredCityNote('北京 / 河北 / 江苏'), /确认.*城市/);
   assert.equal(getPreferredCityNote('上海 / 深圳'), null);

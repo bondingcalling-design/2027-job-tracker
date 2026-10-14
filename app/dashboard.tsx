@@ -388,8 +388,15 @@ export default function Dashboard() {
     const active = items.filter(
       (item) => !item.archived && isOpportunityInScope(item, retiredSeedIds),
     );
+    const curated = active.filter((item) =>
+      !item.isCustom &&
+      screeningReviews[item.id]?.eligible === true &&
+      !locationExclusions[item.id],
+    ).length;
     return {
       total: active.length,
+      curated,
+      retained: active.length - curated,
       mid: active.filter(
         (item) => item.scale === '中厂' || item.scale === '成长公司',
       ).length,
@@ -720,7 +727,7 @@ export default function Dashboard() {
 
         <section className="grid gap-3 py-5 sm:grid-cols-2 xl:grid-cols-4">
           {[
-            ['当前机会', metrics.total, '本轮精选 + 已准备/投递保留'],
+            ['本轮默认推荐', metrics.curated, `另有 ${metrics.retained} 条旧进度／自建保留`],
             ['中厂 / 成长公司', metrics.mid, '本轮重点补充'],
             ['14天内截止', metrics.urgent, '按明确截止日统计'],
             ['已推进投递', metrics.applied, '投递及后续阶段'],
