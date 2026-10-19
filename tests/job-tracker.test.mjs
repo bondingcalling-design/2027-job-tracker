@@ -15,9 +15,24 @@ test('every non-retired seed has an explicit screening decision', () => {
   }
 });
 
+test('October 19 SOE additions use verified undergraduate roles and do not invent a cutoff', () => {
+  const tower = seedOpportunities.find((item) => item.id === 'chinatower-tianjin-aiot-2027');
+  const cicdi = seedOpportunities.find((item) => item.id === 'cicdi-data-elements-2027');
+  assert.ok(tower && cicdi);
+  assert.equal(tower.endDate, '2026-10-27');
+  assert.equal(cicdi.endDate, null);
+  assert.match(tower.degreeGate, /计算机类/);
+  assert.match(cicdi.degreeGate, /计算机科学与技术/);
+  assert.match(cicdi.city, /南京/);
+  assert.ok(screeningReviews[tower.id].eligible);
+  assert.ok(screeningReviews[cicdi.id].eligible);
+  assert.equal(seedOpportunities.filter((item) => item.company === tower.company).length, 1);
+  assert.equal(seedOpportunities.filter((item) => item.company === cicdi.company).length, 1);
+});
+
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 67);
+  assert.equal(selected.length, 69);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);

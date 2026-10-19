@@ -79,6 +79,22 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
+  'chinatower-tianjin-aiot-2027': {
+    eligible: true,
+    reason: '天津铁塔2027数智物联方向明确涉及AIoT行业应用产品，本科计算机可投，集团10月27日截止',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://career.nankai.edu.cn/recruitment/content/type/2/id/6246.html',
+    salarySourceLabel: '天津铁塔2027企业校招公告，未披露岗位薪资',
+    exceptionReason: '央企数字基础设施与能源相邻方向：岗位偏研发攻关，投前核实产品/需求职责的占比',
+  },
+  'cicdi-data-elements-2027': {
+    eligible: true,
+    reason: '中通服设计院南京数据要素工程师单岗明确接受计算机本科，职责包括政企需求梳理和数据方案',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://job.xidian.edu.cn/campus/view/id/757710',
+    salarySourceLabel: '西安电子科技大学刊登的2027具体岗位公告，未披露单岗薪资',
+    exceptionReason: '央企子公司B端数据治理岗位：带咨询与项目属性，投前确认常驻南京、驻场比例和年包',
+  },
   'irootech-energy-ba-2027': {
     eligible: true,
     reason: '2027广州能源管理BA明确接受计算机本科，需求、原型和AI工具与现有经历高度对应',
