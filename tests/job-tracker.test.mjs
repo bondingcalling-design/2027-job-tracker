@@ -6,7 +6,7 @@ import { getPreferredCityNote, isOpportunityInScope, locationExclusions, screeni
 
 const now = '2026-09-10T08:00:00.000Z';
 const initial = () => mergeOpportunities(seedOpportunities, [], now);
-const visible = (items) => items.filter((item) => isOpportunityInScope(item, retiredSeedIds));
+const visible = (items) => items.filter((item) => isOpportunityInScope(item, retiredSeedIds, '2026-10-19'));
 
 test('every non-retired seed has an explicit screening decision', () => {
   assert.equal(new Set(seedOpportunities.map((item) => item.id)).size, seedOpportunities.length);
@@ -17,7 +17,7 @@ test('every non-retired seed has an explicit screening decision', () => {
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 68);
+  assert.equal(selected.length, 67);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -461,6 +461,39 @@ test('October 14 employer review keeps Uniview conditional and INVT as a low-pri
   for (const company of ['中国通服四川', '天池能源']) {
     assert.equal(seedOpportunities.some((opportunity) => opportunity.company.includes(company)), false, company);
   }
+});
+
+test('October 19 update adds distinct undergraduate roles and removes expired unstarted cards only', () => {
+  const ids = [
+    'irootech-energy-ba-2027',
+    'shixi-data-security-product-2027',
+    'greatwall-power-data-2027',
+    'chaitin-ai-security-product-2027',
+  ];
+  const companies = new Set();
+  for (const id of ids) {
+    const item = seedOpportunities.find((opportunity) => opportunity.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.equal(item.verifiedAt, '2026-10-19');
+    assert.match(item.degreeGate, /本科/);
+    assert.ok(new URL(item.applyUrl));
+    assert.ok(new URL(item.sourceUrl));
+    assert.equal(companies.has(normalizeCompanyName(item.company)), false, item.company);
+    companies.add(normalizeCompanyName(item.company));
+    assert.equal(seedOpportunities.filter((seed) => normalizeCompanyName(seed.company) === normalizeCompanyName(item.company)).length, 1);
+  }
+  assert.equal(screeningReviews['irootech-energy-ba-2027'].monthlyMin, 15000);
+  assert.equal(screeningReviews['shixi-data-security-product-2027'].monthlyMin, 12500);
+  assert.equal(screeningReviews['chaitin-ai-security-product-2027'].monthlyMin, 20000);
+  assert.equal(screeningReviews['greatwall-power-data-2027'].salaryKind, '未公开');
+
+  const expired = initial().find((item) => item.id === 'cnpc-zhejiang-digital-2027');
+  assert.ok(expired);
+  assert.equal(isOpportunityInScope(expired, retiredSeedIds, '2026-10-15'), true);
+  assert.equal(isOpportunityInScope(expired, retiredSeedIds, '2026-10-19'), false);
+  expired.stage = '准备中';
+  assert.equal(isOpportunityInScope(expired, retiredSeedIds, '2026-10-19'), true);
+  assert.equal(isOpportunityInScope({ ...expired, stage: '已投递' }, retiredSeedIds, '2026-10-19'), true);
 });
 
 test('city screening hides only unstarted out-of-scope locations and preserves progress', () => {

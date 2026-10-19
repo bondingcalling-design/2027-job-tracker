@@ -79,6 +79,36 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
+  'irootech-energy-ba-2027': {
+    eligible: true,
+    reason: '2027广州能源管理BA明确接受计算机本科，需求、原型和AI工具与现有经历高度对应',
+    salaryKind: '本届公开', monthlyMin: 15000,
+    salarySourceUrl: 'https://career.nankai.edu.cn/correcruit/content/id/119816.html',
+    salarySourceLabel: '南开就业网本届具体岗位15–20K/月；中南大学同岗15–17.5K/月',
+    exceptionReason: '私企项目交付破格：公开月薪下限15K，即12个月基础月薪已达18万元；但须接受项目制出差和可能驻场，先核实常驻城市及出差比例',
+  },
+  'shixi-data-security-product-2027': {
+    eligible: true,
+    reason: '2027深圳B端数据治理产品经理单岗明确接受计算机本科，薪资下限12.5K',
+    salaryKind: '本届公开', monthlyMin: 12500,
+    salarySourceUrl: 'https://career.csu.edu.cn/job/view/id/1193025',
+    salarySourceLabel: '中南大学本届具体产品经理岗位12.5–15K/月',
+  },
+  'greatwall-power-data-2027': {
+    eligible: true,
+    reason: '央企子公司深圳数据工程师明确接受计算机本科；按能源产业链的数据相邻岗位低优先级收录',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://job.hdu.edu.cn/campus/view?id=9610',
+    salarySourceLabel: '杭州电子科技大学2027岗位与福利表，未披露数据岗薪资',
+    exceptionReason: '央企电源行业与福利例外：岗位偏数据工程非产品，单岗薪资未知；需确认工作内容和待遇后决定是否投递',
+  },
+  'chaitin-ai-security-product-2027': {
+    eligible: true,
+    reason: '2027校招有杭州AI+安全产品经理，本科开放且本届公开月薪下限20K；按非能源行业降低优先级',
+    salaryKind: '本届公开', monthlyMin: 20000,
+    salarySourceUrl: 'https://51uns.bysjy.com.cn/Announce/Details/3614306?schoolCode=10710',
+    salarySourceLabel: '长安大学本届产品经理岗位20–40K/月，实际Offer待核',
+  },
   'invt-it-development-2027': {
     eligible: true,
     reason: '英威腾2027深圳开发工程师明确接受计算机本科；按福利较好但非产品岗的低优先级候选收录',
@@ -97,7 +127,7 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   },
   'cm-terminal-product-2027': {
     eligible: true,
-    reason: '10月14日23:59截止，普通校招本科计算机可投，省公司产品经理或繁星智算AI硬件产品经理；不走博士金种子专项',
+    reason: '已核实普通校招于10月14日23:59截止；未开始的记录按截止日自动退出推荐，已有准备或投递进度保留',
     salaryKind: '本届公开', monthlyMin: 10000,
     salarySourceUrl: 'https://career.hebut.edu.cn/correcruit/content/id/80298.html',
     salarySourceLabel: '河北工业大学就业网刊登企业本届校招项目10K+/月，非具体产品岗承诺',
@@ -105,7 +135,7 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   },
   'cnpc-zhejiang-digital-2027': {
     eligible: true,
-    reason: '10月15日23:59:59截止；具体数智化与信息工程岗招2人，明确接受计算机/软件/AI本科，不是电力专业岗',
+    reason: '已核实于10月15日23:59:59截止；具体数智化岗接受计算机/软件/AI本科，但未开始的记录不再占推荐位置',
     salaryKind: '未公开',
     exceptionReason: '央企能源数字化例外：无具体产品职责描述，优先核查是否负责需求和信息系统建设，而非站点运维',
   },
@@ -766,12 +796,17 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   },
 };
 
-type ProgressItem = { id: string; stage: string; isCustom: boolean };
+type ProgressItem = { id: string; stage: string; isCustom: boolean; endDate?: string | null };
 const protectedStages = new Set(['准备中', '已投递', '笔试', '面试', 'Offer', '已拒绝']);
 
-export function isOpportunityInScope(item: ProgressItem, retiredIds: readonly string[]) {
+export function chinaToday() {
+  return new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
+export function isOpportunityInScope(item: ProgressItem, retiredIds: readonly string[], asOfDate = chinaToday()) {
   if (item.stage === '放弃' || retiredIds.includes(item.id)) return false;
   if (protectedStages.has(item.stage)) return true;
+  if (!item.isCustom && item.endDate && item.endDate < asOfDate) return false;
   const review = screeningReviews[item.id];
   return (review ? review.eligible : item.isCustom) && !locationExclusions[item.id];
 }
