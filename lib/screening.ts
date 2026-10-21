@@ -79,6 +79,34 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
+  'hptpd-ai-product-assistant-2027': {
+    eligible: true,
+    reason: '电信官网武汉助理AI产品单岗明确2027本科，AI知识库、RAG、原型与现有经历直接对应；不是按设计院专业大类推断',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://job.chinatelecom.com.cn/wt/TELE/web/index/webPosition210!getOnePosition?postIdEnc=da33c0fdf70912be&recruitType=1&columnId=1&brandCode=1&importPost=0',
+    salarySourceLabel: '官网具体岗位不披露薪资；不以设计院或集团平均年包替代',
+  },
+  'chinacomsrv-guangzhou-product-2027': {
+    eligible: true,
+    reason: '中数通广州产品经理官网具体岗接受计算机本科，PRD/原型/需求/LLM/RAG与两段实习匹配；普通校招不等于重点高校优才计划',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://job.chinatelecom.com.cn/wt/TELE/web/index/webPosition210!getOnePosition?postIdEnc=fc8d07cb898e6e6d&recruitType=1&columnId=1&brandCode=1&importPost=0',
+    salarySourceLabel: '官方具体产品岗薪资未公开；广东通服本届简章仅列福利，不用AI实习岗或实施岗工资冒充',
+  },
+  'shccs-training-ai-product-2027': {
+    eligible: true,
+    reason: '上海信产培训中心官网校园AI产品经理明确计算机/数据科学本科，做AI Agent、RAG与业务场景规划，非传统行政培训或社招',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://job.chinatelecom.com.cn/wt/TELE/web/index/webPosition210!getOnePosition?postIdEnc=f6f3a01180b866ce&recruitType=1&columnId=1&brandCode=1&importPost=0',
+    salarySourceLabel: '官网具体岗未披露工资、薪数及福利细则，不假定年包达到12万元',
+  },
+  'yzw-procurement-product-trainee-2027': {
+    eligible: true,
+    reason: '中国建筑下属云筑国聘2027供采平台产品岗接受本科及互联网相关专业，成都明确，需求/流程/产品设计贴近B端经验',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://www.iguopin.com/job/detail?id=217167390272652273',
+    salarySourceLabel: '用人单位国聘单岗薪资未公开；不以本届管培生合并条目10–15K视作供采平台岗位承诺',
+  },
   'crdigital-data-ai-product-2027': {
     eligible: true,
     reason: '华润数科2027数据/AI方向明确接受计算机本科，深圳有具体名额，智能制造方向另明确接受物联网本科；避开同公司硕士限定方向',

@@ -32,7 +32,7 @@ test('October 19 SOE additions use verified undergraduate roles and do not inven
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 73);
+  assert.equal(selected.length, 77);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -50,6 +50,53 @@ test('recommendations exclude internet megafirms; adjacent roles require an expl
     }
   }
   assert.ok(selected.some((item) => item.id === 'kylin-product-2027'));
+});
+
+test('October 21 follow-up adds four distinct subsidiary product roles with honest salary and deadline fields', () => {
+  const ids = [
+    'hptpd-ai-product-assistant-2027',
+    'chinacomsrv-guangzhou-product-2027',
+    'shccs-training-ai-product-2027',
+    'yzw-procurement-product-trainee-2027',
+  ];
+  const fresh = initial();
+  for (const id of ids) {
+    const item = seedOpportunities.find((seed) => seed.id === id);
+    assert.ok(item && screeningReviews[id].eligible, id);
+    assert.equal(item.ownership, '央企');
+    assert.match(item.degreeGate, /本科/);
+    assert.doesNotMatch(item.city, /北京|西安/);
+    assert.equal(item.verifiedAt, '2026-10-21');
+    assert.equal(screeningReviews[id].salaryKind, '未公开');
+    assert.equal(screeningReviews[id].monthlyMin, undefined);
+    assert.equal(fresh.filter((row) => normalizeCompanyName(row.company) === normalizeCompanyName(item.company)).length, 1);
+    assert.equal(isOpportunityInScope(fresh.find((row) => row.id === id), retiredSeedIds, '2026-10-21'), true);
+  }
+  for (const id of ids.slice(0, 3)) {
+    const item = seedOpportunities.find((seed) => seed.id === id);
+    assert.match(item.applyUrl, /^https:\/\/job\.chinatelecom\.com\.cn\//);
+    assert.equal(item.endDate, null);
+  }
+  const cloud = seedOpportunities.find((seed) => seed.id === ids[3]);
+  assert.equal(cloud.endDate, '2027-06-15');
+  assert.match(cloud.deadlineNote, /12:00/);
+  assert.match(cloud.riskNote, /硕士/);
+  assert.match(seedOpportunities.find((seed) => seed.id === ids[0]).fitReason, /RAG/);
+});
+
+test('new subsidiary seeds respect same-employer abandoned and interview decisions', () => {
+  for (const [id, stage] of [['hptpd-ai-product-assistant-2027', '放弃'], ['yzw-procurement-product-trainee-2027', '面试']]) {
+    const seed = seedOpportunities.find((item) => item.id === id);
+    const manual = {
+      ...seed, id: `manual-${id}`, compensation: '用户已有待遇备注',
+      stage, appliedAt: null, nextActionAt: null, notes: '已有决定，不新增重复卡片',
+      favorite: false, archived: false, isCustom: true,
+    };
+    const reloaded = mergeOpportunities(seedOpportunities, [manual], now);
+    assert.equal(reloaded.some((row) => row.id === id), false);
+    assert.equal(reloaded.find((row) => row.id === manual.id).stage, stage);
+    assert.equal(reloaded.find((row) => row.id === manual.id).notes, manual.notes);
+  }
 });
 
 test('vivo platform product starts as submitted without overwriting later user progress', () => {
