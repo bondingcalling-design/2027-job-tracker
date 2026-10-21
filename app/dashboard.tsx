@@ -619,7 +619,7 @@ export default function Dashboard() {
               央国企约 12 万年包及较好福利可放宽岗位匹配度。高福利例外须注明薪资未知与风险。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              当前按北京时间 {chinaToday()} 判断网申期限；已过期且尚未开始的默认岗位自动退出推荐，已有准备／投递进度继续保留。最新人工核验：2026-10-19。
+              当前按北京时间 {chinaToday()} 判断网申期限；已过期且尚未开始的默认岗位自动退出推荐，已有准备／投递进度继续保留。最新人工核验：2026-10-21。
             </p>
             <p className="mt-2 inline-flex max-w-2xl rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs leading-5 text-amber-900">
               城市边界：北京、西安不投；优先一线／新一线及沿海、南方高科技城市。多城市岗位须核对具体工作地。

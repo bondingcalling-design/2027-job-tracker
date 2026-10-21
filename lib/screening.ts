@@ -79,6 +79,34 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
+  'crdigital-data-ai-product-2027': {
+    eligible: true,
+    reason: '华润数科2027数据/AI方向明确接受计算机本科，深圳有具体名额，智能制造方向另明确接受物联网本科；避开同公司硕士限定方向',
+    salaryKind: '本届公开', monthlyMin: 7000,
+    salarySourceUrl: 'https://career.gdut.edu.cn/job/view/id/2575295',
+    salarySourceLabel: '广东工业大学本届助理产品经理合并条目7–12K/月，非数据/AI细分岗保证薪资',
+  },
+  'eshore-requirements-analysis-2027': {
+    eligible: true,
+    reason: '中国电信全资子公司官网在招广州需求分析，计算机本科可投，需求/流程/原型/评审职责与现有B端经历高度吻合',
+    salaryKind: '本届公开', monthlyMin: 9000,
+    salarySourceUrl: 'https://eshore.zhiye.com/zpdetail/151242745',
+    salarySourceLabel: '广东亿迅官网具体校招岗位9–13K/月，无统一截止',
+  },
+  'sinomach-digital-product-nanjing-2027': {
+    eligible: true,
+    reason: '国机集团全资二级科技企业，南京产品经理单岗明确2027计算机本科；B端、AI原型和工业数字化与经历相接',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://yyxy.fafu.edu.cn/b0/e4/c1016a438500/page.htm',
+    salarySourceLabel: '福建农林大学发布本届具体岗位，未给单岗薪资；不采集团宣传薪酬',
+  },
+  'poly-harmony-ai-product-guangzhou-2027': {
+    eligible: true,
+    reason: '保利和润广州总部AI产品经理具体岗位接受计算机本科，5人，官方就业平台公布本届月薪10.5–约15K',
+    salaryKind: '本届公开', monthlyMin: 10500,
+    salarySourceUrl: 'https://www.91wllm.cn/job/view/id/2394934/from_type/4/from_id/1006254',
+    salarySourceLabel: '湖北省高校就业平台的广州总部具体AI产品岗；大连海事大学同名岗位亦刊10–15K但发布者为分公司',
+  },
   'chinatower-tianjin-aiot-2027': {
     eligible: true,
     reason: '天津铁塔2027数智物联方向明确涉及AIoT行业应用产品，本科计算机可投，集团10月27日截止',
