@@ -76,6 +76,30 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'sinopec-zhejiang-ai-2027': {
+    eligible: true,
+    reason: '官方具体普通AI岗7人，明确物联网本科、杭州/宁波等地，10月28日17:00截止；不把三地岗的其他城市混入',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://job.sinopec.com/api/upgrade/homepage/selectPositionDetail?postId=B97F63DC-4B8C-47F8-8469-43D61051BD92',
+    salarySourceLabel: '官方具体岗未给薪资，不以其他省分公司或集团均值代替',
+    exceptionReason: '央企能源AI技术相邻岗：专业与能源/AI实习相关，但产品职责未细分，含一线锻炼/分配调剂；年包未知，不按高福利已验证岗位推荐，城市须确认',
+  },
+  'sinopec-jiangsu-ai-2027': {
+    eligible: true,
+    reason: '官方AI岗9人，明确物联网本科和南京/苏州/常州等地，10月28日17:00截止；含县公司与一线锻炼风险',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://job.sinopec.com/api/upgrade/homepage/selectPositionDetail?postId=C868AEC4-A92A-4313-8B20-58C806676B21',
+    salarySourceLabel: '官方具体岗未公开月薪或年包，未证实12万元',
+    exceptionReason: '央企能源AI技术相邻岗：非电气限定或纯项目岗，但实际职责、城市、基层期限须确认；不以9个名额推断低竞争',
+  },
+  'cofco-dongguan-ai-engineer-trainee-2027': {
+    eligible: true,
+    reason: '中粮官方具体本科AI数智岗，东莞、10月28日截止；计算机相关专业可尝试，物联网未点名，低推荐备选而非纯产品高匹配',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://campus.51job.com/cofco/campus.html',
+    salarySourceLabel: '具体岗位薪资未公开，不用集团或其他岗位报价推定；集团简章福利需向东莞单位确认',
+    exceptionReason: '央企AI技术相邻备选：有实习相关性和六险二金线索，但包含产线现场、项目实施；未证实12万元年包，推荐2/5，待遇不满足预期时不建议投入',
+  },
   ...Object.fromEntries(exclusions.flatMap(([reason, ids]) =>
     ids.map((id) => [id, { eligible: false, reason }]),
   )),
@@ -386,12 +410,11 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     exceptionReason: '央企AI+电力高匹配项：需求分析低于私企10K门槛不影响收录；必须按城市核学历，避开要求硕士的同名岗位',
   },
   'sgdt-ai-energy-digital-2027': {
-    eligible: true,
-    reason: '国家电网全资数字科技平台，计算机/AI/大数据本科开放，提前批10月30日截止',
-    salaryKind: '本届公开', monthlyMin: 15000,
+    eligible: false,
+    reason: '10月27日复核：母公司主要在雄安、天津少量；原多城市来自远光。未核到目标城市本科具体岗，先撤泛入口推荐，已有准备/投递进度保留',
+    salaryKind: '未公开',
     salarySourceUrl: 'https://career.nankai.edu.cn/correcruit/content/id/119501.html',
-    salarySourceLabel: '国网数科控股2027校园招聘公告（15–20K项目口径）',
-    exceptionReason: 'AI+电力能源最高优先级央企项：同一入口也有工程/项目管理，只选电子信息、AI、数据或数字能源岗位',
+    salarySourceLabel: '官方本届公告列母公司雄安/天津；合并项目15–20K不作为单岗报价',
   },
   'czbank-ai-application-2027': {
     eligible: true,
