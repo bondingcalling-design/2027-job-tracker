@@ -59,6 +59,7 @@ function normalizeCustom(
     sourceLabel: previous?.sourceLabel || '手动添加',
     startDate: text(raw.startDate) || previous?.startDate || null,
     endDate: text(raw.endDate) || previous?.endDate || null,
+    endTime: text(raw.endTime) || previous?.endTime || null,
     deadlineNote: text(
       raw.deadlineNote,
       previous?.deadlineNote || '手动添加，待核实',

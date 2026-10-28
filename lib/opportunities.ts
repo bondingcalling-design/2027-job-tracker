@@ -11,6 +11,7 @@ export type SeedOpportunity = {
   sourceLabel: string;
   startDate: string | null;
   endDate: string | null;
+  endTime?: string | null;
   deadlineNote: string;
   recommendation: number;
   fitReason: string;
@@ -45,6 +46,27 @@ export const retiredSeedIds = [
 
 export const seedOpportunities: SeedOpportunity[] = [
   {
+    id: 'cmft-enterprise-ai-product-2027',
+    company: '招商金科',
+    role: '产品经理（J34056，企业数字化 / AI知识库）',
+    tracks: ['B端软件/平台', 'AI应用产品'],
+    ownership: '央企',
+    scale: '中厂',
+    city: '深圳',
+    applyUrl: 'https://cmhk.zhiye.com/campus/detail?jobAdId=8829ab9d-7e53-446d-bb3d-1732bc3a3cdc',
+    sourceUrl: 'https://cmhk.zhiye.com/campus/detail?jobAdId=8829ab9d-7e53-446d-bb3d-1732bc3a3cdc',
+    sourceLabel: '招商局官方2027校园招聘单岗：J34056、本科、深圳、企业知识库/RAG/Agent；招聘部门业务发展部',
+    startDate: null,
+    endDate: null,
+    deadlineNote: '官网10月21日发布、当前校园岗位开放；具体报名截止未公告，不把系统长周期有效字段2027年10月1日当截止，也不制造月底催投',
+    recommendation: 5,
+    fitReason: '做企业内部数字化、协同办公、AI办公助手、智能公文和企业知识库问答，覆盖需求访谈、业务流程、PRD、原型验证与上线验收。达观知识库/RAG产品经历直接对应，清能复杂B端流程与数据分析经验也可迁移。',
+    riskNote: '是招商金科业务发展部具体产品岗，不等于集团总部岗位；需补企业内部流程与金融科技场景。薪资、固定年包和福利细则未公开；未公布录取比例，不视为低竞争保底。项目上线协作属于产品职责，投前确认是否涉及长期驻场。',
+    degreeGate: '2027届本科及以上，计算机、软件工程、信息管理等相关专业明确可报；PRD/原型、SQL/Excel与LLM/RAG/Agent/Prompt基础，相关实习/校园产品实践优先；未写985/211硬条件',
+    verifiedAt: '2026-10-28',
+    compensation: '官网具体岗面议；月薪、薪数、奖金及福利未公开，不套用招商银行、招商证券或集团其他单位待遇',
+  },
+  {
     id: 'sinopec-zhejiang-ai-2027',
     company: '中石化浙江石油',
     role: '人工智能岗（普通岗，本科物联网可报）',
@@ -57,6 +79,7 @@ export const seedOpportunities: SeedOpportunity[] = [
     sourceLabel: '中石化官方2027具体单岗：浙江人工智能7人、本科/硕士、明确物联网及逐岗截止',
     startDate: '2026-09-24',
     endDate: '2026-10-28',
+    endTime: '17:00',
     deadlineNote: '官网单岗明确2026年10月28日17:00截止；这是普通岗，不是工作地为舟山/衢州/丽水的三地岗。全集团普通与三地岗合计最多2岗',
     recommendation: 3,
     fitReason: '具体AI岗位明确接受物联网本科，清能能源业务系统与达观AI应用经历可用于解释匹配度；杭州、宁波等工作地点符合城市方向，比只按电力专业筛选更有针对性。',
@@ -78,6 +101,7 @@ export const seedOpportunities: SeedOpportunity[] = [
     sourceLabel: '中石化官方2027具体单岗：江苏人工智能9人、本科/硕士、物联网专业、工作地及截止',
     startDate: '2026-09-24',
     endDate: '2026-10-28',
+    endTime: '17:00',
     deadlineNote: '官网单岗明确2026年10月28日17:00截止；全集团普通岗与三地岗合计最多2岗，不能把各省公司当成可分别再投2个的独立批次',
     recommendation: 3,
     fitReason: '央企能源销售企业的明确AI本科岗，专业表直接包含物联网工程；能源业务理解和AI应用实习可作为投递依据，南京、苏州、常州等城市可优先争取。',
@@ -183,6 +207,7 @@ export const seedOpportunities: SeedOpportunity[] = [
     sourceLabel: '用人单位国聘发布的2027具体供采平台产品岗：本科、应届、成都与单岗截止',
     startDate: null,
     endDate: '2027-06-15',
+    endTime: '12:00',
     deadlineNote: '国聘本条报名截止2027年6月15日12:00，不是当天24时；招满可提前下架。不要与高校页面有效期或同公司其他岗位6月30日混用',
     recommendation: 4,
     fitReason: '中国建筑旗下产业互联网企业，成都武侯区具体产品岗做客户需求调研、业务流程/术语梳理、竞品分析及产品设计，清能交易系统的复杂B端流程经验可迁移；不是建筑现场项目经理。',
@@ -267,6 +292,7 @@ export const seedOpportunities: SeedOpportunity[] = [
     sourceLabel: '湖北省高校就业平台企业具体岗位：广州总部、计算机本科、5人、薪资；本届简章11月6日截止',
     startDate: null,
     endDate: '2026-11-06',
+    endTime: '24:00',
     deadlineNote: '企业2027届公告明确网申及测评在11月6日24:00前完成；官网选择“AI产品经理（保利和润-广州总部）”，别选全国营销管培岗位',
     recommendation: 4,
     fitReason: '央企保利发展旗下房地产数字营销服务公司，广州总部的具体AI产品岗招5人，接受计算机本科。你的AI知识产品、需求与原型经验可迁移，区别于同批策划/销售管培生。',
@@ -519,6 +545,7 @@ export const seedOpportunities: SeedOpportunity[] = [
     sourceLabel: '湖北经济学院就业网：中石化湖北石油2027人工智能管理岗具体学历、专业和待遇',
     startDate: '2026-09-24',
     endDate: '2026-10-28',
+    endTime: '17:00',
     deadlineNote: '企业2027校招公告明确10月28日17:00截止；到中国石化官网搜索“湖北石油分公司—人工智能管理岗”',
     recommendation: 4,
     fitReason: '能源销售场景中的具体AI管理岗位，高校发布的岗位页将计算机类列为可投专业，区别于电气/储运岗。',
@@ -540,6 +567,7 @@ export const seedOpportunities: SeedOpportunity[] = [
     sourceLabel: '胜利石油工程2027招聘简章转载：AI研发应用岗10人、本科学历与10月28日截止',
     startDate: '2026-09-24',
     endDate: '2026-10-28',
+    endTime: '17:00',
     deadlineNote: '2027校招网申10月28日17:00截止；进入中国石化官网“油田企业—胜利石油工程有限公司”选人工智能研发应用岗',
     recommendation: 3,
     fitReason: '专门招聘10名人工智能研发应用岗，接受计算机本科，把AI能力用于油气能源场景，比石油工程、电气现场岗更匹配。',
@@ -1103,16 +1131,16 @@ export const seedOpportunities: SeedOpportunity[] = [
     scale: '中厂',
     city: '宁波',
     applyUrl: 'https://zhaopin.nbcb.com.cn/#/campus-recruitment',
-    sourceUrl: 'https://job.zzu.edu.cn/campus/view/id/1018779',
-    sourceLabel: '雇主在郑州大学发布的2027总行金融科技简章：具体产品方向、本科学历与分批流程；薪资另见审核来源',
+    sourceUrl: 'https://www.yinhangzhaopin.com/ningboyh/2026-08-17/223637.htm',
+    sourceLabel: '本届总行金融科技部官方招聘信息完整转载，文末可追溯原始公众号；雇主高校发布交叉核对，非原文已亲读',
     startDate: '2026-08-01',
-    endDate: null,
-    deadlineNote: '雇主本届简章写网申8月起，测评/面试8–12月分批进行，未写本条统一网申截止；撤下第三方汇总的10月31日硬截止，按官网岗位状态尽早申请',
-    recommendation: 5,
+    endDate: '2026-10-31',
+    deadlineNote: '10月28日补核：可追溯官方公众号的完整招聘信息转载明确网申10月31日截止，具体时刻未公布；原始公众号本次受验证码限制，提交前再核官网岗位状态',
+    recommendation: 3,
     fitReason: '产品经理子方向明确负责用户研究、需求分析、产品设计、数据运营，并挖掘大模型AI场景；本科计算机优先，和你的B端产品、AI应用经历直接匹配。',
-    riskNote: '总入口还混有研发、运维、测试等方向；提交时必须选择“产品经理”，不要只投笼统的金融科技定向生后等待随机分配。',
+    riskNote: '单岗学生须知明确：方向选择仅供笔试/面试参考，与实际岗位分配无关，选择产品经理不保证最终做产品，也可能进入研发、运维、测试；因此降低推荐。只有接受金融科技序列并能进一步确认定岗时再投。',
     degreeGate: '2027届本科及以上；计算机、软件工程、人工智能、电子通信、信息安全、自动化、数学统计等可投，未写985/211硬门槛',
-    verifiedAt: '2026-10-27',
+    verifiedAt: '2026-10-28',
     compensation: '10–15K/月（本届高校就业网职位档为10000–14999，具体固定薪资和绩效以Offer为准）',
   },
   {

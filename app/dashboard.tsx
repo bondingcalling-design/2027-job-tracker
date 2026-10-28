@@ -48,7 +48,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { retiredSeedIds } from '@/lib/opportunities';
-import { chinaToday, getPreferredCityNote, isOpportunityInScope, isProtectedFromScreening, locationExclusions, screeningReviews } from '@/lib/screening';
+import { chinaToday, deadlineCountdown, getDeadlineTime, getPreferredCityNote, isDeadlineExpired, isOpportunityInScope, isProtectedFromScreening, locationExclusions, screeningReviews } from '@/lib/screening';
 
 type Opportunity = {
   id: string;
@@ -63,6 +63,7 @@ type Opportunity = {
   sourceLabel: string;
   startDate: string | null;
   endDate: string | null;
+  endTime?: string | null;
   deadlineNote: string;
   recommendation: number;
   fitReason: string;
@@ -150,6 +151,7 @@ function daysUntil(date: string | null) {
 }
 
 function deadlineTone(item: Opportunity) {
+  if (isDeadlineExpired(item)) return 'text-destructive';
   const days = daysUntil(item.endDate);
   if (days === null) return 'text-muted-foreground';
   if (days < 0) return 'text-destructive';
@@ -191,6 +193,7 @@ function downloadBlob(content: string, filename: string, type: string) {
 export default function Dashboard() {
   const [items, setItems] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [clockNow, setClockNow] = useState(() => Date.now());
   const [savingIds, setSavingIds] = useState<Set<string>>(new Set());
   const [notice, setNotice] = useState('');
   const [query, setQuery] = useState('');
@@ -227,6 +230,16 @@ export default function Dashboard() {
   useEffect(() => {
     queueMicrotask(() => void load());
   }, [load]);
+
+  useEffect(() => {
+    const refreshClock = () => setClockNow(Date.now());
+    const timer = window.setInterval(refreshClock, 30_000);
+    document.addEventListener('visibilitychange', refreshClock);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', refreshClock);
+    };
+  }, []);
 
   useEffect(() => {
     queueMicrotask(() => setPage(1));
@@ -298,7 +311,7 @@ export default function Dashboard() {
         showAbandoned &&
         item.stage === '放弃' &&
         !retiredSeedIds.includes(item.id);
-      if (!isOpportunityInScope(item, retiredSeedIds) && !abandonedVisible)
+      if (!isOpportunityInScope(item, retiredSeedIds, undefined, clockNow) && !abandonedVisible)
         return false;
       if (item.archived !== showArchived) return false;
       if (
@@ -324,7 +337,7 @@ export default function Dashboard() {
       if (favoriteOnly && !item.favorite) return false;
       if (upcomingOnly) {
         const days = daysUntil(item.endDate);
-        if (days === null || days < 0 || days > 30) return false;
+        if (days === null || days < 0 || days > 30 || isDeadlineExpired(item, clockNow)) return false;
       }
       return true;
     });
@@ -362,6 +375,7 @@ export default function Dashboard() {
     });
   }, [
     items,
+    clockNow,
     query,
     track,
     ownership,
@@ -383,7 +397,7 @@ export default function Dashboard() {
 
   const metrics = useMemo(() => {
     const active = items.filter(
-      (item) => !item.archived && isOpportunityInScope(item, retiredSeedIds),
+      (item) => !item.archived && isOpportunityInScope(item, retiredSeedIds, undefined, clockNow),
     );
     const curated = active.filter((item) =>
       !item.isCustom &&
@@ -399,13 +413,13 @@ export default function Dashboard() {
       ).length,
       urgent: active.filter((item) => {
         const days = daysUntil(item.endDate);
-        return days !== null && days >= 0 && days <= 14;
+        return days !== null && days >= 0 && days <= 14 && !isDeadlineExpired(item, clockNow);
       }).length,
       applied: active.filter(
         (item) => !['待投递', '准备中', '放弃'].includes(item.stage),
       ).length,
     };
-  }, [items]);
+  }, [items, clockNow]);
 
   const workflowAlerts = useMemo(() => {
     const activeStages = new Set(['已投递', '笔试', '面试', 'Offer']);
@@ -424,12 +438,13 @@ export default function Dashboard() {
         (a.nextActionAt || '').localeCompare(b.nextActionAt || ''),
       )
       .slice(0, 6);
-  }, [items]);
+  }, [items, clockNow]);
 
   const applicationDeadlines = useMemo(() => items
     .filter((item) =>
       !item.archived &&
-      isOpportunityInScope(item, retiredSeedIds) &&
+      isOpportunityInScope(item, retiredSeedIds, undefined, clockNow) &&
+      !isDeadlineExpired(item, clockNow) &&
       ['待投递', '准备中'].includes(item.stage) &&
       (() => {
         const days = daysUntil(item.endDate);
@@ -440,7 +455,7 @@ export default function Dashboard() {
       (a.endDate || '').localeCompare(b.endDate || '') ||
       b.recommendation - a.recommendation,
     )
-    .slice(0, 6), [items]);
+    .slice(0, 6), [items, clockNow]);
 
   function resetFilters() {
     setQuery('');
@@ -587,7 +602,7 @@ export default function Dashboard() {
       item.recommendation,
       item.stage,
       item.startDate,
-      item.endDate,
+      item.endDate ? `${item.endDate}${getDeadlineTime(item) ? ` ${item.endTime} 北京时间` : ''}` : '',
       item.applyUrl,
       item.compensation,
       item.nextActionAt,
@@ -619,7 +634,7 @@ export default function Dashboard() {
               央国企约 12 万年包及较好福利可放宽岗位匹配度。高福利例外须注明薪资未知与风险。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              当前按北京时间 {chinaToday()} 判断网申期限；已过期且尚未开始的默认岗位自动退出推荐，已有准备／投递进度继续保留。最新人工核验：2026-10-27；截止当天请查看详情中的具体时刻，未公布的时刻不按24时承诺。
+              当前按北京时间 {chinaToday(clockNow)} 判断网申期限；已核实时刻的岗位按分钟倒计时，到点停止催投；未公布时刻不承诺24时。已有准备／投递进度保留。最新人工核验：2026-10-28。
             </p>
             <p className="mt-2 inline-flex max-w-2xl rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs leading-5 text-amber-900">
               城市边界：北京、西安不投；优先一线／新一线及沿海、南方高科技城市。多城市岗位须核对具体工作地。
@@ -673,9 +688,9 @@ export default function Dashboard() {
                   rel="noreferrer"
                   className="group bg-red-50 px-4 py-3 transition-colors hover:bg-white"
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <strong className="text-sm text-red-950">{localDate(item.endDate)}</strong>
-                    <span className="text-xs text-red-700">{daysUntil(item.endDate) === 0 ? '今天截止' : `还剩 ${daysUntil(item.endDate)} 天`}</span>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <strong className="text-sm text-red-950">{localDate(item.endDate)}{getDeadlineTime(item) ? ` ${item.endTime}` : ''}</strong>
+                    <span className="text-xs text-red-700">{deadlineCountdown(item, clockNow)}</span>
                   </div>
                   <p className="mt-1 flex items-center gap-1 text-sm font-medium text-foreground">
                     {item.company}
@@ -1149,7 +1164,7 @@ function OpportunityRows({
         </TableCell>
         <TableCell className={cn('font-mono text-xs', deadlineTone(item))}>
           <div>
-            {localDate(item.startDate)} — {localDate(item.endDate)}
+            {localDate(item.startDate)} — {localDate(item.endDate)}{getDeadlineTime(item) ? ` ${item.endTime}` : ''}{isDeadlineExpired(item) ? ' · 已截止' : ''}
           </div>
           <div className="mt-1 max-w-[190px] truncate font-sans">
             {item.deadlineNote}
@@ -1345,7 +1360,7 @@ function MobileCard({
         <div>
           <p className="text-muted-foreground">网申时间</p>
           <p className={cn('mt-1 font-mono', deadlineTone(item))}>
-            {localDate(item.startDate)} — {localDate(item.endDate)}
+            {localDate(item.startDate)} — {localDate(item.endDate)}{getDeadlineTime(item) ? ` ${item.endTime}` : ''}{isDeadlineExpired(item) ? ' · 已截止' : ''}
           </p>
         </div>
         <div>

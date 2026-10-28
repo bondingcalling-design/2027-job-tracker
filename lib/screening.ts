@@ -76,6 +76,13 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'cmft-enterprise-ai-product-2027': {
+    eligible: true,
+    reason: '官方具体2027本科深圳产品岗，企业知识库问答、RAG/Agent、PRD和业务流程与两段实习直接匹配；薪资面议，无已核实近期截止',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://cmhk.zhiye.com/campus/detail?jobAdId=8829ab9d-7e53-446d-bb3d-1732bc3a3cdc',
+    salarySourceLabel: '招商局官方具体校园岗位面议；不套其他招商体系公司的薪资',
+  },
   'sinopec-zhejiang-ai-2027': {
     eligible: true,
     reason: '官方具体普通AI岗7人，明确物联网本科、杭州/宁波等地，10月28日17:00截止；不把三地岗的其他城市混入',
@@ -466,11 +473,11 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   },
   'nbcb-fintech-product-2027': {
     eligible: true,
-    reason: '宁波银行总行金融科技产品经理本科计算机可投，职责含需求分析、产品设计和大模型AI场景，本届职位档10–15K/月',
+    reason: '本科计算机可报总行金融科技定向生，产品方向职责匹配，但只作笔面试参考、不保证实际产品定岗，推荐下调；完整招聘信息转载标10月31日截止',
     salaryKind: '本届公开', monthlyMin: 10000,
     salarySourceUrl: 'https://career.cup.edu.cn/campus/view/id/460150',
     salarySourceLabel: '宁波银行总行金融科技部2027招聘简章（职位档10000–14999）',
-    exceptionReason: '银行中少数与简历高度匹配的明确产品岗：总入口混有研发和运维，投递时必须选产品经理方向',
+    exceptionReason: '金融科技产品方向可作为备选，但最终岗位分配不保证；先确认是否接受研发/测试/运维等安排，不把选择产品方向等同于产品Offer',
   },
   'suzhou-bank-ai-tech-2027': {
     eligible: false,
@@ -891,17 +898,49 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   },
 };
 
-type ProgressItem = { id: string; stage: string; isCustom: boolean; endDate?: string | null };
+type DeadlineItem = { endDate?: string | null; endTime?: string | null };
+type ProgressItem = DeadlineItem & { id: string; stage: string; isCustom: boolean };
 const protectedStages = new Set(['准备中', '已投递', '笔试', '面试', 'Offer', '已拒绝']);
 
-export function chinaToday() {
-  return new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
+export function chinaToday(timestamp = Date.now()) {
+  return new Date(timestamp + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
-export function isOpportunityInScope(item: ProgressItem, retiredIds: readonly string[], asOfDate = chinaToday()) {
+export function getDeadlineTime(item: DeadlineItem) {
+  if (!item.endDate || !item.endTime || !/^(?:[01]\d|2[0-3]):[0-5]\d$|^24:00$/.test(item.endTime)) return null;
+  return Number.isFinite(Date.parse(`${item.endDate}T${item.endTime}:00+08:00`)) ? item.endTime : null;
+}
+
+export function isDeadlineExpired(item: DeadlineItem, timestamp = Date.now()) {
+  if (!item.endDate) return false;
+  const time = getDeadlineTime(item);
+  return time
+    ? timestamp >= Date.parse(`${item.endDate}T${time}:00+08:00`)
+    : item.endDate < chinaToday(timestamp);
+}
+
+export function deadlineCountdown(item: DeadlineItem, timestamp = Date.now()) {
+  if (!item.endDate) return '截止未公布';
+  if (isDeadlineExpired(item, timestamp)) return '已截止';
+  const time = getDeadlineTime(item);
+  if (time) {
+    const minutes = Math.ceil((Date.parse(`${item.endDate}T${time}:00+08:00`) - timestamp) / 60000);
+    const days = Math.floor(minutes / 1440);
+    const hours = Math.floor((minutes % 1440) / 60);
+    if (days > 0) return `剩${days}天${hours}小时`;
+    if (hours > 0) return `剩${hours}小时${minutes % 60}分`;
+    return `剩${minutes}分钟`;
+  }
+  const days = Math.round((Date.parse(`${item.endDate}T00:00:00Z`) - Date.parse(`${chinaToday(timestamp)}T00:00:00Z`)) / 86400000);
+  return days === 0 ? '今天截止 · 时刻未公布' : `剩${days}天 · 时刻未公布`;
+}
+
+// 显式传日期用于历史审计，按该日北京时间零点判断；正常页面按实际时刻判断。
+export function isOpportunityInScope(item: ProgressItem, retiredIds: readonly string[], asOfDate?: string, timestamp = Date.now()) {
   if (item.stage === '放弃' || retiredIds.includes(item.id)) return false;
   if (protectedStages.has(item.stage)) return true;
-  if (!item.isCustom && item.endDate && item.endDate < asOfDate) return false;
+  const reference = asOfDate ? Date.parse(`${asOfDate}T00:00:00+08:00`) : timestamp;
+  if (!item.isCustom && isDeadlineExpired(item, reference)) return false;
   const review = screeningReviews[item.id];
   return (review ? review.eligible : item.isCustom) && !locationExclusions[item.id];
 }

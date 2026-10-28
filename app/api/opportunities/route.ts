@@ -80,6 +80,7 @@ function mapRow(row: Record<string, unknown>) {
     sourceLabel: row.source_label,
     startDate: row.start_date,
     endDate: row.end_date,
+    endTime: seedOpportunities.find((item) => item.id === row.source_id && item.endDate === row.end_date)?.endTime || null,
     deadlineNote: row.deadline_note,
     recommendation: row.recommendation,
     fitReason: row.fit_reason,

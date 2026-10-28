@@ -2,11 +2,76 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { seedOpportunities, retiredSeedIds } from '../lib/opportunities.ts';
 import { mergeOpportunities, normalizeCompanyName } from '../lib/opportunity-state.ts';
-import { getPreferredCityNote, isOpportunityInScope, locationExclusions, screeningReviews } from '../lib/screening.ts';
+import { chinaToday, deadlineCountdown, getDeadlineTime, getPreferredCityNote, isDeadlineExpired, isOpportunityInScope, locationExclusions, screeningReviews } from '../lib/screening.ts';
 
 const now = '2026-09-10T08:00:00.000Z';
 const initial = () => mergeOpportunities(seedOpportunities, [], now);
 const visible = (items) => items.filter((item) => isOpportunityInScope(item, retiredSeedIds, '2026-10-19'));
+
+test('verified 17:00 deadlines close in China time rather than waiting until midnight', () => {
+  const row = initial().find((item) => item.id === 'sinopec-zhejiang-ai-2027');
+  const before = Date.parse('2026-10-28T16:59:59+08:00');
+  const cutoff = Date.parse('2026-10-28T17:00:00+08:00');
+  assert.equal(getDeadlineTime(row), '17:00');
+  assert.equal(isDeadlineExpired(row, before), false);
+  assert.equal(deadlineCountdown(row, before), '剩1分钟');
+  assert.equal(isOpportunityInScope(row, retiredSeedIds, undefined, before), true);
+  assert.equal(isDeadlineExpired(row, cutoff), true);
+  assert.equal(deadlineCountdown(row, cutoff), '已截止');
+  assert.equal(isOpportunityInScope(row, retiredSeedIds, undefined, cutoff), false);
+  assert.equal(chinaToday(Date.parse('2026-10-27T16:01:00Z')), '2026-10-28');
+});
+
+test('a precise deadline never deletes preparing or interview progress and cannot revive abandoned cards', () => {
+  const original = initial().find((item) => item.id === 'sinopec-jiangsu-ai-2027');
+  const cutoff = Date.parse('2026-10-28T17:00:00+08:00');
+  for (const stage of ['准备中', '已投递', '笔试', '面试', 'Offer']) {
+    const saved = { ...original, stage, notes: '我已记录的进度', nextActionAt: '2026-11-01' };
+    const restored = mergeOpportunities(seedOpportunities, [saved]).find((item) => item.id === original.id);
+    assert.equal(restored.stage, stage);
+    assert.equal(restored.notes, saved.notes);
+    assert.equal(restored.nextActionAt, saved.nextActionAt);
+    assert.equal(isOpportunityInScope(restored, retiredSeedIds, undefined, cutoff), true);
+    assert.equal(isDeadlineExpired(restored, cutoff), true);
+  }
+  assert.equal(isOpportunityInScope({ ...original, stage: '放弃' }, retiredSeedIds, undefined, cutoff - 1), false);
+});
+
+test('unknown cutoff times do not receive a fabricated midnight countdown', () => {
+  const row = { endDate: '2026-10-28' };
+  const late = Date.parse('2026-10-28T23:59:59+08:00');
+  assert.equal(getDeadlineTime(row), null);
+  assert.equal(isDeadlineExpired(row, late), false);
+  assert.equal(deadlineCountdown(row, late), '今天截止 · 时刻未公布');
+  assert.equal(isDeadlineExpired(row, Date.parse('2026-10-29T00:00:00+08:00')), true);
+  assert.equal(getDeadlineTime({ ...row, endTime: '99:99' }), null);
+  assert.equal(deadlineCountdown({ endDate: null, endTime: '17:00' }, late), '截止未公布');
+});
+
+test('verified 24:00 and noon deadlines keep their literal boundary', () => {
+  const midnight = { endDate: '2026-11-06', endTime: '24:00' };
+  assert.equal(getDeadlineTime(midnight), '24:00');
+  assert.equal(isDeadlineExpired(midnight, Date.parse('2026-11-06T23:59:59+08:00')), false);
+  assert.equal(isDeadlineExpired(midnight, Date.parse('2026-11-07T00:00:00+08:00')), true);
+  const noon = seedOpportunities.find((item) => item.id === 'yzw-procurement-product-trainee-2027');
+  assert.equal(noon.endTime, '12:00');
+  assert.equal(isDeadlineExpired(noon, Date.parse('2027-06-15T12:00:00+08:00')), true);
+});
+
+test('October 28 adds a distinct official bachelor AI knowledge-product role without treating a placeholder as a deadline', () => {
+  const seed = seedOpportunities.find((item) => item.id === 'cmft-enterprise-ai-product-2027');
+  assert.ok(seed && screeningReviews[seed.id].eligible);
+  assert.equal(seed.city, '深圳');
+  assert.equal(seed.ownership, '央企');
+  assert.match(seed.degreeGate, /2027届本科/);
+  assert.match(seed.fitReason, /知识库|RAG/);
+  assert.match(seed.applyUrl, /^https:\/\/cmhk\.zhiye\.com\/campus\/detail/);
+  assert.equal(seed.endDate, null);
+  assert.equal(seed.startDate, null);
+  assert.match(seed.compensation, /面议/);
+  assert.equal(screeningReviews[seed.id].salaryKind, '未公开');
+  assert.equal(initial().filter((item) => normalizeCompanyName(item.company) === normalizeCompanyName(seed.company)).length, 1);
+});
 
 test('every non-retired seed has an explicit screening decision', () => {
   assert.equal(new Set(seedOpportunities.map((item) => item.id)).size, seedOpportunities.length);
@@ -49,7 +114,7 @@ test('October 27 deadline additions are distinct undergraduate SOE units with ho
   assert.match(cofco.deadlineNote, /未注明具体时刻/);
 });
 
-test('October 27 corrections remove false urgency and preserve saved progress when hiding a broad group entry', () => {
+test('deadline corrections preserve saved progress and distinguish sourced dates from page validity', () => {
   const fresh = initial();
   const group = fresh.find((row) => row.id === 'sgdt-ai-energy-digital-2027');
   assert.equal(screeningReviews[group.id].eligible, false);
@@ -64,8 +129,10 @@ test('October 27 corrections remove false urgency and preserve saved progress wh
   assert.equal(kept.favorite, true);
   assert.equal(isOpportunityInScope(kept, retiredSeedIds, '2026-10-27'), true);
   const bank = seedOpportunities.find((seed) => seed.id === 'nbcb-fintech-product-2027');
-  assert.equal(bank.endDate, null);
-  assert.match(bank.deadlineNote, /未写本条统一网申截止/);
+  assert.equal(bank.endDate, '2026-10-31');
+  assert.match(bank.deadlineNote, /完整招聘信息转载/);
+  assert.match(bank.riskNote, /与实际岗位分配无关/);
+  assert.equal(bank.recommendation, 3);
   const ygsoft = seedOpportunities.find((seed) => seed.id === 'ygsoft-ai-requirements-2027');
   assert.equal(ygsoft.endDate, '2026-10-30');
   assert.match(ygsoft.deadlineNote, /12月8日是页面有效期/);
@@ -88,7 +155,7 @@ test('October 19 SOE additions use verified undergraduate roles and do not inven
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 79);
+  assert.equal(selected.length, 80);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -390,7 +457,7 @@ test('bank review keeps the three valid undergraduate routes from the first batc
   assert.equal(screeningReviews['hzbank-ai-tech-2027'].monthlyMin, 10000);
   assert.equal(screeningReviews['citic-card-product-ai-2027'].monthlyMin, 10000);
   assert.equal(screeningReviews['nbcb-fintech-product-2027'].monthlyMin, 10000);
-  assert.equal(seedOpportunities.find((item) => item.id === 'nbcb-fintech-product-2027').recommendation, 5);
+  assert.equal(seedOpportunities.find((item) => item.id === 'nbcb-fintech-product-2027').recommendation, 3);
   for (const id of retiredIds) {
     assert.ok(retiredSeedIds.includes(id), id);
     assert.equal(screeningReviews[id].eligible, false, id);
@@ -475,7 +542,7 @@ test('October 12 bank audit removes expired, master-only, low-pay and resume-mis
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
     assert.ok(item && screeningReviews[id].eligible, id);
     assert.match(item.degreeGate, /本科/);
-    assert.equal(item.verifiedAt, item.id === 'nbcb-fintech-product-2027' ? '2026-10-27' : '2026-10-12');
+    assert.equal(item.verifiedAt, item.id === 'nbcb-fintech-product-2027' ? '2026-10-28' : '2026-10-12');
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
     if (screeningReviews[id].monthlyMin !== undefined) {
