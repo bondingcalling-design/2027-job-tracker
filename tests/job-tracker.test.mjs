@@ -80,6 +80,99 @@ test('every non-retired seed has an explicit screening decision', () => {
   }
 });
 
+test('October 28 expansion keeps distinct bachelor routes and distinguishes reference pay from a confirmed offer', () => {
+  const ids = [
+    'ths-aime-agent-product-2027', 'dewu-supplychain-ai-platform-2027',
+    'coli-commercial-saas-product-2027', 'aspire-ai-application-guangzhou-2027',
+    'csg-ecosystem-ict-guangzhou-2027', 'finvolution-product-ph-2027',
+  ];
+  const fresh = initial();
+  for (const id of ids) {
+    const seed = seedOpportunities.find((item) => item.id === id);
+    assert.ok(seed && screeningReviews[id].eligible, id);
+    assert.match(seed.degreeGate, /本科/);
+    assert.doesNotMatch(seed.city, /北京|西安/);
+    assert.equal(seed.initialStage, undefined);
+    assert.equal(seed.initialAppliedAt, undefined);
+    assert.equal(fresh.filter((item) => normalizeCompanyName(item.company) === normalizeCompanyName(seed.company)).length, 1);
+    if (seed.ownership === '私企') {
+      assert.ok(screeningReviews[id].monthlyMin >= 10000, id);
+      assert.ok(screeningReviews[id].salarySourceUrl, id);
+    }
+  }
+  assert.equal(screeningReviews[ids[0]].salaryKind, '往届参考');
+  assert.match(seedOpportunities.find((item) => item.id === ids[0]).compensation, /历史.*届别未标/);
+  assert.equal(screeningReviews[ids[1]].salaryKind, '招聘转载参考');
+  assert.match(seedOpportunities.find((item) => item.id === ids[1]).degreeGate, /物联网/);
+  assert.match(seedOpportunities.find((item) => item.id === ids[1]).compensation, /用户产品经理.*子方向未披露/);
+  const finvolution = seedOpportunities.find((item) => item.id === ids[5]);
+  assert.deepEqual(finvolution.tracks, ['其他产品备选']);
+  assert.match(finvolution.sourceLabel, /非|不是/);
+  assert.match(finvolution.riskNote, /出差.*派驻/);
+});
+
+test('new cutoff evidence does not spread another job or platform validity period to the target role', () => {
+  for (const id of ['ths-aime-agent-product-2027', 'dewu-supplychain-ai-platform-2027', 'coli-commercial-saas-product-2027', 'aspire-ai-application-guangzhou-2027', 'finvolution-product-ph-2027']) {
+    const seed = seedOpportunities.find((item) => item.id === id);
+    assert.equal(seed.startDate, null, id);
+    assert.equal(seed.endDate, null, id);
+    assert.equal(getDeadlineTime(seed), null, id);
+  }
+  const grid = initial().find((item) => item.id === 'csg-ecosystem-ict-guangzhou-2027');
+  assert.equal(grid.endDate, '2026-11-02');
+  assert.equal(grid.endTime, '24:00');
+  assert.match(grid.role, /职责待登录核对/);
+  assert.match(grid.riskNote, /尚不能区分产品、开发或运维/);
+  assert.equal(screeningReviews[grid.id].monthlyMin, undefined);
+  assert.equal(isDeadlineExpired(grid, Date.parse('2026-11-02T23:59:59+08:00')), false);
+  assert.equal(isOpportunityInScope(grid, retiredSeedIds, undefined, Date.parse('2026-11-03T00:00:00+08:00')), false);
+});
+
+test('new employer aliases respect an existing interview or abandoned decision rather than creating another card', () => {
+  const cases = [
+    ['ths-aime-agent-product-2027', '浙江核新同花顺网络信息股份有限公司'],
+    ['dewu-supplychain-ai-platform-2027', '得物App'],
+    ['dewu-supplychain-ai-platform-2027', '上海得物信息集团有限公司'],
+    ['aspire-ai-application-guangzhou-2027', '卓望数码技术（深圳）有限公司'],
+    ['finvolution-product-ph-2027', '上海耳序信息技术有限公司'],
+  ];
+  for (const [id, alias] of cases) {
+    const seed = seedOpportunities.find((item) => item.id === id);
+    assert.equal(normalizeCompanyName(alias), normalizeCompanyName(seed.company));
+    for (const stage of ['面试', '放弃']) {
+      const manual = { ...freshStored(seed), id: `manual-${id}`, company: alias, stage, notes: '已有决定', favorite: true, isCustom: true };
+      const merged = mergeOpportunities(seedOpportunities, [manual], now);
+      assert.equal(merged.some((item) => item.id === id), false);
+      assert.deepEqual(merged.find((item) => item.id === manual.id), manual);
+    }
+  }
+  assert.notEqual(normalizeCompanyName('中国移动终端公司'), normalizeCompanyName('卓望'));
+  assert.notEqual(normalizeCompanyName('南网互联网服务有限公司'), normalizeCompanyName('南方电网用户生态运营公司'));
+});
+
+function freshStored(seed) {
+  return { ...seed, compensation: seed.compensation || '未公开', stage: '待投递', appliedAt: null, nextActionAt: null, notes: '', favorite: false, archived: false, isCustom: false };
+}
+
+test('Kylin Shanghai refresh preserves personal progress and uses its own verified deadline', () => {
+  const seed = seedOpportunities.find((item) => item.id === 'kylin-product-2027');
+  assert.match(seed.role, /产品经理-SH/);
+  assert.match(seed.city, /上海/);
+  assert.doesNotMatch(seed.city, /北京|西安/);
+  assert.equal(seed.endDate, '2026-11-18');
+  assert.equal(seed.endTime, '24:00');
+  assert.equal(seed.startDate, null);
+  assert.equal(seed.tracks.includes('AI应用产品'), false);
+  assert.match(seed.riskNote, /并非RAG产品/);
+  assert.match(seed.deadlineNote, /原其他城市不能套此期限/);
+  const previous = { ...freshStored(seed), stage: '面试', notes: '原城市回执及备注', appliedAt: '2026-10-20', nextActionAt: '2026-11-01', favorite: true, createdAt: '2026-09-10', updatedAt: '2026-10-20' };
+  const saved = mergeOpportunities(seedOpportunities, [previous], now).find((item) => item.id === seed.id);
+  for (const field of ['stage', 'notes', 'appliedAt', 'nextActionAt', 'favorite', 'createdAt', 'updatedAt']) {
+    assert.equal(saved[field], previous[field], field);
+  }
+  assert.equal(isOpportunityInScope(saved, retiredSeedIds, '2026-11-19'), true);
+});
+
 test('October 27 deadline additions are distinct undergraduate SOE units with honest salary fields', () => {
   const ids = ['sinopec-zhejiang-ai-2027', 'sinopec-jiangsu-ai-2027', 'cofco-dongguan-ai-engineer-trainee-2027'];
   const fresh = initial();
@@ -155,7 +248,7 @@ test('October 19 SOE additions use verified undergraduate roles and do not inven
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 80);
+  assert.equal(selected.length, 86);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);

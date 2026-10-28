@@ -24,8 +24,20 @@ export function normalizeCompanyName(company: string) {
     .replace(/[（(][^）)]*[）)]/g, '')
     .replace(/(?:集团股份有限公司|股份有限公司|有限责任公司|有限公司|控股集团|科技集团|集团)$/g, '')
     .replace(/[^a-z0-9\u3400-\u9fff]/g, '');
-  // 同一雇主在不同招聘页使用的简称；不合并不同子公司。
-  return normalized === '帆软软件' ? '帆软' : normalized;
+  // 已确认的同一招聘品牌/经营主体别名，避免用户手动记录与新种子重复；不按集团名称泛合并子公司。
+  const aliases: Record<string, string> = {
+    帆软软件: '帆软',
+    得物app: '得物',
+    上海得物信息集团: '得物',
+    上海识装信息科技: '得物',
+    浙江核新同花顺网络信息: '同花顺',
+    卓望数码: '卓望',
+    卓望数码技术: '卓望',
+    卓望数码技术深圳: '卓望',
+    上海耳序: '信也科技',
+    上海耳序信息技术: '信也科技',
+  };
+  return aliases[normalized] || normalized;
 }
 
 function hasUserDecision(item: StoredOpportunity | undefined) {

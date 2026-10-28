@@ -76,6 +76,50 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'ths-aime-agent-product-2027': {
+    eligible: true,
+    reason: '官网2251为2027本科杭州AI产品岗，RAG/Agent问答与实习直接对应；工资用历史同城本科产品校招参考，明确非本届保证',
+    salaryKind: '往届参考', monthlyMin: 10000,
+    salarySourceUrl: 'https://www.nowcoder.com/jobs/detail/57915',
+    salarySourceLabel: '同花顺杭州本科产品经理历史校招10–20K×15，已结束、届别未标，不是本次投递入口',
+  },
+  'dewu-supplychain-ai-platform-2027': {
+    eligible: true,
+    reason: '官方2027本科明确含物联网，上海供应链AI平台的设备/数据/问答与履历契合；同品牌同城同届产品薪资参考下限14K',
+    salaryKind: '招聘转载参考', monthlyMin: 14000,
+    salarySourceUrl: 'https://www.shixiseng.com/intern/inn_yd8ybuxyyg1p?pcm=pc_SearchList',
+    salarySourceLabel: '得物App认证雇主2027上海本科正式校招用户产品经理14–28K，非供应链子岗报价；不套其11月8日截止',
+  },
+  'coli-commercial-saas-product-2027': {
+    eligible: true,
+    reason: '官网海之子科技公司具体岗确认2027本科深圳，B端/中后台PRD与SQL实习匹配；雇主高校同岗公开15–19.999K',
+    salaryKind: '本届公开', monthlyMin: 15000,
+    salarySourceUrl: 'https://career.cuhk.edu.cn/job/view/id/469585',
+    salarySourceLabel: '港中深雇主发布的本届商业产品经理薪资档，官网面议、非Offer保证',
+  },
+  'aspire-ai-application-guangzhou-2027': {
+    eligible: true,
+    reason: '中国移动控股企业广州本科AI应用校招，官方15–25K及双休七险二金；RAG/Agent场景相关但偏后端研发，列转岗备选',
+    salaryKind: '本届公开', monthlyMin: 15000,
+    salarySourceUrl: 'https://aspire.zhiye.com/Campus/detail?jobAdId=2921d413-bf24-4796-bee9-c75592724bfb',
+    salarySourceLabel: '官网J10788具体岗直接披露15–25K及福利，补贴是否额外须确认',
+    exceptionReason: '高福利央企AI研发相邻岗：官方工资与双休/七险二金有依据，但必须具备后端编码能力，不冒充纯产品岗位',
+  },
+  'csg-ecosystem-ict-guangzhou-2027': {
+    eligible: true,
+    reason: '官方本部单岗明确广州本科计算机相关、12人、11月2日24时截止；岗位职责详情需个人登录，低推荐先核职能',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://zhaopin.csg.cn/#/post-list-detail?postId=FC365DA0FF554DF6A90B0E781C75E524',
+    salarySourceLabel: '官方具体信息通信岗位未披露薪资，不能用南网其他单位待遇替代',
+    exceptionReason: '仅作为计算机本科能源央企备选，尚未确认产品/开发/运维分工；不认定年包达12万，也不把登录可见的未知职责包装成高匹配',
+  },
+  'finvolution-product-ph-2027': {
+    eligible: true,
+    reason: '信也关联经营主体HR具体2027本科上海产品岗15–25K×15薪；普通金融产品备选，未证实AI/B端方向，不混进核心AI标签',
+    salaryKind: '招聘转载参考', monthlyMin: 15000,
+    salarySourceUrl: 'https://www.nowcoder.com/jobs/detail/465410',
+    salarySourceLabel: '上海耳序HR刊载的信也2027具体岗位参考；关联主体由信也官方协议及SEC集团清单交叉核对，非官网ATS已亲读',
+  },
   'cmft-enterprise-ai-product-2027': {
     eligible: true,
     reason: '官方具体2027本科深圳产品岗，企业知识库问答、RAG/Agent、PRD和业务流程与两段实习直接匹配；薪资面议，无已核实近期截止',
@@ -716,8 +760,10 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     salarySourceLabel: '合合信息岗位薪酬范围（领英/猎聘）',
   },
   'kylin-product-2027': {
-    eligible: true, reason: '央企子公司独立2027产品岗，计算机本科可投；薪资不限，不包含科技项目助理岗',
+    eligible: true, reason: '同ID更新为中国电子官网上海产品经理-SH，2027计算机本科、11月18日24时截止；文档知识库不是RAG产品，不新增重复卡',
     salaryKind: '未公开',
+    salarySourceUrl: 'https://career.cec.com.cn/student-api/api/position/find/839965403512977',
+    salarySourceLabel: '中国电子官方上海单岗仅列六险二金等，无金额',
   },
   'richinfo-ai-product-2027': {
     eligible: true, reason: '本届政企AI产品岗，本科可投；RAG/Agent/知识库方向，公开月薪档下限10.5K',
