@@ -80,6 +80,70 @@ test('every non-retired seed has an explicit screening decision', () => {
   }
 });
 
+test('four further employers keep real bachelor roles and distinguish product work from coding-heavy alternatives', () => {
+  const ids = ['wepie-backoffice-product-2027', 'yealink-product-manager-2027', 'sdic-intelligence-agent-xiamen-2027', 'ccssoft-agent-chengdu-2027'];
+  const fresh = initial();
+  for (const id of ids) {
+    const seed = seedOpportunities.find((item) => item.id === id);
+    assert.ok(seed && screeningReviews[id].eligible, id);
+    assert.match(seed.degreeGate, /本科/);
+    assert.doesNotMatch(seed.city, /北京|西安|昆明/);
+    assert.equal(fresh.filter((item) => normalizeCompanyName(item.company) === normalizeCompanyName(seed.company)).length, 1);
+    assert.equal(seed.initialStage, undefined);
+  }
+  const wepie = seedOpportunities.find((item) => item.id === ids[0]);
+  assert.deepEqual(wepie.tracks, ['B端软件/平台']);
+  assert.equal(screeningReviews[wepie.id].monthlyMin, 10500);
+  assert.match(wepie.riskNote, /不是已证实的能源或RAG产品/);
+  const yealink = seedOpportunities.find((item) => item.id === ids[1]);
+  assert.equal(yealink.city, '厦门');
+  assert.match(yealink.degreeGate, /CET6/);
+  assert.equal(screeningReviews[yealink.id].salaryKind, '往届参考');
+  assert.match(yealink.compensation, /非本届.*原BOSS未复核/);
+  for (const id of ids.slice(2)) {
+    const seed = seedOpportunities.find((item) => item.id === id);
+    assert.equal(seed.ownership, '央企');
+    assert.match(seed.role, /开发/);
+    assert.match(seed.riskNote, /Python|Java/);
+    assert.equal(screeningReviews[id].salaryKind, '未公开');
+    assert.equal(screeningReviews[id].monthlyMin, undefined);
+    assert.ok(seed.recommendation <= 3);
+  }
+});
+
+test('new role dates do not inherit a page expiry, placeholder or another subsidiary deadline', () => {
+  for (const id of ['wepie-backoffice-product-2027', 'yealink-product-manager-2027', 'sdic-intelligence-agent-xiamen-2027', 'ccssoft-agent-chengdu-2027']) {
+    const row = initial().find((item) => item.id === id);
+    assert.equal(row.startDate, null, id);
+    assert.equal(row.endDate, null, id);
+    assert.equal(deadlineCountdown(row, Date.parse('2026-10-28T18:00:00+08:00')), '截止未公布');
+  }
+  assert.match(seedOpportunities.find((item) => item.id === 'wepie-backoffice-product-2027').deadlineNote, /11月8日是页面过期/);
+  assert.match(seedOpportunities.find((item) => item.id === 'ccssoft-agent-chengdu-2027').deadlineNote, /不套四川通服10月30日/);
+});
+
+test('further employer legal names do not duplicate an existing manual decision or merge distinct subsidiaries', () => {
+  const cases = [
+    ['wepie-backoffice-product-2027', '武汉微派网络科技有限公司'],
+    ['yealink-product-manager-2027', '厦门亿联网络技术股份有限公司'],
+    ['sdic-intelligence-agent-xiamen-2027', '国投智能（厦门）信息股份有限公司'],
+    ['sdic-intelligence-agent-xiamen-2027', '美亚柏科'],
+    ['ccssoft-agent-chengdu-2027', '中通服软件科技有限公司'],
+  ];
+  for (const [id, company] of cases) {
+    const seed = seedOpportunities.find((item) => item.id === id);
+    assert.equal(normalizeCompanyName(seed.company), normalizeCompanyName(company));
+    for (const stage of ['准备中', '面试', '放弃']) {
+      const manual = { ...freshStored(seed), id: `manual-${id}`, company, stage, notes: '已有记录及决定', favorite: true, isCustom: true };
+      const restored = mergeOpportunities(seedOpportunities, [manual], now);
+      assert.equal(restored.some((item) => item.id === id), false);
+      assert.deepEqual(restored.find((item) => item.id === manual.id), manual);
+    }
+  }
+  assert.notEqual(normalizeCompanyName('中通服软件'), normalizeCompanyName('上海信产通信服务培训中心'));
+  assert.notEqual(normalizeCompanyName('中通服软件'), normalizeCompanyName('中数通信息'));
+});
+
 test('October 28 expansion keeps distinct bachelor routes and distinguishes reference pay from a confirmed offer', () => {
   const ids = [
     'ths-aime-agent-product-2027', 'dewu-supplychain-ai-platform-2027',
@@ -248,7 +312,7 @@ test('October 19 SOE additions use verified undergraduate roles and do not inven
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 86);
+  assert.equal(selected.length, 90);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);

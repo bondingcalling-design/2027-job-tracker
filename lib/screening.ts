@@ -76,6 +76,36 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'wepie-backoffice-product-2027': {
+    eligible: true,
+    reason: '官方27届本科正式中后台产品岗、武汉、后台/SaaS经验优先；雇主高校本届同岗公开工资档10.5–14.999K',
+    salaryKind: '本届公开', monthlyMin: 10500,
+    salarySourceUrl: 'https://ccnu.91wllm.cn/campus/view/id/1001585',
+    salarySourceLabel: '华中师大雇主本届中后台产品经理职位表；不是用公司其他岗位工资或15–20K传闻代替',
+  },
+  'yealink-product-manager-2027': {
+    eligible: true,
+    reason: '官网厦门本科计算机/软件产品正式校招，CET6契合；按用户允许估薪，用26届同城同类产品转载10–15K参考，本届面议、非保证达标',
+    salaryKind: '往届参考', monthlyMin: 10000,
+    salarySourceUrl: 'https://www.shushuqiuzhi.com/article/180460',
+    salarySourceLabel: '26届厦门信息化产品经理10–15K第三方转录；原BOSS正文未亲读，非本届J12321报价，先核工资再投入',
+  },
+  'sdic-intelligence-agent-xiamen-2027': {
+    eligible: true,
+    reason: '国投智能官方具体本科全职Agent岗，完整字段确认厦门，需求/知识库/RAG与实习相关；偏Python研发、薪资未知，低推荐技术备选',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://hr.300188.cn/campus/detail?jobAdId=1e6f5b07-30e1-4c97-97a1-53f7a9c174fe',
+    salarySourceLabel: '官网单岗面议，没有12万年包或具体福利金额证据',
+    exceptionReason: '本科央企AI技术相邻备选，知识库和需求设计相关但须有Python/API实操；不因央企身份假定待遇或已满足开发能力',
+  },
+  'ccssoft-agent-chengdu-2027': {
+    eligible: true,
+    reason: '中国电信官网中通服软件10月26日新发成都本科Agent岗，计算机/软工可投，RAG与知识产品相关但Java生产开发门槛高，推荐2/5',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://job.chinatelecom.com.cn/wt/TELE/web/index/webPosition210!getOnePosition?postIdEnc=00e4fa8f2ced0631&recruitType=1&columnId=1&brandCode=1&importPost=0',
+    salarySourceLabel: '官方单岗未公开工资与福利，不套其他通服单位报价或10月30日截止',
+    exceptionReason: '央企AI应用研发备选，明确区别纯产品；须补Java/Spring及Agent生产案例，未知待遇不认定达12万或轻松',
+  },
   'ths-aime-agent-product-2027': {
     eligible: true,
     reason: '官网2251为2027本科杭州AI产品岗，RAG/Agent问答与实习直接对应；工资用历史同城本科产品校招参考，明确非本届保证',

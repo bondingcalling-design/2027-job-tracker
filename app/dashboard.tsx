@@ -638,7 +638,7 @@ export default function Dashboard() {
               当前按北京时间 {chinaToday(clockNow)} 判断网申期限；已核实时刻的岗位按分钟倒计时，到点停止催投；未公布时刻不承诺24时。已有准备／投递进度保留。最新人工核验：2026-10-28。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              本轮新增6家：同花顺、得物、中海发展科技、卓望、南网用户生态、信也科技；另更新麒麟上海岗位的11月18日截止。可搜索公司名查看；薪资参考与待核事项都写在详情中。
+              本次追加4家：微派网络、亿联网络、国投智能、中通服软件。前两家看产品岗，后两家是有编码门槛的AI技术备选；亿联工资仅往届转载参考。上一批6家继续保留，可搜索公司名查看。
             </p>
             <p className="mt-2 inline-flex max-w-2xl rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs leading-5 text-amber-900">
               城市边界：北京、西安不投；优先一线／新一线及沿海、南方高科技城市。多城市岗位须核对具体工作地。
