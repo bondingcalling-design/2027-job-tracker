@@ -89,6 +89,7 @@ const TRACKS = [
   '智能硬件/IoT',
   '能源数字化/央国企',
   '其他产品备选',
+  '经营/业务分析备选',
 ];
 const STAGES = [
   '待投递',
@@ -630,16 +631,25 @@ export default function Dashboard() {
               秋招投递台
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              聚焦 B 端 / AI / 能源产品与产品工程、技术产品、解决方案等相邻岗位；
+              聚焦 B 端 / AI / 能源产品、需求分析和业务分析；产品工程师按实际职责筛选，开发、算法、测试、运维不作为备选。
               私企常规项月薪下限 ≥ 1 万；私企项目/交付岗仅在可核实年薪约 15 万以上时放宽，
               央国企约 12 万年包及较好福利可放宽岗位匹配度。高福利例外须注明薪资未知与风险。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              当前按北京时间 {chinaToday(clockNow)} 判断网申期限；已核实时刻的岗位按分钟倒计时，到点停止催投；未公布时刻不承诺24时。已有准备／投递进度保留。最新人工核验：2026-10-28。
+              当前按北京时间 {chinaToday(clockNow)} 判断网申期限；已核实时刻的岗位按分钟倒计时，到点停止催投；未公布时刻不承诺24时。已有准备／投递进度保留。最新人工复核：2026-11-02（按记录分别注明核验日）。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              本次追加4家：微派网络、亿联网络、国投智能、中通服软件。前两家看产品岗，后两家是有编码门槛的AI技术备选；亿联工资仅往届转载参考。上一批6家继续保留，可搜索公司名查看。
+              本轮新增资环深圳基地运营低优先备选，复核保利和润11月6日及麒麟上海11月18日截止，更新彩讯AI产品待遇依据。已撤回开发类推荐和已关闭的中移互联网岗位；已有准备／投递进度保留。
             </p>
+            <details className="mt-2 max-w-2xl text-xs leading-6 text-muted-foreground">
+              <summary className="cursor-pointer font-medium text-foreground">11月2日 · 供销、安能、资环、中国物流线索核验</summary>
+              <div className="mt-1 space-y-1 break-words">
+                <p>供销：官方2026事业单位公告的5:1是面试入围比例，不是报录比；未核到适配的2027岗。<a className="underline" href="https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/rcrs_4225/sydwrsgl/202604/t20260420_574256.html" target="_blank" rel="noreferrer">查看公告</a></p>
+                <p>安能：三局简章列六险二金，但毕业届别矛盾、未列计算机专业且须服从分配；不能外推全集团免笔试或有安家费。<a className="underline" href="https://51uns.bysjy.com.cn/Announce/Details/3592432?schoolCode=10710" target="_blank" rel="noreferrer">查看雇主简章</a></p>
+                <p>资环：新增深圳计算机本科可报的基地运营岗；官方月薪6千–1.2万，非产品，不支持统一30万起。<a className="underline" href="https://campus.51job.com/crrg2027/job.html" target="_blank" rel="noreferrer">查看官方岗位表</a></p>
+                <p>中国物流：公开入口仍返回2026招聘项目，未核实符合条件的2027非研发岗及统一本科15–20万待遇。<a className="underline" href="https://chinalogisticsgroup.hotjob.cn/SU6426c1e1bef57c1e26962897/pb/school.html" target="_blank" rel="noreferrer">查看官方入口</a></p>
+              </div>
+            </details>
             <p className="mt-2 inline-flex max-w-2xl rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs leading-5 text-amber-900">
               城市边界：北京、西安不投；优先一线／新一线及沿海、南方高科技城市。多城市岗位须核对具体工作地。
             </p>
@@ -1263,7 +1273,7 @@ function OpportunityRows({
         <TableRow className="bg-muted/22">
           <TableCell colSpan={9} className="whitespace-normal">
             <div className="grid min-w-0 gap-5 px-2 py-3 text-xs leading-5 lg:grid-cols-2 xl:grid-cols-4">
-              <Detail label="为什么推荐" value={item.fitReason} />
+              <Detail label={screeningReviews[item.id]?.eligible === false ? '历史匹配说明（已退出推荐）' : '为什么推荐'} value={item.fitReason} />
               <Detail label="风险 / 准备重点" value={item.riskNote} />
               <Detail label="学历门槛" value={item.degreeGate} />
               <div className="min-w-0">
@@ -1437,7 +1447,7 @@ function MobileCard({
       ) : null}
       {expanded ? (
         <div className="mt-4 grid gap-3 border-t border-border pt-3 text-xs leading-5 sm:grid-cols-2">
-          <Detail label="为什么推荐" value={item.fitReason} />
+          <Detail label={screeningReviews[item.id]?.eligible === false ? '历史匹配说明（已退出推荐）' : '为什么推荐'} value={item.fitReason} />
           <Detail label="风险 / 准备重点" value={item.riskNote} />
           <Detail label="学历门槛" value={item.degreeGate} />
           <div>

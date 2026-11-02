@@ -18,6 +18,10 @@ const progressFields = [
 ] as const;
 
 export function normalizeCompanyName(company: string) {
+  // This city is part of a subsidiary's legal name, not an optional card annotation.
+  if (/^中资环电子循环利用[（(]深圳[）)](?:有限公司)?$/.test(company.normalize('NFKC').trim())) {
+    return '中资环电子循环利用深圳';
+  }
   const normalized = company
     .normalize('NFKC')
     .toLowerCase()

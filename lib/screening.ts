@@ -76,6 +76,14 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'crrg-shenzhen-base-operations-2027': {
+    eligible: true,
+    reason: '官网2027深圳具体经营运营岗接受计算机本科；低推荐备选，非产品或研发，不把新央企背景当高薪或低竞争证据',
+    salaryKind: '本届公开', monthlyMin: 6000,
+    salarySourceUrl: 'https://xyz.51job.com/external/apply.aspx?jobid=173844515&ctmid=9545724',
+    salarySourceLabel: '资环官方校招所链接的173844515具体岗：6千–1.2万/月，非集团年薪30万承诺',
+    exceptionReason: '央企经营分析备选：本科计算机可报、深圳；待遇可能低于12万，仅在接受公开薪资和运营方向时考虑，排在产品岗位之后',
+  },
   'wepie-backoffice-product-2027': {
     eligible: true,
     reason: '官方27届本科正式中后台产品岗、武汉、后台/SaaS经验优先；雇主高校本届同岗公开工资档10.5–14.999K',
@@ -484,11 +492,11 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   },
   'ygsoft-ai-requirements-2027': {
     eligible: true,
-    reason: '国网数科控股智慧能源软件公司，珠海AI应用与武汉需求分析均明确本科，10月30日截止',
+    reason: '仅保留武汉需求分析师，不推荐珠海开发岗；本科可投，本轮提前批10月30日已截止，已有进度保留',
     salaryKind: '本届公开', monthlyMin: 9500,
     salarySourceUrl: 'https://yjsjob.91wllm.cn/campus/view/id/1005888',
     salarySourceLabel: '远光软件2027提前批具体岗位薪资表',
-    exceptionReason: '央企AI+电力高匹配项：需求分析低于私企10K门槛不影响收录；必须按城市核学历，避开要求硕士的同名岗位',
+    exceptionReason: '央企电力企业软件需求分析项：低于私企10K门槛不影响收录；仅限已核本科的武汉需求岗，不扩展到研发岗位',
   },
   'sgdt-ai-energy-digital-2027': {
     eligible: false,
@@ -563,11 +571,11 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   },
   'citic-card-product-ai-2027': {
     eligible: true,
-    reason: '中信银行信用卡中心本科产品经理/AI应用开发岗，网申暂定10月18日截止',
+    reason: '仅保留本科产品及渠道方向，不推荐AI应用开发；原暂定10月18日截止，已有进度保留',
     salaryKind: '本届公开', monthlyMin: 10000,
     salarySourceUrl: 'https://jobs.tiangong.edu.cn/correcruit/content/id/55652.html',
     salarySourceLabel: '中信银行信用卡中心2027秋季校园招聘公告（标注10000元以上）',
-    exceptionReason: '央企金融科技产品岗：优先产品及渠道、AI应用开发，回避纯营销/客服/渠道执行；需确认具体部门和英语四级要求',
+    exceptionReason: '仅限产品及渠道方向，回避开发、运维和纯营销客服；确认具体职责及英语四级要求',
   },
   'sf-tech-product-data-2027': {
     eligible: true,
@@ -796,10 +804,10 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     salarySourceLabel: '中国电子官方上海单岗仅列六险二金等，无金额',
   },
   'richinfo-ai-product-2027': {
-    eligible: true, reason: '本届政企AI产品岗，本科可投；RAG/Agent/知识库方向，公开月薪档下限10.5K',
-    salaryKind: '本届公开', monthlyMin: 10500,
-    salarySourceUrl: 'https://myjob.dlmu.edu.cn/campus/view/id/868828',
-    salarySourceLabel: '高校就业网2027岗位薪资档与年薪表',
+    eligible: true, reason: '本届AI产品经理具体岗本科，RAG/Agent需求与评测匹配；川大雇主单岗12–20K，保留原记录',
+    salaryKind: '本届公开', monthlyMin: 12000,
+    salarySourceUrl: 'https://jy.scu.edu.cn/index/index/employjobdetail.html?data=MDAwMDAwMDAwMJG6n3_Ed6imi4qQtLh4Y9-Kz7bOs4bddricp9CWi5qikaeWacSdqLqGfaK2w4iil5C4zNbGiL-E',
+    salarySourceLabel: '四川大学雇主2027具体AI产品经理单岗，18人、本科、12–20K/月',
   },
   'autohome-b2b-product-2027': {
     eligible: true,
@@ -809,8 +817,8 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     salarySourceLabel: '企业校园招聘人员发布的2027具体岗位',
   },
   'cmic-ai-product-2027': {
-    eligible: true,
-    reason: '中国移动旗下官方2027 AI产品岗，本科计算机可投；知识库/智能体匹配，央企不设薪资下限',
+    eligible: false,
+    reason: '2026年11月2日官网具体岗位已显示招聘关闭，退出待投递列表；已有准备/投递进度保留。',
     salaryKind: '未公开',
   },
   'nio-energy-product-2027': {
@@ -973,6 +981,30 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     salarySourceLabel: '安克深圳经验不限产品经理同岗参考，非本届报价',
   },
 };
+
+// 2026-11-02纠偏：计算机本科能报、RAG领域相关，不等于接受开发转岗。
+const developmentRoleIds = [
+  'sdic-intelligence-agent-xiamen-2027', 'ccssoft-agent-chengdu-2027',
+  'aspire-ai-application-guangzhou-2027', 'chinatower-tianjin-aiot-2027',
+  'greatwall-power-data-2027', 'invt-it-development-2027', 'huali-ai-system-2027',
+  'scc-software-digital-2027', 'zhiguang-bms-software-2027', 'xinyueneng-cim-energy-2027',
+  'czbank-ai-application-2027', 'hzbank-ai-tech-2027', 'sinopec-shengli-ai-application-2027',
+  'sac-power-ai-service-2027', 'sifang-power-service-2027',
+];
+const unconfirmedDirectionIds = [
+  'csg-ecosystem-ict-guangzhou-2027', 'cnpc-zhejiang-digital-2027',
+  'sinopec-zhejiang-ai-2027', 'sinopec-jiangsu-ai-2027', 'sinopec-hubei-ai-management-2027',
+  'cofco-dongguan-ai-engineer-trainee-2027', 'uniview-ai-software-energy-product-2027',
+  'goldwind-product-rd-2027', 'mingyang-smart-energy-ai-2027', 'nrec-support-2027',
+  'nbcb-fintech-product-2027', 'huaneng-beijing-digital-2027', 'wisdri-automation-technical-marketing-2027',
+];
+export const roleDirectionExclusions: Record<string, string> = Object.fromEntries([
+  ...developmentRoleIds.map((id) => [id, '岗位方向撤回：主要为开发、研发、数据工程、运维或现场调试，不符合产品/需求/业务分析路线；薪资和央企背景不构成研发转岗例外。']),
+  ...unconfirmedDirectionIds.map((id) => [id, '职责待核，退出待投递推荐：尚未锁定非开发产品/需求/业务分析职能，或可能分流研发；不能只按计算机专业、能源行业或福利宣传判断匹配。']),
+]);
+for (const [id, reason] of Object.entries(roleDirectionExclusions)) {
+  if (screeningReviews[id]) Object.assign(screeningReviews[id], { eligible: false, reason, exceptionReason: undefined });
+}
 
 type DeadlineItem = { endDate?: string | null; endTime?: string | null };
 type ProgressItem = DeadlineItem & { id: string; stage: string; isCustom: boolean };

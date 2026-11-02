@@ -2,11 +2,92 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { seedOpportunities, retiredSeedIds } from '../lib/opportunities.ts';
 import { mergeOpportunities, normalizeCompanyName } from '../lib/opportunity-state.ts';
-import { chinaToday, deadlineCountdown, getDeadlineTime, getPreferredCityNote, isDeadlineExpired, isOpportunityInScope, locationExclusions, screeningReviews } from '../lib/screening.ts';
+import { chinaToday, deadlineCountdown, getDeadlineTime, getPreferredCityNote, isDeadlineExpired, isOpportunityInScope, locationExclusions, roleDirectionExclusions, screeningReviews } from '../lib/screening.ts';
+
+// Independent fixture: a computer-related degree does not imply an R&D career preference.
+const withdrawnDirectionIds = new Set([
+  'sdic-intelligence-agent-xiamen-2027', 'ccssoft-agent-chengdu-2027',
+  'aspire-ai-application-guangzhou-2027', 'chinatower-tianjin-aiot-2027',
+  'greatwall-power-data-2027', 'invt-it-development-2027', 'huali-ai-system-2027',
+  'scc-software-digital-2027', 'zhiguang-bms-software-2027', 'xinyueneng-cim-energy-2027',
+  'czbank-ai-application-2027', 'hzbank-ai-tech-2027', 'sinopec-shengli-ai-application-2027',
+  'sac-power-ai-service-2027', 'sifang-power-service-2027',
+  'csg-ecosystem-ict-guangzhou-2027', 'cnpc-zhejiang-digital-2027',
+  'sinopec-zhejiang-ai-2027', 'sinopec-jiangsu-ai-2027', 'sinopec-hubei-ai-management-2027',
+  'cofco-dongguan-ai-engineer-trainee-2027', 'uniview-ai-software-energy-product-2027',
+  'goldwind-product-rd-2027', 'mingyang-smart-energy-ai-2027', 'nrec-support-2027',
+  'nbcb-fintech-product-2027', 'huaneng-beijing-digital-2027', 'wisdri-automation-technical-marketing-2027',
+]);
+const closedRoleIds = new Set(['cmic-ai-product-2027']);
+function assertCurrentDecision(item, id = item?.id) {
+  assert.ok(item, id);
+  assert.equal(screeningReviews[id].eligible, !withdrawnDirectionIds.has(id) && !closedRoleIds.has(id), id);
+}
 
 const now = '2026-09-10T08:00:00.000Z';
 const initial = () => mergeOpportunities(seedOpportunities, [], now);
 const visible = (items) => items.filter((item) => isOpportunityInScope(item, retiredSeedIds, '2026-10-19'));
+
+test('direction correction hides unstarted coding and uncertain roles but retains each personal decision', () => {
+  assert.deepEqual(new Set(Object.keys(roleDirectionExclusions)), withdrawnDirectionIds);
+  for (const id of withdrawnDirectionIds) {
+    const row = initial().find((item) => item.id === id);
+    assert.ok(row, id);
+    assert.equal(screeningReviews[id].eligible, false, id);
+    assert.match(screeningReviews[id].reason, /岗位方向撤回|职责待核/);
+    assert.equal(isOpportunityInScope(row, retiredSeedIds, '2026-11-02'), false, id);
+    for (const stage of ['准备中', '已投递', '笔试', '面试', 'Offer', '已拒绝', '放弃']) {
+      const saved = { ...row, stage, notes: '原岗位回执与备注', favorite: true,
+        appliedAt: '2026-10-20', nextActionAt: '2026-11-03',
+        createdAt: '2026-09-10T08:00:00Z', updatedAt: '2026-10-20T08:00:00Z' };
+      const kept = mergeOpportunities(seedOpportunities, [saved], now).find((item) => item.id === id);
+      for (const field of ['stage', 'notes', 'favorite', 'appliedAt', 'nextActionAt', 'createdAt', 'updatedAt']) {
+        assert.equal(kept[field], saved[field], `${id}: ${field}`);
+      }
+      assert.equal(isOpportunityInScope(kept, retiredSeedIds, '2026-11-02'), stage !== '放弃', id);
+    }
+  }
+  for (const row of visible(initial()).filter((item) => item.stage === '待投递')) {
+    assert.doesNotMatch(row.role, /开发工程师|算法工程师|运维工程师|软件测试|AI开发|智能体开发|BMS.*软件/);
+  }
+});
+
+test('Wuhan requirements survive the Farsoft narrowing without extending an expired campus batch', () => {
+  const seed = seedOpportunities.find((item) => item.id === 'ygsoft-ai-requirements-2027');
+  assert.equal(seed.city, '武汉');
+  assert.match(seed.role, /需求分析师/);
+  assert.doesNotMatch(seed.role, /开发|AI应用/);
+  assert.equal(seed.endDate, '2026-10-30');
+  assert.match(seed.compensation, /9500.*10499/);
+  assert.equal(isOpportunityInScope(freshStored(seed), retiredSeedIds, '2026-11-02'), false);
+});
+
+test('November review adds only one honest SOE operations alternative and updates existing product cards', () => {
+  const seed = seedOpportunities.find((item) => item.id === 'crrg-shenzhen-base-operations-2027');
+  assert.equal(seed.ownership, '央企');
+  assert.equal(seed.recommendation, 2);
+  assert.match(seed.city, /深圳/);
+  assert.match(seed.degreeGate, /本科.*计算机|本科.*CET4/);
+  assert.match(seed.riskNote, /不是产品经理/);
+  assert.equal(seed.endDate, null);
+  assert.equal(screeningReviews[seed.id].monthlyMin, 6000);
+  assert.match(seed.compensation, /不推定达到12万/);
+  assert.equal(normalizeCompanyName(seed.company), normalizeCompanyName('中资环电子循环利用（深圳）有限公司'));
+  assert.notEqual(normalizeCompanyName(seed.company), normalizeCompanyName('中资环电子循环利用（惠州）有限公司'));
+  const saved = { ...freshStored(seed), id: 'manual-crrg', company: '中资环电子循环利用（深圳）有限公司', stage: '放弃', notes: '没有合适岗位', isCustom: true };
+  const merged = mergeOpportunities(seedOpportunities, [saved], now);
+  assert.equal(merged.some((item) => item.id === seed.id), false);
+  assert.deepEqual(merged.find((item) => item.id === saved.id), saved);
+  for (const id of ['richinfo-ai-product-2027', 'nsfocus-security-product-2027']) {
+    assert.equal(seedOpportunities.find((item) => item.id === id).endDate, null, id);
+  }
+  assert.equal(screeningReviews['richinfo-ai-product-2027'].monthlyMin, 12000);
+  assert.equal(screeningReviews['cmic-ai-product-2027'].eligible, false);
+  const poly = seedOpportunities.find((item) => item.id === 'poly-harmony-ai-product-guangzhou-2027');
+  assert.equal(poly.endDate, '2026-11-06');
+  assert.equal(poly.endTime, '24:00');
+  assert.match(poly.deadlineNote, /网申及测评/);
+});
 
 test('verified 17:00 deadlines close in China time rather than waiting until midnight', () => {
   const row = initial().find((item) => item.id === 'sinopec-zhejiang-ai-2027');
@@ -15,7 +96,7 @@ test('verified 17:00 deadlines close in China time rather than waiting until mid
   assert.equal(getDeadlineTime(row), '17:00');
   assert.equal(isDeadlineExpired(row, before), false);
   assert.equal(deadlineCountdown(row, before), '剩1分钟');
-  assert.equal(isOpportunityInScope(row, retiredSeedIds, undefined, before), true);
+  assert.equal(isOpportunityInScope(row, retiredSeedIds, undefined, before), false); // direction withdrawn
   assert.equal(isDeadlineExpired(row, cutoff), true);
   assert.equal(deadlineCountdown(row, cutoff), '已截止');
   assert.equal(isOpportunityInScope(row, retiredSeedIds, undefined, cutoff), false);
@@ -80,12 +161,12 @@ test('every non-retired seed has an explicit screening decision', () => {
   }
 });
 
-test('four further employers keep real bachelor roles and distinguish product work from coding-heavy alternatives', () => {
+test('historical employer evidence survives withdrawal of coding-heavy roles', () => {
   const ids = ['wepie-backoffice-product-2027', 'yealink-product-manager-2027', 'sdic-intelligence-agent-xiamen-2027', 'ccssoft-agent-chengdu-2027'];
   const fresh = initial();
   for (const id of ids) {
     const seed = seedOpportunities.find((item) => item.id === id);
-    assert.ok(seed && screeningReviews[id].eligible, id);
+    assertCurrentDecision(seed, id);
     assert.match(seed.degreeGate, /本科/);
     assert.doesNotMatch(seed.city, /北京|西安|昆明/);
     assert.equal(fresh.filter((item) => normalizeCompanyName(item.company) === normalizeCompanyName(seed.company)).length, 1);
@@ -153,7 +234,7 @@ test('October 28 expansion keeps distinct bachelor routes and distinguishes refe
   const fresh = initial();
   for (const id of ids) {
     const seed = seedOpportunities.find((item) => item.id === id);
-    assert.ok(seed && screeningReviews[id].eligible, id);
+    assertCurrentDecision(seed, id);
     assert.match(seed.degreeGate, /本科/);
     assert.doesNotMatch(seed.city, /北京|西安/);
     assert.equal(seed.initialStage, undefined);
@@ -242,7 +323,7 @@ test('October 27 deadline additions are distinct undergraduate SOE units with ho
   const fresh = initial();
   for (const id of ids) {
     const item = seedOpportunities.find((seed) => seed.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.equal(item.ownership, '央企');
     assert.match(item.degreeGate, /本科/);
     assert.doesNotMatch(item.city, /北京|西安/);
@@ -252,7 +333,7 @@ test('October 27 deadline additions are distinct undergraduate SOE units with ho
     assert.equal(screeningReviews[id].monthlyMin, undefined);
     assert.equal(fresh.filter((row) => normalizeCompanyName(row.company) === normalizeCompanyName(item.company)).length, 1);
     const row = fresh.find((entry) => entry.id === id);
-    assert.equal(isOpportunityInScope(row, retiredSeedIds, '2026-10-27'), true);
+    assert.equal(isOpportunityInScope(row, retiredSeedIds, '2026-10-27'), false); // later direction review
     assert.equal(isOpportunityInScope(row, retiredSeedIds, '2026-10-29'), false);
     assert.equal(isOpportunityInScope({ ...row, stage: '准备中' }, retiredSeedIds, '2026-10-29'), true);
   }
@@ -292,7 +373,7 @@ test('deadline corrections preserve saved progress and distinguish sourced dates
   assert.equal(bank.recommendation, 3);
   const ygsoft = seedOpportunities.find((seed) => seed.id === 'ygsoft-ai-requirements-2027');
   assert.equal(ygsoft.endDate, '2026-10-30');
-  assert.match(ygsoft.deadlineNote, /12月8日是页面有效期/);
+  assert.match(ygsoft.deadlineNote, /12月8日只是页面有效期/);
 });
 
 test('October 19 SOE additions use verified undergraduate roles and do not invent a cutoff', () => {
@@ -304,7 +385,7 @@ test('October 19 SOE additions use verified undergraduate roles and do not inven
   assert.match(tower.degreeGate, /计算机类/);
   assert.match(cicdi.degreeGate, /计算机科学与技术/);
   assert.match(cicdi.city, /南京/);
-  assert.ok(screeningReviews[tower.id].eligible);
+  assert.equal(screeningReviews[tower.id].eligible, false);
   assert.ok(screeningReviews[cicdi.id].eligible);
   assert.equal(seedOpportunities.filter((item) => item.company === tower.company).length, 1);
   assert.equal(seedOpportunities.filter((item) => item.company === cicdi.company).length, 1);
@@ -312,7 +393,7 @@ test('October 19 SOE additions use verified undergraduate roles and do not inven
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 90);
+  assert.equal(selected.length, 65);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -342,11 +423,11 @@ test('October 21 follow-up adds four distinct subsidiary product roles with hone
   const fresh = initial();
   for (const id of ids) {
     const item = seedOpportunities.find((seed) => seed.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.equal(item.ownership, '央企');
     assert.match(item.degreeGate, /本科/);
     assert.doesNotMatch(item.city, /北京|西安/);
-    assert.equal(item.verifiedAt, '2026-10-21');
+    assert.equal(item.verifiedAt, id === 'poly-harmony-ai-product-guangzhou-2027' ? '2026-11-02' : '2026-10-21');
     assert.equal(screeningReviews[id].salaryKind, '未公开');
     assert.equal(screeningReviews[id].monthlyMin, undefined);
     assert.equal(fresh.filter((row) => normalizeCompanyName(row.company) === normalizeCompanyName(item.company)).length, 1);
@@ -405,9 +486,9 @@ test('broader-title search adds product engineering and exception candidates wit
   ];
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
-    assert.ok(screeningReviews[id].exceptionReason, id);
+    if (screeningReviews[id].eligible) assert.ok(screeningReviews[id].exceptionReason, id);
     assert.ok(new URL(item.applyUrl));
   }
 });
@@ -459,19 +540,19 @@ test('five newly verified companies have concrete bachelor product roles', () =>
   const ids = ['ronds-software-product-2027', 'huice-b2b-product-2027', 'intsig-data-product-2027', 'kylin-product-2027', 'richinfo-ai-product-2027'];
   for (const id of ids) {
     const item = seedOpportunities.find((item) => item.id === id);
-    assert.ok(item && screeningReviews[id].eligible);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
   }
-  assert.equal(seedOpportunities.find((item) => item.id === 'richinfo-ai-product-2027').verifiedAt, '2026-09-14');
+  assert.equal(seedOpportunities.find((item) => item.id === 'richinfo-ai-product-2027').verifiedAt, '2026-11-02');
 });
 
 test('three re-screened industrial tech companies have concrete product opportunities', () => {
   const ids = ['envision-product-2027', 'lalamove-strategy-product-2027', 'ninebot-navimow-product-2027'];
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.ok(screeningReviews[id].monthlyMin >= 10000, item.company);
     assert.ok(new URL(item.applyUrl));
@@ -483,11 +564,11 @@ test('three large technology companies are screened by role instead of size', ()
   const ids = ['oppo-ai-pm-2027', 'xiaomi-product-2027', 'anker-campus-2027'];
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.equal(item.scale, '大型科技企业');
     assert.match(item.degreeGate, /本科/);
     assert.ok(screeningReviews[id].monthlyMin >= 10000, item.company);
-    assert.equal(item.verifiedAt, '2026-09-14');
+    assert.equal(item.verifiedAt, ['cmic-ai-product-2027', 'richinfo-ai-product-2027'].includes(id) ? '2026-11-02' : '2026-09-14');
   }
 });
 
@@ -495,12 +576,12 @@ test('continued search adds three concrete bachelor roles without delivery work'
   const ids = ['nio-energy-product-2027', 'cmic-ai-product-2027', 'autohome-b2b-product-2027'];
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.doesNotMatch(item.role, /项目管理|项目经理|PMO|实施|交付/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
-    assert.equal(item.verifiedAt, '2026-09-14');
+    assert.equal(item.verifiedAt, ['cmic-ai-product-2027', 'richinfo-ai-product-2027'].includes(id) ? '2026-11-02' : '2026-09-14');
   }
   assert.ok(screeningReviews['nio-energy-product-2027'].monthlyMin >= 10000);
   assert.ok(screeningReviews['autohome-b2b-product-2027'].monthlyMin >= 10000);
@@ -517,7 +598,7 @@ test('latest search adds B2B, AI-security, energy and power-product adjacent rol
   ];
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
@@ -526,14 +607,14 @@ test('latest search adds B2B, AI-security, energy and power-product adjacent rol
   assert.equal(screeningReviews['qiyuan-energy-product-2027'].monthlyMin, 10000);
   assert.equal(screeningReviews['threatbook-ai-product-2027'].salaryKind, '本届公开');
   assert.equal(screeningReviews['novastar-product-solution-2027'].salaryKind, '未公开');
-  assert.match(screeningReviews['sifang-power-service-2027'].exceptionReason, /出差|现场/);
+  assert.equal(screeningReviews['sifang-power-service-2027'].eligible, false);
 });
 
 test('latest search also adds two high-salary AI SaaS product roles', () => {
   const ids = ['beisen-ai-saas-product-2027', 'jiufang-ai-data-product-2027'];
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
@@ -547,11 +628,11 @@ test('October search adds software-solution and industrial-vision product routes
   const ids = ['hkaco-software-solution-2027', 'shining3d-product-reserve-2027'];
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
-    assert.ok(screeningReviews[id].exceptionReason, id);
+    if (screeningReviews[id].eligible) assert.ok(screeningReviews[id].exceptionReason, id);
   }
   assert.equal(screeningReviews['hkaco-software-solution-2027'].monthlyMin, 15000);
   assert.equal(screeningReviews['shining3d-product-reserve-2027'].monthlyMin, 10000);
@@ -567,11 +648,11 @@ test('October energy search adds five undergraduate storage and digital-factory 
   ];
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
-    assert.ok(screeningReviews[id].exceptionReason, id);
+    if (screeningReviews[id].eligible) assert.ok(screeningReviews[id].exceptionReason, id);
   }
   assert.equal(screeningReviews['hyperstrong-energy-solution-2027'].monthlyMin, 10000);
   assert.equal(screeningReviews['bluetti-energy-product-2027'].salaryKind, '本届公开');
@@ -586,7 +667,7 @@ test('October AI product search adds three concrete undergraduate routes without
   ];
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
@@ -605,7 +686,7 @@ test('bank review keeps the three valid undergraduate routes from the first batc
   ];
   for (const id of keptIds) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
@@ -631,7 +712,7 @@ test('October follow-up retains three eligible logistics-tech and energy routes 
   ];
   for (const id of keptIds) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
@@ -662,11 +743,11 @@ test('October 9 batch retains eight routes after subsequent bank and location au
   const companies = new Set();
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
-    assert.match(item.verifiedAt, /^2026-10-(09|12|27)$/);
+    assert.match(item.verifiedAt, /^2026-(10-(09|12|27)|11-02)$/);
     assert.equal(companies.has(item.company), false, item.company);
     companies.add(item.company);
   }
@@ -697,7 +778,7 @@ test('October 12 bank audit removes expired, master-only, low-pay and resume-mis
   ];
   for (const id of keptIds) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.equal(item.verifiedAt, item.id === 'nbcb-fintech-product-2027' ? '2026-10-28' : '2026-10-12');
     assert.ok(new URL(item.applyUrl));
@@ -735,7 +816,7 @@ test('latest review keeps only four high-confidence computer-major product route
   const companies = new Set();
   for (const id of keptIds) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.match(item.degreeGate, /计算机|信息技术|软件|人工智能/);
     assert.doesNotMatch(item.company, /银行/);
@@ -765,7 +846,7 @@ test('October 13 SOE review adds only concrete undergraduate computer routes', (
   ];
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.match(item.degreeGate, /本科/);
     assert.match(item.degreeGate, /计算机/);
     assert.ok(new URL(item.applyUrl));
@@ -796,7 +877,7 @@ test('October 14 employer review keeps Uniview conditional and INVT as a low-pri
   assert.equal(invt.recommendation, 2);
   assert.match(invt.degreeGate, /计算机/);
   assert.match(invt.compensation, /薪资未公开/);
-  assert.match(screeningReviews[invt.id].exceptionReason, /福利破格/);
+  assert.equal(screeningReviews[invt.id].eligible, false);
   assert.equal(screeningReviews[invt.id].monthlyMin, undefined);
   assert.equal(seedOpportunities.filter((opportunity) => opportunity.company === '英威腾').length, 1);
   for (const company of ['中国通服四川', '天池能源']) {
@@ -814,7 +895,7 @@ test('October 19 update adds distinct undergraduate roles and removes expired un
   const companies = new Set();
   for (const id of ids) {
     const item = seedOpportunities.find((opportunity) => opportunity.id === id);
-    assert.ok(item && screeningReviews[id].eligible, id);
+    assertCurrentDecision(item, id);
     assert.equal(item.verifiedAt, '2026-10-19');
     assert.match(item.degreeGate, /本科/);
     assert.ok(new URL(item.applyUrl));
@@ -830,7 +911,7 @@ test('October 19 update adds distinct undergraduate roles and removes expired un
 
   const expired = initial().find((item) => item.id === 'cnpc-zhejiang-digital-2027');
   assert.ok(expired);
-  assert.equal(isOpportunityInScope(expired, retiredSeedIds, '2026-10-15'), true);
+  assert.equal(isOpportunityInScope(expired, retiredSeedIds, '2026-10-15'), false); // duties unconfirmed
   assert.equal(isOpportunityInScope(expired, retiredSeedIds, '2026-10-19'), false);
   expired.stage = '准备中';
   assert.equal(isOpportunityInScope(expired, retiredSeedIds, '2026-10-19'), true);
