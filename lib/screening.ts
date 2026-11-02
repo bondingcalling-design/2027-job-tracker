@@ -76,6 +76,35 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'wps-ai-product-zhuhai-2027': {
+    eligible: true,
+    reason: '官方珠海具体岗开放，2027本科计算机可报、职责是AI应用产品；雇主本届同岗三城合并公告15–20K，不把名额及薪资说成珠海单岗保证',
+    salaryKind: '本届公开', monthlyMin: 15000,
+    salarySourceUrl: 'https://career.nankai.edu.cn/correcruit/content/id/118435.html',
+    salarySourceLabel: '南开雇主本届AI应用产品同岗三城合并公告；官网珠海具体岗未单独公布工资',
+  },
+  'zjamp-trade-hangzhou-2027': {
+    eligible: true,
+    reason: '浙江供销系统公有控股企业经营备选；本科薪资有同届同岗证据，但计算机专业及重点高校口径待确认，不属于确定可报的产品岗位',
+    salaryKind: '本届公开', monthlyMin: 10500,
+    salarySourceUrl: 'https://hzau.91wllm.cn/job/view/id/2160018/from_type/4/from_id/1008361',
+    salarySourceLabel: '华中农大雇主2027贸易业务单岗，10.5–14.999K/月；4人',
+    exceptionReason: '供销系统经营贸易低推荐备选：先核实专业和学校口径；含销售/物流/结算和出差，不能当产品经理或已获准报名',
+  },
+  'gac-logistics-business-systems-2027': {
+    eligible: true,
+    reason: '本届具体业务系统分析岗接受计算机本科，广州番禺，雇主公开12–13万年包；核心为需求、流程、业务数据分析，非开发',
+    salaryKind: '本届公开',
+    salarySourceUrl: 'https://jy.gzhu.edu.cn/web/Index/jobs-brief-detail?id=18505',
+    salarySourceLabel: '广州大学雇主2027同岗年薪12–13万；固定月薪未披露',
+    exceptionReason: '国企约12万年包且需求/业务分析直接匹配；接受部分一线需求调研和落地跟进，不是研发或现场调试备选',
+  },
+  'sinotrans-east-trainee-shanghai-2027': {
+    eligible: true,
+    reason: '官网开放的2027上海本科不限专业管培岗；经营备选，不等于产品定岗，研究生优先不是硕士硬限',
+    salaryKind: '未公开',
+    exceptionReason: '央企经营培养低推荐备选：薪酬与福利未核实，未达到已证实约12万放宽线；先核待遇、轮岗和定岗后再投入准备',
+  },
   'crrg-shenzhen-base-operations-2027': {
     eligible: true,
     reason: '官网2027深圳具体经营运营岗接受计算机本科；低推荐备选，非产品或研发，不把新央企背景当高薪或低竞争证据',

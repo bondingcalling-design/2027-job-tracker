@@ -639,15 +639,15 @@ export default function Dashboard() {
               当前按北京时间 {chinaToday(clockNow)} 判断网申期限；已核实时刻的岗位按分钟倒计时，到点停止催投；未公布时刻不承诺24时。已有准备／投递进度保留。最新人工复核：2026-11-02（按记录分别注明核验日）。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              本轮新增资环深圳基地运营低优先备选，复核保利和润11月6日及麒麟上海11月18日截止，更新彩讯AI产品待遇依据。已撤回开发类推荐和已关闭的中移互联网岗位；已有准备／投递进度保留。
+              续查新增4家：广汽商贸物流业务系统分析、金山办公珠海AI产品、中国外运华东上海管培，以及浙农股份贸易业务条件备选。前两条优先；浙农须先确认专业与学校口径。保利和润11月6日、麒麟上海11月18日截止继续关注。
             </p>
             <details className="mt-2 max-w-2xl text-xs leading-6 text-muted-foreground">
               <summary className="cursor-pointer font-medium text-foreground">11月2日 · 供销、安能、资环、中国物流线索核验</summary>
               <div className="mt-1 space-y-1 break-words">
-                <p>供销：官方2026事业单位公告的5:1是面试入围比例，不是报录比；未核到适配的2027岗。<a className="underline" href="https://www.mohrss.gov.cn/xxgk2020/fdzdgknr/rcrs_4225/sydwrsgl/202604/t20260420_574256.html" target="_blank" rel="noreferrer">查看公告</a></p>
-                <p>安能：三局简章列六险二金，但毕业届别矛盾、未列计算机专业且须服从分配；不能外推全集团免笔试或有安家费。<a className="underline" href="https://51uns.bysjy.com.cn/Announce/Details/3592432?schoolCode=10710" target="_blank" rel="noreferrer">查看雇主简章</a></p>
+                <p>供销：续查地方社企后新增浙农股份杭州贸易岗，薪资有本届证据，但计算机专业与“重点高校”口径须先确认；天禾数字运营仍待核，不把聚合站错配信息当事实。<a className="underline" href="https://hzau.91wllm.cn/campus/view/id/1008361" target="_blank" rel="noreferrer">查看浙农本届公告</a></p>
+                <p>安能：续查一、二、三局及科工/科技子公司，三局已有明确2027新版；本轮阻碍是已公开非研发岗位专业未含计算机、二局专业表外暂不接收，以及项目地点须服从分配，不再用旧简章届别矛盾排除整个集团。<a className="underline" href="https://www.gaoxiaojob.com/announcement/detail/435777.html" target="_blank" rel="noreferrer">查看三局新版转载及官方来源</a></p>
                 <p>资环：新增深圳计算机本科可报的基地运营岗；官方月薪6千–1.2万，非产品，不支持统一30万起。<a className="underline" href="https://campus.51job.com/crrg2027/job.html" target="_blank" rel="noreferrer">查看官方岗位表</a></p>
-                <p>中国物流：公开入口仍返回2026招聘项目，未核实符合条件的2027非研发岗及统一本科15–20万待遇。<a className="underline" href="https://chinalogisticsgroup.hotjob.cn/SU6426c1e1bef57c1e26962897/pb/school.html" target="_blank" rel="noreferrer">查看官方入口</a></p>
+                <p>中国物流：续查集团73岗及中储智运独立10岗；集团仍为2026项目，中储智运正式供应链产品/经营分析岗要求硕士。新增的“中国外运华东”属于招商局，不能冒充中国物流集团机会。<a className="underline" href="https://zczy.zhiye.com/home/" target="_blank" rel="noreferrer">查看中储智运官网</a></p>
               </div>
             </details>
             <p className="mt-2 inline-flex max-w-2xl rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs leading-5 text-amber-900">

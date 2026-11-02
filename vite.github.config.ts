@@ -24,11 +24,11 @@ export default defineConfig({
     rollupOptions: {
       output: {
         inlineDynamicImports: true,
-        entryFileNames: 'app.js',
-        chunkFileNames: 'app.js',
+        entryFileNames: 'app-[hash].js',
+        chunkFileNames: 'chunk-[hash].js',
         assetFileNames: (assetInfo) =>
           assetInfo.name?.endsWith('.css')
-            ? 'styles.css'
+            ? 'styles-[hash].css'
             : '[name][extname]',
       },
     },

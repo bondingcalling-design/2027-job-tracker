@@ -28,6 +28,63 @@ const now = '2026-09-10T08:00:00.000Z';
 const initial = () => mergeOpportunities(seedOpportunities, [], now);
 const visible = (items) => items.filter((item) => isOpportunityInScope(item, retiredSeedIds, '2026-10-19'));
 
+test('subsidiary follow-up adds product and business roles without inventing eligibility, pay or deadlines', () => {
+  const ids = ['gac-logistics-business-systems-2027', 'wps-ai-product-zhuhai-2027', 'sinotrans-east-trainee-shanghai-2027', 'zjamp-trade-hangzhou-2027'];
+  const rows = initial();
+  for (const id of ids) {
+    const seed = seedOpportunities.find((item) => item.id === id);
+    assertCurrentDecision(seed, id);
+    assert.match(seed.degreeGate, /本科/);
+    assert.doesNotMatch(seed.city, /北京|西安/);
+    assert.doesNotMatch(seed.role, /开发|测试|运维|算法工程师/);
+    assert.equal(seed.endDate, null, id);
+    assert.equal(rows.filter((item) => normalizeCompanyName(item.company) === normalizeCompanyName(seed.company)).length, 1, id);
+  }
+  const gac = rows.find((item) => item.id === ids[0]);
+  assert.equal(gac.ownership, '国企');
+  assert.match(gac.role, /业务系统分析/);
+  assert.match(gac.compensation, /12–13万元\/年/);
+  assert.equal(screeningReviews[gac.id].monthlyMin, undefined);
+  const wps = rows.find((item) => item.id === ids[1]);
+  assert.equal(wps.city, '珠海（香洲）');
+  assert.equal(screeningReviews[wps.id].monthlyMin, 15000);
+  assert.match(wps.applyUrl, /5de1b10f-4260-4f7a-baed-6f0a43f4d415/);
+  assert.match(wps.riskNote, /不是.*单独名额/);
+  const external = rows.find((item) => item.id === ids[2]);
+  assert.equal(external.ownership, '央企');
+  assert.match(external.degreeGate, /专业不限.*研究生.*优先/);
+  assert.match(external.riskNote, /不是.*中国物流集团/);
+  assert.equal(screeningReviews[external.id].salaryKind, '未公开');
+  const coop = rows.find((item) => item.id === ids[3]);
+  assert.equal(coop.ownership, '混合所有制');
+  assert.match(coop.role, /先确认专业/);
+  assert.match(coop.riskNote, /专业枚举未含计算机/);
+  assert.match(coop.degreeGate, /资格待核/);
+  assert.ok(coop.recommendation <= 2);
+});
+
+test('new subsidiary and software aliases never duplicate existing interview or abandoned decisions', () => {
+  const cases = [
+    ['gac-logistics-business-systems-2027', '广州广汽商贸物流有限公司'],
+    ['wps-ai-product-zhuhai-2027', 'WPS'],
+    ['wps-ai-product-zhuhai-2027', '珠海金山办公软件有限公司'],
+    ['sinotrans-east-trainee-shanghai-2027', '中国外运华东有限公司'],
+    ['zjamp-trade-hangzhou-2027', '浙农集团股份有限公司'],
+  ];
+  for (const [id, company] of cases) {
+    const seed = seedOpportunities.find((item) => item.id === id);
+    assert.equal(normalizeCompanyName(company), normalizeCompanyName(seed.company));
+    for (const stage of ['准备中', '面试', '放弃']) {
+      const old = { ...freshStored(seed), id: `manual-${id}`, company, stage, notes: '我的已有记录', favorite: true, isCustom: true };
+      const merged = mergeOpportunities(seedOpportunities, [old], now);
+      assert.equal(merged.some((item) => item.id === id), false);
+      assert.deepEqual(merged.find((item) => item.id === old.id), old);
+    }
+  }
+  assert.notEqual(normalizeCompanyName('金山软件'), normalizeCompanyName('金山办公'));
+  assert.notEqual(normalizeCompanyName('中国外运华东'), normalizeCompanyName('中外运物流华东'));
+});
+
 test('direction correction hides unstarted coding and uncertain roles but retains each personal decision', () => {
   assert.deepEqual(new Set(Object.keys(roleDirectionExclusions)), withdrawnDirectionIds);
   for (const id of withdrawnDirectionIds) {
@@ -62,7 +119,7 @@ test('Wuhan requirements survive the Farsoft narrowing without extending an expi
   assert.equal(isOpportunityInScope(freshStored(seed), retiredSeedIds, '2026-11-02'), false);
 });
 
-test('November review adds only one honest SOE operations alternative and updates existing product cards', () => {
+test('initial November review retains an honest SOE operations alternative and updates existing product cards', () => {
   const seed = seedOpportunities.find((item) => item.id === 'crrg-shenzhen-base-operations-2027');
   assert.equal(seed.ownership, '央企');
   assert.equal(seed.recommendation, 2);
@@ -393,7 +450,7 @@ test('October 19 SOE additions use verified undergraduate roles and do not inven
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 65);
+  assert.equal(selected.length, 69);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
