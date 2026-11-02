@@ -48,6 +48,8 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { retiredSeedIds } from '@/lib/opportunities';
+import { focusEmployers } from '@/lib/focus-employers';
+import { normalizeCompanyName } from '@/lib/opportunity-state';
 import { chinaToday, deadlineCountdown, getDeadlineTime, getPreferredCityNote, isDeadlineExpired, isOpportunityInScope, isProtectedFromScreening, locationExclusions, screeningReviews } from '@/lib/screening';
 
 type Opportunity = {
@@ -481,6 +483,18 @@ export default function Dashboard() {
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  function focusOpportunity(item: Opportunity) {
+    resetFilters();
+    setQuery(item.company);
+    setShowAbandoned(item.stage === '放弃');
+    setShowArchived(item.archived);
+    setPage(1);
+    setExpandedId(item.id);
+    document
+      .getElementById('opportunity-table')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   async function saveEditor(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!editing) return;
@@ -641,15 +655,6 @@ export default function Dashboard() {
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
               续查新增4家：广汽商贸物流业务系统分析、金山办公珠海AI产品、中国外运华东上海管培，以及浙农股份贸易业务条件备选。前两条优先；浙农须先确认专业与学校口径。保利和润11月6日、麒麟上海11月18日截止继续关注。
             </p>
-            <details className="mt-2 max-w-2xl text-xs leading-6 text-muted-foreground">
-              <summary className="cursor-pointer font-medium text-foreground">11月2日 · 供销、安能、资环、中国物流线索核验</summary>
-              <div className="mt-1 space-y-1 break-words">
-                <p>供销：续查地方社企后新增浙农股份杭州贸易岗，薪资有本届证据，但计算机专业与“重点高校”口径须先确认；天禾数字运营仍待核，不把聚合站错配信息当事实。<a className="underline" href="https://hzau.91wllm.cn/campus/view/id/1008361" target="_blank" rel="noreferrer">查看浙农本届公告</a></p>
-                <p>安能：续查一、二、三局及科工/科技子公司，三局已有明确2027新版；本轮阻碍是已公开非研发岗位专业未含计算机、二局专业表外暂不接收，以及项目地点须服从分配，不再用旧简章届别矛盾排除整个集团。<a className="underline" href="https://www.gaoxiaojob.com/announcement/detail/435777.html" target="_blank" rel="noreferrer">查看三局新版转载及官方来源</a></p>
-                <p>资环：新增深圳计算机本科可报的基地运营岗；官方月薪6千–1.2万，非产品，不支持统一30万起。<a className="underline" href="https://campus.51job.com/crrg2027/job.html" target="_blank" rel="noreferrer">查看官方岗位表</a></p>
-                <p>中国物流：续查集团73岗及中储智运独立10岗；集团仍为2026项目，中储智运正式供应链产品/经营分析岗要求硕士。新增的“中国外运华东”属于招商局，不能冒充中国物流集团机会。<a className="underline" href="https://zczy.zhiye.com/home/" target="_blank" rel="noreferrer">查看中储智运官网</a></p>
-              </div>
-            </details>
             <p className="mt-2 inline-flex max-w-2xl rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs leading-5 text-amber-900">
               城市边界：北京、西安不投；优先一线／新一线及沿海、南方高科技城市。多城市岗位须核对具体工作地。
             </p>
@@ -683,6 +688,47 @@ export default function Dashboard() {
             </Button>
           </div>
         </header>
+
+        <section aria-labelledby="focus-employers-title" className="mt-5 rounded-[18px] border border-primary/20 bg-primary/5 p-4 sm:p-5">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <h2 id="focus-employers-title" className="text-base font-semibold">你指定的4家重点关注企业</h2>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">企业线索单独保留；有具体岗位的关联原记录，待核线索不计入可投机会数。原投递阶段与放弃决定保留。</p>
+            </div>
+            <Badge variant="outline">核查于 2026-11-02</Badge>
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {focusEmployers.map((employer) => {
+              const related = employer.relatedOpportunity;
+              const item = related ? items.find((row) =>
+                row.id === related.id || normalizeCompanyName(row.company) === normalizeCompanyName(related.company),
+              ) : undefined;
+              return (
+                <article key={employer.id} className="flex min-w-0 flex-col rounded-xl border border-border bg-background p-4">
+                  <h3 className="text-base font-semibold">{employer.company}</h3>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{employer.affiliation}</p>
+                  <p className="mt-3 text-xs font-medium text-primary">{employer.status}</p>
+                  <p className="mt-2 break-words text-sm leading-6">{employer.summary}</p>
+                  <p className="mt-2 break-words text-xs leading-5 text-muted-foreground">{employer.constraint}</p>
+                  <div className="mt-auto pt-3">
+                    {item ? (
+                      <Button variant="outline" size="sm" className="mb-3 max-w-full" onClick={() => focusOpportunity(item)}>
+                        查看关联记录 · {item.stage}<ArrowUpRight className="size-3.5" />
+                      </Button>
+                    ) : null}
+                    <div className="flex flex-wrap gap-x-3 gap-y-2">
+                      {employer.links.map((link) => (
+                        <a key={link.url} className="inline-flex items-center gap-0.5 text-xs text-primary underline underline-offset-4" href={link.url} target="_blank" rel="noreferrer">
+                          {link.label}<ArrowUpRight className="size-3" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
 
         {applicationDeadlines.length > 0 ? (
           <section

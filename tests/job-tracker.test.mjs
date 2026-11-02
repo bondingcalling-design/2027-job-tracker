@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { seedOpportunities, retiredSeedIds } from '../lib/opportunities.ts';
 import { mergeOpportunities, normalizeCompanyName } from '../lib/opportunity-state.ts';
+import { focusEmployers } from '../lib/focus-employers.ts';
 import { chinaToday, deadlineCountdown, getDeadlineTime, getPreferredCityNote, isDeadlineExpired, isOpportunityInScope, locationExclusions, roleDirectionExclusions, screeningReviews } from '../lib/screening.ts';
 
 // Independent fixture: a computer-related degree does not imply an R&D career preference.
@@ -27,6 +28,21 @@ function assertCurrentDecision(item, id = item?.id) {
 const now = '2026-09-10T08:00:00.000Z';
 const initial = () => mergeOpportunities(seedOpportunities, [], now);
 const visible = (items) => items.filter((item) => isOpportunityInScope(item, retiredSeedIds, '2026-10-19'));
+
+test('four requested employer leads link to existing records without creating job opportunities', () => {
+  assert.deepEqual(focusEmployers.map((employer) => employer.company), ['中国供销合作社', '中国安能', '中国资环', '中国物流集团']);
+  const relatedIds = focusEmployers.flatMap((employer) => employer.relatedOpportunity ? [employer.relatedOpportunity.id] : []);
+  assert.deepEqual(new Set(relatedIds), new Set(['zjamp-trade-hangzhou-2027', 'crrg-shenzhen-base-operations-2027']));
+  for (const employer of focusEmployers) {
+    assert.equal(seedOpportunities.some((row) => row.id === employer.id), false);
+    for (const link of employer.links) assert.equal(new URL(link.url).protocol, 'https:');
+    if (employer.relatedOpportunity) {
+      const row = seedOpportunities.find((item) => item.id === employer.relatedOpportunity.id);
+      assert.ok(row);
+      assert.equal(normalizeCompanyName(row.company), normalizeCompanyName(employer.relatedOpportunity.company));
+    }
+  }
+});
 
 test('subsidiary follow-up adds product and business roles without inventing eligibility, pay or deadlines', () => {
   const ids = ['gac-logistics-business-systems-2027', 'wps-ai-product-zhuhai-2027', 'sinotrans-east-trainee-shanghai-2027', 'zjamp-trade-hangzhou-2027'];
