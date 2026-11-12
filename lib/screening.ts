@@ -76,6 +76,28 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'cndg-data-product-2027': {
+    eligible: true,
+    reason: '新央企明确的2027数据产品岗，计算机本科可报，做产品规划、需求及数据服务设计。雄安按点名企业单独考虑。',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://career.nankai.edu.cn/correcruit/content/id/120331.html',
+    salarySourceLabel: '雇主本届整批招聘页列10–15K，具体岗工资未披露',
+    exceptionReason: '雄安为城市备选，接受该工作地再申请。官方截止11月30日17:00，每人限报1岗。',
+  },
+  'getech-tcl-ai-product-shenzhen-2027': {
+    eligible: true,
+    reason: 'TCL官网工业智能体及语义平台产品岗位，明确计算机本科可报，深圳。RAG与知识图谱产品高度相关，薪资先核。',
+    salaryKind: '招聘转载参考',
+    salarySourceUrl: 'https://www.jobstore.com/cn/job/l32171611/ai-job',
+    salarySourceLabel: '同名同职责深圳岗位，Jobstore标注月薪10–15K为平台估算',
+    exceptionReason: 'TCL指定企业下的高匹配岗位。平台估算供参考，尚未证实固定月薪达到1万元。',
+  },
+  'cec-greatwall-hardware-product-shenzhen-2027': {
+    eligible: true,
+    reason: '央企下属深圳工控产品岗位，转载单岗注明计算机本科和真实产品职责。官网入口内需核对具体岗位状态。',
+    salaryKind: '未公开',
+    exceptionReason: '物联网硬件产品备选。需了解计算机架构并确认硬件故障支持占比。',
+  },
   'wps-ai-product-zhuhai-2027': {
     eligible: true,
     reason: '官方珠海具体岗开放，2027本科计算机可报、职责是AI应用产品；雇主本届同岗三城合并公告15–20K，不把名额及薪资说成珠海单岗保证',

@@ -30,6 +30,12 @@ export function normalizeCompanyName(company: string) {
     .replace(/[^a-z0-9\u3400-\u9fff]/g, '');
   // 已确认的同一招聘品牌/经营主体别名，避免用户手动记录与新种子重复；不按集团名称泛合并子公司。
   const aliases: Record<string, string> = {
+    国数集团: '国家数据',
+    国数: '国家数据',
+    tcl格创东智: '格创东智',
+    格创东智深圳科技: '格创东智',
+    格创东智科技: '格创东智',
+    中电长城: '中电长城科技',
     wps: '金山办公',
     wps金山办公: '金山办公',
     珠海金山办公软件: '金山办公',

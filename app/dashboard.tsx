@@ -650,10 +650,17 @@ export default function Dashboard() {
               央国企约 12 万年包及较好福利可放宽岗位匹配度。高福利例外须注明薪资未知与风险。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              当前按北京时间 {chinaToday(clockNow)} 判断网申期限；已核实时刻的岗位按分钟倒计时，到点停止催投；未公布时刻不承诺24时。已有准备／投递进度保留。最新人工复核：2026-11-02（按记录分别注明核验日）。
+              当前按北京时间 {chinaToday(clockNow)} 判断网申期限。已核实截止时刻的岗位按分钟倒计时。最新岗位更新 2026-11-12，各岗位详情注明核验日期。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              续查新增4家：广汽商贸物流业务系统分析、金山办公珠海AI产品、中国外运华东上海管培，以及浙农股份贸易业务条件备选。前两条优先；浙农须先确认专业与学校口径。保利和润11月6日、麒麟上海11月18日截止继续关注。
+              11月12日新增国家数据集团数据产品经理（雄安，11月30日17:00截止）、TCL格创东智AI产品助理（深圳，薪资待确认）、中电长城科技工控产品经理（深圳，单岗状态待确认）。麒麟软件上海岗位11月18日24:00截止。
+            </p>
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
+              <a className="underline underline-offset-2" href="https://wecruit.hotjob.cn/SU6491506a2f9d24316e91b81b/mc/detail?distance=0&amp;postId=6a8a7a4f1ad6db7cf833b657&amp;recruitType=campus" target="_blank" rel="noreferrer">TCL实业空调事业部</a> 另有广州／中山AI智能产品经理，物联网本科可报，偏智能家居，薪资待核。
+            </p>
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
+              <a className="underline underline-offset-2" href="https://zhaopin.airchina.com.cn/campus/jobs/2026/10/185624.shtml" target="_blank" rel="noreferrer">国航信息管理部</a> 11月15日24:00截止，统一招录后分配方向。只有能确认分到产品管理及可接受城市时才考虑。
+              <a className="ml-2 underline underline-offset-2" href="https://51uns.bysjy.com.cn/Announce/Details/3633767?schoolCode=10710" target="_blank" rel="noreferrer">远光软件</a> 需求分析方向等国网正式批确认具体岗位和截止日。
             </p>
             <p className="mt-2 inline-flex max-w-2xl rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs leading-5 text-amber-900">
               城市边界：北京、西安不投；优先一线／新一线及沿海、南方高科技城市。多城市岗位须核对具体工作地。
