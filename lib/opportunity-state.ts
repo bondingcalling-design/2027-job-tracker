@@ -30,6 +30,14 @@ export function normalizeCompanyName(company: string) {
     .replace(/[^a-z0-9\u3400-\u9fff]/g, '');
   // 已确认的同一招聘品牌/经营主体别名，避免用户手动记录与新种子重复；不按集团名称泛合并子公司。
   const aliases: Record<string, string> = {
+    上海商米科技: '商米',
+    商米科技: '商米',
+    sunmi: '商米',
+    上海声网科技: '声网',
+    上海兆言网络科技: '声网',
+    agora: '声网',
+    深城交科技: '深城交',
+    深圳市城市交通规划设计研究中心: '深城交',
     国数集团: '国家数据',
     国数: '国家数据',
     tcl格创东智: '格创东智',

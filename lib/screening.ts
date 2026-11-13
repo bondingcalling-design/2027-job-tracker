@@ -76,6 +76,27 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'sunmi-dmp-product-shanghai-2027': {
+    eligible: true,
+    reason: '上海企业设备管理SaaS的2027产品岗，物联网经验明确加分，雇主单岗公开薪资与投递窗口。',
+    salaryKind: '本届公开', monthlyMin: 15000,
+    salarySourceUrl: 'https://www.nowcoder.com/jobs/detail/474283',
+    salarySourceLabel: '商米HR发布的DMP单岗为15–20K/月 × 14薪',
+  },
+  'agora-b2b-product-shanghai-2027': {
+    eligible: true,
+    reason: '官网在招的2027届B端产品岗位，计算机本科可报。牛客上海校招岗位的职责与官网一致，明确平台规划与迭代。',
+    salaryKind: '本届公开', monthlyMin: 15000,
+    salarySourceUrl: 'https://www.nowcoder.com/jobs/detail/396475',
+    salarySourceLabel: '声网HR发布的上海同职责校招岗为15–25K/月 × 15薪',
+  },
+  'sutpc-international-product-shenzhen-2027': {
+    eligible: true,
+    reason: '深圳市属国企子公司的智慧交通平台产品岗位，接受计算机类本科，做海外行业产品定义、规划和迭代。',
+    salaryKind: '本届公开', monthlyMin: 10500,
+    salarySourceUrl: 'https://job.xidian.edu.cn/teachin/view/id/126950',
+    salarySourceLabel: '西电就业网雇主本届具体岗位薪资档为10500–14999元/月',
+  },
   'cndg-data-product-2027': {
     eligible: true,
     reason: '新央企明确的2027数据产品岗，计算机本科可报，做产品规划、需求及数据服务设计。雄安按点名企业单独考虑。',
