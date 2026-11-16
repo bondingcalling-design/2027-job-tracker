@@ -650,10 +650,10 @@ export default function Dashboard() {
               央国企约 12 万年包及较好福利可放宽岗位匹配度。高福利例外须注明薪资未知与风险。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              当前按北京时间 {chinaToday(clockNow)} 判断网申期限。已核实截止时刻的岗位按分钟倒计时。最新岗位更新 2026-11-13，各岗位详情注明核验日期。
+              当前按北京时间 {chinaToday(clockNow)} 判断网申期限。已核实截止时刻的岗位按分钟倒计时。最新岗位更新 2026-11-16，各岗位详情注明核验日期。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              11月13日新增商米集团DMP产品经理（上海，5星）、声网B端产品经理（上海，4星）、深城交科技集团海外产品经理（深圳，4星）。麒麟软件上海岗位11月18日24:00截止，国家数据集团数据产品经理11月30日17:00截止。
+              11月16日新增广州发展新能源电力交易（成都，5星）、中国外运长江需求与产品经理（南京，4星，学历待确认）、宝时得海外产品专员（苏州，4星）。麒麟软件上海岗位11月18日24:00截止，国家数据集团数据产品经理11月30日17:00截止。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
               <a className="underline underline-offset-2" href="https://wecruit.hotjob.cn/SU6491506a2f9d24316e91b81b/mc/detail?distance=0&amp;postId=6a8a7a4f1ad6db7cf833b657&amp;recruitType=campus" target="_blank" rel="noreferrer">TCL实业空调事业部</a> 另有广州／中山AI智能产品经理，物联网本科可报，偏智能家居，薪资待核。

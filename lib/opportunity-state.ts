@@ -30,6 +30,13 @@ export function normalizeCompanyName(company: string) {
     .replace(/[^a-z0-9\u3400-\u9fff]/g, '');
   // 已确认的同一招聘品牌/经营主体别名，避免用户手动记录与新种子重复；不按集团名称泛合并子公司。
   const aliases: Record<string, string> = {
+    广州发展新能源: '广州发展新能源集团',
+    广发新能源: '广州发展新能源集团',
+    外运长江: '中国外运长江',
+    宝时得: '宝时得科技',
+    宝时得机械: '宝时得科技',
+    宝时得机械中国: '宝时得科技',
+    positec: '宝时得科技',
     上海商米科技: '商米',
     商米科技: '商米',
     sunmi: '商米',

@@ -76,6 +76,27 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'gdg-renewables-power-trading-chengdu-2027': {
+    eligible: true,
+    reason: '市属国企子公司成都电力交易岗，雇主简章明确接受计算机科学等相关本科。电力交易业务与实习直接相关。',
+    salaryKind: '本届公开', monthlyMin: 10000,
+    salarySourceUrl: 'https://job.ncepu.edu.cn/zpgg/dc5df0b48bc64f838a465596658a29ec.htm',
+    salarySourceLabel: '华北电大雇主本届电力交易岗列10–18K/月，公告列六险二金。成都实际定薪待确认。',
+  },
+  'sinotrans-yangtze-requirements-product-nanjing-2027': {
+    eligible: true,
+    reason: '央企子公司南京全职校招单岗开放。需求分析、知识库和AI产品职责匹配。官网未明确学历，优先核资格。',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://sinotrans.zhiye.com/campus/detail?jobAdId=b24e92ea-6f00-430a-89e2-27b76f5026b5',
+    salarySourceLabel: '官方 J34280 面议，未公布福利金额。',
+  },
+  'positec-overseas-product-suzhou-2027': {
+    eligible: true,
+    reason: '苏州本科工科产品岗，新发布且有投递入口。岗位做功能定义、产品规划和迭代，薪资有本届同城同类岗位参考。',
+    salaryKind: '招聘转载参考', monthlyMin: 12000,
+    salarySourceUrl: 'https://51uns.bysjy.com.cn/Announce/Details/3618012?schoolCode=10710',
+    salarySourceLabel: '长安大学就业网投递表：宝时得本届苏州产品专员12–20K/月，海外市场单岗未报价。',
+  },
   'sunmi-dmp-product-shanghai-2027': {
     eligible: true,
     reason: '上海企业设备管理SaaS的2027产品岗，物联网经验明确加分，雇主单岗公开薪资与投递窗口。',
