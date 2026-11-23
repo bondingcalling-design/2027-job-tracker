@@ -650,17 +650,16 @@ export default function Dashboard() {
               央国企约 12 万年包及较好福利可放宽岗位匹配度。高福利例外须注明薪资未知与风险。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              当前按北京时间 {chinaToday(clockNow)} 判断网申期限。已核实截止时刻的岗位按分钟倒计时。最新岗位更新 2026-11-16，各岗位详情注明核验日期。
+              当前按北京时间 {chinaToday(clockNow)} 判断网申期限。已核实截止时刻的岗位按分钟倒计时。最新岗位更新 2026-11-23，各岗位详情注明核验日期。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              11月16日新增广州发展新能源电力交易（成都，5星）、中国外运长江需求与产品经理（南京，4星，学历待确认）、宝时得海外产品专员（苏州，4星）。麒麟软件上海岗位11月18日24:00截止，国家数据集团数据产品经理11月30日17:00截止。
+              11月23日新增海康威视产品管理（杭州，4星）、联通广东产业互联网产品经理（广州，4星）和京东方精电车载产品企划（成都，3星）。国家数据集团数据产品经理11月30日17:00截止。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
               <a className="underline underline-offset-2" href="https://wecruit.hotjob.cn/SU6491506a2f9d24316e91b81b/mc/detail?distance=0&amp;postId=6a8a7a4f1ad6db7cf833b657&amp;recruitType=campus" target="_blank" rel="noreferrer">TCL实业空调事业部</a> 另有广州／中山AI智能产品经理，物联网本科可报，偏智能家居，薪资待核。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              <a className="underline underline-offset-2" href="https://zhaopin.airchina.com.cn/campus/jobs/2026/10/185624.shtml" target="_blank" rel="noreferrer">国航信息管理部</a> 11月15日24:00截止，统一招录后分配方向。只有能确认分到产品管理及可接受城市时才考虑。
-              <a className="ml-2 underline underline-offset-2" href="https://51uns.bysjy.com.cn/Announce/Details/3633767?schoolCode=10710" target="_blank" rel="noreferrer">远光软件</a> 需求分析方向等国网正式批确认具体岗位和截止日。
+              <a className="underline underline-offset-2" href="https://51uns.bysjy.com.cn/Announce/Details/3633767?schoolCode=10710" target="_blank" rel="noreferrer">远光软件</a> 需求分析方向等国网正式批确认具体岗位和截止日。
             </p>
             <p className="mt-2 inline-flex max-w-2xl rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs leading-5 text-amber-900">
               城市边界：北京、西安不投；优先一线／新一线及沿海、南方高科技城市。多城市岗位须核对具体工作地。
@@ -699,12 +698,11 @@ export default function Dashboard() {
         <section aria-labelledby="focus-employers-title" className="mt-5 rounded-[18px] border border-primary/20 bg-primary/5 p-4 sm:p-5">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <h2 id="focus-employers-title" className="text-base font-semibold">你指定的4家重点关注企业</h2>
+              <h2 id="focus-employers-title" className="text-base font-semibold">指定企业核查</h2>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">企业线索单独保留；有具体岗位的关联原记录，待核线索不计入可投机会数。原投递阶段与放弃决定保留。</p>
             </div>
-            <Badge variant="outline">核查于 2026-11-02</Badge>
           </div>
-          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {focusEmployers.map((employer) => {
               const related = employer.relatedOpportunity;
               const item = related ? items.find((row) =>
@@ -714,7 +712,7 @@ export default function Dashboard() {
                 <article key={employer.id} className="flex min-w-0 flex-col rounded-xl border border-border bg-background p-4">
                   <h3 className="text-base font-semibold">{employer.company}</h3>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">{employer.affiliation}</p>
-                  <p className="mt-3 text-xs font-medium text-primary">{employer.status}</p>
+                  <p className="mt-3 text-xs font-medium text-primary">{employer.status} · {employer.checkedAt}</p>
                   <p className="mt-2 break-words text-sm leading-6">{employer.summary}</p>
                   <p className="mt-2 break-words text-xs leading-5 text-muted-foreground">{employer.constraint}</p>
                   <div className="mt-auto pt-3">

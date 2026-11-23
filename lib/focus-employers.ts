@@ -14,6 +14,19 @@ export type FocusEmployer = {
 
 export const focusEmployers: FocusEmployer[] = [
   {
+    id: 'cscec-third-railway',
+    company: '中建三局铁路建设公司',
+    affiliation: '中国建筑集团 · 中建三局铁路建设单位',
+    status: '2027届有招聘 · 职责和城市待确认',
+    summary: '职能管理大类列计算机科学与技术、信息管理与信息系统等专业，岗位说明主要列人资、行政、党群、法务。公司校招简章列七险二金和各类津补贴，河北工业大学该批招聘页标注8–10K/月。',
+    constraint: '要求专业排名前30%、专业课无补考、本科英语四级。物联网工程能否填报需确认。公司按全国及海外项目招聘，具体职能岗、城市、单岗待遇及截止均待核。签约环节需签三方，已签者的换签处理未公开。',
+    checkedAt: '2026-11-23',
+    links: [
+      { label: '招聘简章和网申方式', url: 'https://51uns.bysjy.com.cn/Announce/Details/3606550?schoolCode=10710' },
+      { label: '岗位类别和薪资参考', url: 'https://career.hebut.edu.cn/home/correcruit/content/id/80685.html' },
+    ],
+  },
+  {
     id: 'supply-cooperative',
     company: '中国供销合作社',
     affiliation: '总社事业单位、中央及地方社有企业分别核查',

@@ -22,6 +22,9 @@ export function normalizeCompanyName(company: string) {
   if (/^中资环电子循环利用[（(]深圳[）)](?:有限公司)?$/.test(company.normalize('NFKC').trim())) {
     return '中资环电子循环利用深圳';
   }
+  if (/^(?:联通[（(]?广东[）)]?产业互联网(?:有限公司)?|广东联通产互)$/.test(company.normalize('NFKC').trim())) {
+    return '联通广东产业互联网';
+  }
   const normalized = company
     .normalize('NFKC')
     .toLowerCase()
@@ -30,6 +33,10 @@ export function normalizeCompanyName(company: string) {
     .replace(/[^a-z0-9\u3400-\u9fff]/g, '');
   // 已确认的同一招聘品牌/经营主体别名，避免用户手动记录与新种子重复；不按集团名称泛合并子公司。
   const aliases: Record<string, string> = {
+    杭州海康威视数字技术: '海康威视',
+    海康: '海康威视',
+    hikvision: '海康威视',
+    boevaritronix: '京东方精电',
     广州发展新能源: '广州发展新能源集团',
     广发新能源: '广州发展新能源集团',
     外运长江: '中国外运长江',

@@ -29,8 +29,8 @@ const now = '2026-09-10T08:00:00.000Z';
 const initial = () => mergeOpportunities(seedOpportunities, [], now);
 const visible = (items) => items.filter((item) => isOpportunityInScope(item, retiredSeedIds, '2026-10-19'));
 
-test('four requested employer leads link to existing records without creating job opportunities', () => {
-  assert.deepEqual(focusEmployers.map((employer) => employer.company), ['中国供销合作社', '中国安能', '中国资环', '中国物流集团']);
+test('requested employer leads link to existing records without creating job opportunities', () => {
+  assert.deepEqual(focusEmployers.map((employer) => employer.company), ['中建三局铁路建设公司', '中国供销合作社', '中国安能', '中国资环', '中国物流集团']);
   const relatedIds = focusEmployers.flatMap((employer) => employer.relatedOpportunity ? [employer.relatedOpportunity.id] : []);
   assert.deepEqual(new Set(relatedIds), new Set(['zjamp-trade-hangzhou-2027', 'crrg-shenzhen-base-operations-2027']));
   for (const employer of focusEmployers) {
@@ -466,7 +466,7 @@ test('October 19 SOE additions use verified undergraduate roles and do not inven
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 78);
+  assert.equal(selected.length, 81);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);

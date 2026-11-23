@@ -76,6 +76,23 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'hikvision-product-management-hangzhou-2027': {
+    eligible: true,
+    reason: '杭州在招的2027届本科产品岗，计算机相关专业优先。职责涉及需求、定义、原型和迭代。',
+    salaryKind: '未公开',
+  },
+  'unicom-guangdong-industrial-internet-product-2027': {
+    eligible: true,
+    reason: '央企下属公司广州在招本科岗，计算机相关优先，职责是企业客户需求调研和平台产品运营。尾号87505的正文未列专业成绩排名门槛。',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://xiaoyuan.zhaopin.com/job/CC145093010J40890487505',
+    salarySourceLabel: '招聘系统面议，结构化薪资区间口径待确认。',
+  },
+  'boe-varitronix-vehicle-product-planning-chengdu-2027': {
+    eligible: true,
+    reason: '国有控股产业公司成都校招产品企划岗，接受本科，偏好理工科。职位适配度取决于是否看重物联网背景以及实际产品企划职责占比。',
+    salaryKind: '未公开',
+  },
   'gdg-renewables-power-trading-chengdu-2027': {
     eligible: true,
     reason: '市属国企子公司成都电力交易岗，雇主简章明确接受计算机科学等相关本科。电力交易业务与实习直接相关。',
