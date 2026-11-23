@@ -646,14 +646,14 @@ export default function Dashboard() {
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
               聚焦 B 端 / AI / 能源产品、需求分析和业务分析；产品工程师按实际职责筛选，开发、算法、测试、运维不作为备选。
-              私企常规项月薪下限 ≥ 1 万；私企项目/交付岗仅在可核实年薪约 15 万以上时放宽，
+              新增私企岗位参考月薪下限须超过一线 12K、新一线 10K；项目和交付岗仅在可核实年薪约 15 万以上时放宽，
               央国企约 12 万年包及较好福利可放宽岗位匹配度。高福利例外须注明薪资未知与风险。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
               当前按北京时间 {chinaToday(clockNow)} 判断网申期限。已核实截止时刻的岗位按分钟倒计时。最新岗位更新 2026-11-23，各岗位详情注明核验日期。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              11月23日新增海康威视产品管理（杭州，4星）、联通广东产业互联网产品经理（广州，4星）和京东方精电车载产品企划（成都，3星）。国家数据集团数据产品经理11月30日17:00截止。
+              新增华润万家 AI 产品管培生（深圳，5星）、韶音科技 IT 产品管培生（深圳，4星）和同程旅行中后台商业化产品经理（苏州，4星）。近期截止：国家数据集团数据产品经理 11月30日17:00。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
               <a className="underline underline-offset-2" href="https://wecruit.hotjob.cn/SU6491506a2f9d24316e91b81b/mc/detail?distance=0&amp;postId=6a8a7a4f1ad6db7cf833b657&amp;recruitType=campus" target="_blank" rel="noreferrer">TCL实业空调事业部</a> 另有广州／中山AI智能产品经理，物联网本科可报，偏智能家居，薪资待核。

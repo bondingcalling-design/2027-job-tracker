@@ -33,6 +33,13 @@ export function normalizeCompanyName(company: string) {
     .replace(/[^a-z0-9\u3400-\u9fff]/g, '');
   // 已确认的同一招聘品牌/经营主体别名，避免用户手动记录与新种子重复；不按集团名称泛合并子公司。
   const aliases: Record<string, string> = {
+    华润万家生活超市: '华润万家',
+    深圳市韶音科技: '韶音科技',
+    韶音: '韶音科技',
+    shokz: '韶音科技',
+    同程网络科技: '同程旅行',
+    同程: '同程旅行',
+    tongcheng: '同程旅行',
     杭州海康威视数字技术: '海康威视',
     海康: '海康威视',
     hikvision: '海康威视',

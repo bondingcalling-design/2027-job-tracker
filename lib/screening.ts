@@ -76,6 +76,25 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'cr-vanguard-ai-product-shenzhen-2027': {
+    eligible: true,
+    reason: '央企旗下深圳总部 AI 产品岗，计算机相关本科可投，岗位明确要求 AI 产品实习和大模型项目经历。',
+    salaryKind: '未公开',
+  },
+  'shokz-it-product-trainee-shenzhen-2027': {
+    eligible: true,
+    reason: '深圳正式批明确接受计算机相关本科。内部 IT 产品管培生含 AI 产品方向，往届深圳同岗公开月薪下限超过 12K。',
+    salaryKind: '往届参考', monthlyMin: 18000,
+    salarySourceUrl: 'https://m.zhipin.com/zhaopin/bbfa12b57e07207f0HF83tm7/',
+    salarySourceLabel: '韶音科技 BOSS 直聘公开列表：深圳 IT 产品经理管培生（26 届校招）18–25K/月×14 薪。',
+  },
+  'tongcheng-b2b-commercial-product-suzhou-2027': {
+    eligible: true,
+    reason: '苏州本科中后台岗，覆盖商户工具和 AI 应用。苏州同届相近产品岗公开月薪下限超过 10K，此岗实际薪资待确认。',
+    salaryKind: '招聘转载参考', monthlyMin: 14000,
+    salarySourceUrl: 'https://www.nowcoder.com/jobs/detail/470611',
+    salarySourceLabel: '同程校招经理在牛客发布的苏州前端产品经理（27 届）14–20K/月×14 薪，属于同届同城相近岗位。',
+  },
   'hikvision-product-management-hangzhou-2027': {
     eligible: true,
     reason: '杭州在招的2027届本科产品岗，计算机相关专业优先。职责涉及需求、定义、原型和迭代。',
