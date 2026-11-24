@@ -650,10 +650,10 @@ export default function Dashboard() {
               央国企约 12 万年包及较好福利可放宽岗位匹配度。高福利例外须注明薪资未知与风险。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              当前按北京时间 {chinaToday(clockNow)} 判断网申期限。已核实截止时刻的岗位按分钟倒计时。最新岗位更新 2026-11-23，各岗位详情注明核验日期。
+              当前按北京时间 {chinaToday(clockNow)} 判断网申期限。已核实截止时刻的岗位按分钟倒计时。最新岗位更新 2026-11-24，各岗位详情注明核验日期。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              新增华润万家 AI 产品管培生（深圳，5星）、韶音科技 IT 产品管培生（深圳，4星）和同程旅行中后台商业化产品经理（苏州，4星）。近期截止：国家数据集团数据产品经理 11月30日17:00。
+              成都优先看云筑供采平台产品、彩讯大模型产品、北森企业软件产品和新增的海艺 AI 产品。云筑往届流程含集团测评，本届是否另设笔试待确认。国家数据集团数据产品经理 11月30日17:00 截止。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
               <a className="underline underline-offset-2" href="https://wecruit.hotjob.cn/SU6491506a2f9d24316e91b81b/mc/detail?distance=0&amp;postId=6a8a7a4f1ad6db7cf833b657&amp;recruitType=campus" target="_blank" rel="noreferrer">TCL实业空调事业部</a> 另有广州／中山AI智能产品经理，物联网本科可报，偏智能家居，薪资待核。

@@ -76,6 +76,13 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'seaart-ai-product-chengdu-2027': {
+    eligible: true,
+    reason: '成都在招批次的正式本科 AI 产品岗。单岗月薪下限12K，职责覆盖PRD、原型及AI功能效果分析。',
+    salaryKind: '本届公开', monthlyMin: 12000,
+    salarySourceUrl: 'https://jy.scu.edu.cn/index/index/employjobdetail.html?data=MDAwMDAwMDAwMJG6n3_Ed6imi4qQtLh4Y96KubbSsmHddricp9CWi5qikaeWacSdqLqGfaK2w4iil5C4zNbGiL-E',
+    salarySourceLabel: '成都海艺互娱在四川大学就业网发布的本届成都 AI 产品经理单岗为12–20K/月。',
+  },
   'cr-vanguard-ai-product-shenzhen-2027': {
     eligible: true,
     reason: '央企旗下深圳总部 AI 产品岗，计算机相关本科可投，岗位明确要求 AI 产品实习和大模型项目经历。',
@@ -826,10 +833,10 @@ export const screeningReviews: Record<string, ScreeningReview> = {
   },
   'beisen-ai-saas-product-2027': {
     eligible: true,
-    reason: 'AI HR SaaS软件产品经理，本科开放，需求分析与功能设计职责明确，校招15–20K/月',
-    salaryKind: '本届公开', monthlyMin: 15000,
-    salarySourceUrl: 'https://career.nankai.edu.cn/correcruit/content/id/89658.html',
-    salarySourceLabel: '北森云计算2027软件产品经理校招公告',
+    reason: '成都可选的 HR SaaS 产品岗，本科开放。职责含用户研究、需求分析、功能和交互设计。',
+    salaryKind: '本届公开', monthlyMin: 14000,
+    salarySourceUrl: 'https://mnowpick.nowcoder.com/jobs/detail/470226?deliverSource=2&pageSource=5003',
+    salarySourceLabel: '北森招聘方在牛客发布的 2027 软件产品经理 J14870，14–20K/月×14薪。',
   },
   'jiufang-ai-data-product-2027': {
     eligible: true,
