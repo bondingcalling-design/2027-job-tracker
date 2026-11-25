@@ -76,6 +76,27 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  'guming-it-product-2027': {
+    eligible: true,
+    reason: '杭州普通 IT 产品管培岗，计算机本科适配，岗位包含供销仓配、IoT 需求和 AI 产品验证。',
+    salaryKind: '本届公开', monthlyMin: 20000,
+    salarySourceUrl: 'https://cn.linkedin.com/jobs/view/it%E4%BA%A7%E5%93%81%E7%AE%A1%E5%9F%B9%E7%94%9F-mj002998-at-%E6%B5%99%E6%B1%9F%E5%8F%A4%E8%8C%97%E7%A7%91%E6%8A%80%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8-4489315056',
+    salarySourceLabel: '古茗 MJ002998 同岗猎聘报价，领英同步 20–28K/月',
+  },
+  'waterdrop-ai-product-shenzhen-2027': {
+    eligible: true,
+    reason: '深圳 2027 届本科 AI 产品岗，做垂直 AI 助手，RAG 和 Agent 经历直接适配。',
+    salaryKind: '本届公开', monthlyMin: 20000,
+    salarySourceUrl: 'https://www.nowcoder.com/jobs/detail/462506',
+    salarySourceLabel: '水滴 HR 牛客原帖 20–25K/月 × 12薪',
+  },
+  'sanhua-product-management-2027': {
+    eligible: true,
+    reason: '杭州本科可投的产品管理管培方向，职责含需求、路线图与版本迭代；注意轮岗后定岗。',
+    salaryKind: '本届公开', monthlyMin: 13000,
+    salarySourceUrl: 'https://cn.linkedin.com/jobs/view/2027%E5%B1%8A%E5%85%A8%E7%90%83%E7%AE%A1%E5%9F%B9%E7%94%9F%EF%BC%88%E4%BA%A7%E5%93%81%E7%AE%A1%E7%90%86%EF%BC%89-at-%E4%B8%89%E8%8A%B1%E6%8E%A7%E8%82%A1%E9%9B%86%E5%9B%A2%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8-4487872542',
+    salarySourceLabel: '三花杭州产品管理同岗猎聘报价，领英同步 13–22K/月',
+  },
   '517la-b2b-product-chengdu-2027': {
     eligible: true,
     reason: '成都金牛区2027届B端产品经理，计算机本科优先。雇主同届两份单岗均为12K起，总简章另列10K起，正式月薪待确认。',
