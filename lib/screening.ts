@@ -76,6 +76,13 @@ const exclusions: [string, string[]][] = [
 ];
 
 export const screeningReviews: Record<string, ScreeningReview> = {
+  '517la-b2b-product-chengdu-2027': {
+    eligible: true,
+    reason: '成都金牛区2027届B端产品经理，计算机本科优先。雇主同届两份单岗均为12K起，总简章另列10K起，正式月薪待确认。',
+    salaryKind: '本届公开', monthlyMin: 12000,
+    salarySourceUrl: 'https://www.zhipin.com/job_detail/b8ba4fe18218babb0nJ53t26F1dU.html',
+    salarySourceLabel: '差旅壹号 BOSS 直聘成都校招单岗 12–14K × 13薪',
+  },
   'seaart-ai-product-chengdu-2027': {
     eligible: true,
     reason: '成都在招批次的正式本科 AI 产品岗。单岗月薪下限12K，职责覆盖PRD、原型及AI功能效果分析。',
@@ -539,8 +546,8 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     exceptionReason: '高匹配通信/政企B端产品：只选产品经理管培，避开海外交付、运营咨询和驻场实施方向',
   },
   'pudurobotics-product-manager-2027': {
-    eligible: true,
-    reason: '2027商用机器人产品经理，本科开放，职责覆盖B端客户、PRD、软硬件协同和全生命周期，15–30K×14薪',
+    eligible: false,
+    reason: '11月25日复核，牛客单岗已结束，成都官网招聘状态待确认，暂不列为可投',
     salaryKind: '本届公开', monthlyMin: 15000,
     salarySourceUrl: 'https://www.nowcoder.com/jobs/detail/460236',
     salarySourceLabel: '普渡机器人2027产品经理具体岗位',
@@ -619,12 +626,11 @@ export const screeningReviews: Record<string, ScreeningReview> = {
     exceptionReason: '能源垂直产品研发：逐岗核对本科要求，避开硕士算法岗和不愿接受的新疆现场岗位',
   },
   'nsfocus-security-product-2027': {
-    eligible: true,
-    reason: '2027校招明确单列企业级网络安全产品经理，本科开放，当前产品岗公开转载为15–20K/月',
-    salaryKind: '本届公开', monthlyMin: 15000,
-    salarySourceUrl: 'https://www.shushuqiuzhi.com/article/232869',
-    salarySourceLabel: '绿盟科技2027产品经理岗位15–20K公开转载',
-    exceptionReason: '高薪B端安全产品：非电力垂直，但客户覆盖能源/金融/政企，优先级放在AI+能源岗位之后',
+    eligible: false,
+    reason: '国聘单岗是企业安全软件产品，本科可投。成都可选但北京优先，成都名额及实际薪资待核',
+    salaryKind: '未公开',
+    salarySourceUrl: 'https://www.iguopin.com/job/detail?id=215584477206808140',
+    salarySourceLabel: '绿盟科技国聘单岗，未公布薪资',
   },
   'ygsoft-ai-requirements-2027': {
     eligible: true,

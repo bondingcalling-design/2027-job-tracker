@@ -650,16 +650,22 @@ export default function Dashboard() {
               央国企约 12 万年包及较好福利可放宽岗位匹配度。高福利例外须注明薪资未知与风险。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              当前按北京时间 {chinaToday(clockNow)} 判断网申期限。已核实截止时刻的岗位按分钟倒计时。最新岗位更新 2026-11-24，各岗位详情注明核验日期。
+              当前按北京时间 {chinaToday(clockNow)} 判断网申期限。已核实截止时刻的岗位按分钟倒计时。最近复核 2026-11-25，各岗位详情注明核验日期。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              成都优先看云筑供采平台产品、彩讯大模型产品、北森企业软件产品和新增的海艺 AI 产品。云筑往届流程含集团测评，本届是否另设笔试待确认。国家数据集团数据产品经理 11月30日17:00 截止。
+              成都新增差旅壹号 B 端产品经理。也可看云筑供采平台产品、彩讯大模型产品、北森企业软件产品和海艺 AI 产品。云筑往届流程含集团测评，本届是否另设笔试待确认。国家数据集团数据产品经理 11月30日17:00 截止。
+            </p>
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
+              <a className="underline underline-offset-2" href="https://thunisoft.zhiye.com/campus/detail?jobAdId=ffc4fad8-e2b0-4c0c-9e7e-a1dbcae98109" target="_blank" rel="noreferrer">华宇软件成都 AI 产品经理</a>接受本科，单岗薪资待核。
+            </p>
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
+              <a className="underline underline-offset-2" href="https://www.iguopin.com/job/detail?id=215584477206808140" target="_blank" rel="noreferrer">绿盟科技软件产品经理</a>于 11月27日 00:00 截止。职位列成都可选、北京优先，成都名额和薪资待核。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
               <a className="underline underline-offset-2" href="https://wecruit.hotjob.cn/SU6491506a2f9d24316e91b81b/mc/detail?distance=0&amp;postId=6a8a7a4f1ad6db7cf833b657&amp;recruitType=campus" target="_blank" rel="noreferrer">TCL实业空调事业部</a> 另有广州／中山AI智能产品经理，物联网本科可报，偏智能家居，薪资待核。
             </p>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-muted-foreground">
-              <a className="underline underline-offset-2" href="https://51uns.bysjy.com.cn/Announce/Details/3633767?schoolCode=10710" target="_blank" rel="noreferrer">远光软件</a> 需求分析方向等国网正式批确认具体岗位和截止日。
+              <a className="underline underline-offset-2" href="https://zhaopin.sgcc.com.cn/" target="_blank" rel="noreferrer">国网数科及远光软件第一批</a>于 11月25日截止，须参加国网统一笔试。远光接受成都方向的相关专业本科，成都需求分析师的具体名额待核。
             </p>
             <p className="mt-2 inline-flex max-w-2xl rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs leading-5 text-amber-900">
               城市边界：北京、西安不投；优先一线／新一线及沿海、南方高科技城市。多城市岗位须核对具体工作地。

@@ -19,10 +19,12 @@ const withdrawnDirectionIds = new Set([
   'goldwind-product-rd-2027', 'mingyang-smart-energy-ai-2027', 'nrec-support-2027',
   'nbcb-fintech-product-2027', 'huaneng-beijing-digital-2027', 'wisdri-automation-technical-marketing-2027',
 ]);
-const closedRoleIds = new Set(['cmic-ai-product-2027']);
+const unavailableRoleIds = new Set([
+  'cmic-ai-product-2027', 'pudurobotics-product-manager-2027', 'nsfocus-security-product-2027',
+]);
 function assertCurrentDecision(item, id = item?.id) {
   assert.ok(item, id);
-  assert.equal(screeningReviews[id].eligible, !withdrawnDirectionIds.has(id) && !closedRoleIds.has(id), id);
+  assert.equal(screeningReviews[id].eligible, !withdrawnDirectionIds.has(id) && !unavailableRoleIds.has(id), id);
 }
 
 const now = '2026-09-10T08:00:00.000Z';
@@ -151,9 +153,7 @@ test('initial November review retains an honest SOE operations alternative and u
   const merged = mergeOpportunities(seedOpportunities, [saved], now);
   assert.equal(merged.some((item) => item.id === seed.id), false);
   assert.deepEqual(merged.find((item) => item.id === saved.id), saved);
-  for (const id of ['richinfo-ai-product-2027', 'nsfocus-security-product-2027']) {
-    assert.equal(seedOpportunities.find((item) => item.id === id).endDate, null, id);
-  }
+  assert.equal(seedOpportunities.find((item) => item.id === 'richinfo-ai-product-2027').endDate, null);
   assert.equal(screeningReviews['richinfo-ai-product-2027'].monthlyMin, 12000);
   assert.equal(screeningReviews['cmic-ai-product-2027'].eligible, false);
   const poly = seedOpportunities.find((item) => item.id === 'poly-harmony-ai-product-guangzhou-2027');
@@ -174,6 +174,29 @@ test('verified 17:00 deadlines close in China time rather than waiting until mid
   assert.equal(deadlineCountdown(row, cutoff), '已截止');
   assert.equal(isOpportunityInScope(row, retiredSeedIds, undefined, cutoff), false);
   assert.equal(chinaToday(Date.parse('2026-10-27T16:01:00Z')), '2026-10-28');
+});
+
+test('November 25 Chengdu review keeps pay differences and existing decisions', () => {
+  const rows = initial();
+  const travel = rows.find((item) => item.id === '517la-b2b-product-chengdu-2027');
+  assert.equal(travel.city, '成都（金牛）');
+  assert.equal(travel.endDate, null);
+  assert.equal(screeningReviews[travel.id].monthlyMin, 12000);
+  assert.match(travel.compensation, /10–14K/);
+  const saved = { ...travel, id: 'my-travel', company: '四川差旅壹号国际旅行社有限公司', stage: '面试', isCustom: true };
+  const merged = mergeOpportunities(seedOpportunities, [saved], now);
+  assert.equal(merged.some((item) => item.id === travel.id), false);
+  assert.equal(merged.find((item) => item.id === saved.id).stage, '面试');
+
+  const green = rows.find((item) => item.id === 'nsfocus-security-product-2027');
+  const pudu = rows.find((item) => item.id === 'pudurobotics-product-manager-2027');
+  assert.equal(getDeadlineTime(green), '00:00');
+  assert.equal(isDeadlineExpired(green, Date.parse('2026-11-26T16:00:00Z')), true);
+  assert.equal(pudu.endDate, null);
+  for (const item of [green, pudu]) {
+    assert.equal(isOpportunityInScope(item, retiredSeedIds, '2026-11-25'), false);
+    assert.equal(isOpportunityInScope({ ...item, stage: '已投递' }, retiredSeedIds, '2026-11-25'), true);
+  }
 });
 
 test('a precise deadline never deletes preparing or interview progress and cannot revive abandoned cards', () => {
@@ -466,7 +489,7 @@ test('October 19 SOE additions use verified undergraduate roles and do not inven
 
 test('recommendations exclude internet megafirms; adjacent roles require an explicit exception; private floor is 10K', () => {
   const selected = visible(initial());
-  assert.equal(selected.length, 85);
+  assert.equal(selected.length, 84);
   const internetMegafirms = /字节|美团|拼多多|腾讯|百度|阿里巴巴/;
   for (const item of selected) {
     assert.doesNotMatch(item.company, internetMegafirms);
@@ -820,11 +843,11 @@ test('October 9 batch retains eight routes after subsequent bank and location au
     assert.match(item.degreeGate, /本科/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
-    assert.match(item.verifiedAt, /^2026-(10-(09|12|27)|11-02)$/);
+    assert.match(item.verifiedAt, /^2026-(10-(09|12|27)|11-(02|25))$/);
     assert.equal(companies.has(item.company), false, item.company);
     companies.add(item.company);
   }
-  for (const id of ['ztccloud-b2b-product-2027', 'seichitech-product-information-2027', 'kingdee-ai-product-2027', 'goldwind-product-rd-2027', 'nsfocus-security-product-2027']) {
+  for (const id of ['ztccloud-b2b-product-2027', 'seichitech-product-information-2027', 'kingdee-ai-product-2027', 'goldwind-product-rd-2027']) {
     assert.ok(screeningReviews[id].monthlyMin >= 10000, id);
   }
   for (const id of ['ygsoft-ai-requirements-2027', 'sgdt-ai-energy-digital-2027', 'czbank-ai-application-2027', 'huaneng-beijing-digital-2027']) {
@@ -870,7 +893,7 @@ test('October 12 bank audit removes expired, master-only, low-pay and resume-mis
   assert.match(seedOpportunities.find((item) => item.id === 'bankofbeijing-ai-tech-2027').role, /AI产品经理/);
 });
 
-test('latest review keeps only four high-confidence computer-major product routes', () => {
+test('October product shortlist preserves records after current availability checks', () => {
   const keptIds = [
     'pylontech-cloud-product-2027',
     'pudurobotics-product-manager-2027',
@@ -896,7 +919,7 @@ test('latest review keeps only four high-confidence computer-major product route
     assert.doesNotMatch(item.role, /电气|电力专业|项目管理|项目经理|PMO|实施交付/);
     assert.ok(new URL(item.applyUrl));
     assert.ok(new URL(item.sourceUrl));
-    assert.equal(item.verifiedAt, '2026-10-09');
+    assert.equal(item.verifiedAt, id === 'pudurobotics-product-manager-2027' ? '2026-11-25' : '2026-10-09');
     assert.equal(companies.has(item.company), false, item.company);
     companies.add(item.company);
     assert.equal(seedOpportunities.filter((seed) => seed.company === item.company).length, 1, item.company);

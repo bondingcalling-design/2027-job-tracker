@@ -33,6 +33,9 @@ export function normalizeCompanyName(company: string) {
     .replace(/[^a-z0-9\u3400-\u9fff]/g, '');
   // 已确认的同一招聘品牌/经营主体别名，避免用户手动记录与新种子重复；不按集团名称泛合并子公司。
   const aliases: Record<string, string> = {
+    四川差旅壹号国际旅行社: '差旅壹号',
+    四川我要去哪科技: '差旅壹号',
+    '517la': '差旅壹号',
     成都海艺互娱科技: '海艺科技',
     成都海艺智创科技: '海艺科技',
     成都海集科技: '海艺科技',
